@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+    <context id="DB2Tables" targetRuntime="MyBatis3">
+
+        <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin"/>
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/spm_assignment?serverTimezone=CST"
+                        userId="root"
+                        password="root">
+            <property name="nullCatalogMeansCurrent" value="true"/>
+        </jdbcConnection>
+
+
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="cn.edu.njust.dev.ses.main.model" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="XMLMAPPER" targetPackage="cn.edu.njust.dev.ses.main.mapper"
+                             targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <table tableName="global_parameters" domainObjectName="GlobalParameter"></table>
+        <table tableName="user" domainObjectName="User">
+            <generatedKey column="uid" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="grades_entry" domainObjectName="GradesEntry">
+            <generatedKey column="gid" sqlStatement="MySql" identity="true"/></table>
+        <table tableName="application" domainObjectName="Application">
+            <generatedKey column="aid" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="teacher" domainObjectName="Teacher"></table>
+        <table tableName="ccf_event" domainObjectName="CCFEvent">
+            <generatedKey column="eid" sqlStatement="MySql" identity="true"/>
+        </table>
+
+
+    </context>
+</generatorConfiguration>
