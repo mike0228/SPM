@@ -16,7 +16,7 @@ public class SessionLoginFilter extends OncePerRequestFilter {
     }
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if(request.getSession().getAttribute("logged_in_as")==null && request.getSession().getAttribute("quick_validate_performed") == null) {
+        if(request.getSession().getAttribute("logged_in_as") == null && request.getSession().getAttribute("quick_validate_performed") == null) {
             accountManagementUtils.quickValidate(request);
             request.getSession().setAttribute("quick_validate_performed", true);
         }
