@@ -24,7 +24,7 @@ public class AccountService {
         List<UserSession> list = userSessionMapper.selectByExample(example);
         if(list.isEmpty()) return null;
         UserSession session = list.get(0);
-        if(session.getExpires().after(new Date())){
+        if(session.getExpires().before(new Date())){
             userSessionMapper.deleteByPrimaryKey(session.getSessionId());
             return null;
         }
