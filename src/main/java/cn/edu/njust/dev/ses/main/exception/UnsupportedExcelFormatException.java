@@ -7,4 +7,5 @@ public class UnsupportedExcelFormatException extends RuntimeException {
     public UnsupportedExcelFormatException(String message){
         super(message);
     }
+    public UnsupportedExcelFormatException(String message, Throwable cause){ super(message, cause);}
 }
