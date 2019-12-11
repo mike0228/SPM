@@ -14,5 +14,4 @@ public @interface ExcelField {
     boolean required() default true;
 
     String[] value();
-
 }
