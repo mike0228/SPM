@@ -50,7 +50,8 @@
         <table tableName="ccf_event" domainObjectName="CCFEvent">
             <generatedKey column="eid" sqlStatement="MySql" identity="true"/>
         </table>
-        <table tableName="student" domainObjectName="Student"></table>
+        <table tableName="student" domainObjectName="Student">
+        </table>
 
 
     </context>
