@@ -42,7 +42,9 @@
             <generatedKey column="session_id" sqlStatement="MySql" identity="true"/>
         </table>
         <table tableName="grades_entry" domainObjectName="GradesEntry">
-            <generatedKey column="gid" sqlStatement="MySql" identity="true"/></table>
+            <generatedKey column="gid" sqlStatement="MySql" identity="true"/>
+            <columnOverride column="is_approved" javaType="java.lang.Boolean" jdbcType="BOOLEAN" />
+        </table>
         <table tableName="application" domainObjectName="Application">
             <generatedKey column="aid" sqlStatement="MySql" identity="true"/>
         </table>
@@ -51,6 +53,9 @@
             <generatedKey column="eid" sqlStatement="MySql" identity="true"/>
         </table>
         <table tableName="student" domainObjectName="Student">
+        </table>
+        <table tableName="select_rank_entry" domainObjectName="SelectRankEntry">
+            <generatedKey column="reid" sqlStatement="MySql" identity="true"/>
         </table>
 
 
