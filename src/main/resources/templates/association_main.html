@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>协会</title>
+    <title>协会管理系统</title>
     <link rel="stylesheet" href="../static/css/layui.css">
 </head>
 <body class="layui-layout-body">
@@ -11,9 +11,6 @@
     <div class="layui-header">
         <div class="layui-logo">协会管理系统</div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
-        <ul class="layui-nav layui-layout-left">
-            <li class="layui-nav-item"><a href="">首页</a></li>
-        </ul>
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a href="javascript:;">
@@ -33,10 +30,8 @@
         <div class="layui-side-scroll">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
             <ul class="layui-nav layui-nav-tree"  lay-filter="test">
-                <li class="layui-nav-item"><a id="association_display_scores">查看成绩</a></li>
                 <li class="layui-nav-item"><a id="association_change_filter">更改筛选条件</a></li>
                 <li class="layui-nav-item"><a id="association_import_scores">导入选拔赛成绩</a></li>
-                <li class="layui-nav-item"><a id="association_change_information">维护协会信息</a></li>
                 <li class="layui-nav-item"><a id="association_change_password">修改密码</a></li>
             </ul>
         </div>
@@ -44,7 +39,7 @@
 
     <div class="layui-body" >
         <!-- 内容主体区域 -->
-        <iframe id="childPage" style="width:100%;height: 100%;" frameborder="0" src="association_display_scores.html"></iframe>
+        <iframe id="childPage" style="width:100%;height: 100%;" frameborder="0" src="association_change_filter.html"></iframe>
     </div>
 
     <div class="layui-footer">

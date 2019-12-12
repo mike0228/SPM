@@ -11,10 +11,10 @@
     <div class="layui-row" >
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
-            <button type="button" class="layui-btn" id="test1">
+            <button type="submit" class="layui-btn" id="upload_form">
                 <i class="layui-icon">&#xe67c;</i>上传表格
             </button>
-            <button type="button" class="layui-btn">下载模版</button>
+            <a href="../download/format.xls" download="format.xls" class="layui-btn">下载模版</a>
         </div>
     </div>
 
@@ -29,17 +29,24 @@
     });
     layui.use('upload', function(){
         var upload = layui.upload;
-
         //执行实例
         var uploadInst = upload.render({
-            elem: '#test1' //绑定元素
+            elem: '#upload_form' //绑定元素
             ,url: '/upload/' //上传接口
             ,done: function(res){
                 //上传完毕回调
+                layer.open({
+                   content:'上传成功'
+                });
             }
             ,error: function(){
                 //请求异常回调
+                layer.open({
+                    content:'上传失败'
+                });
             }
+            ,accept:'file'
+            ,exts:'xls'
         });
     });
 </script>
