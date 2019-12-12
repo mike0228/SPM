@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.StringUtils;
 
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class ExcelUniversalParser<E extends GenericDTO> {
                 if(ef != null) {
                     boolean unsupported = true;
                     for (Class<?> item : supportedFieldType) {
-                        if(item.isAssignableFrom(item)) {
+                        if(field.getType().isAssignableFrom(item)) {
                             unsupported = false;
                             break;
                         }
@@ -166,7 +167,10 @@ public class ExcelUniversalParser<E extends GenericDTO> {
                                         unfitPropertyTypeException.setColumn(value);
                                         throw unfitPropertyTypeException;
                                     }
-                                } else if(cell.getCellTypeEnum() == CellType.STRING) {
+                                } else if(cell.getCellTypeEnum() == CellType.STRING || cell.getCellTypeEnum() == CellType.BLANK) {
+                                    if(cell.getCellTypeEnum() == CellType.BLANK|| StringUtils.isEmpty(cell.getStringCellValue())){
+                                        originalString = "0.0";
+                                    }
                                     try {
                                         if(propertyType.isAssignableFrom(Long.class)) {
                                             object = Long.parseLong(originalString);
