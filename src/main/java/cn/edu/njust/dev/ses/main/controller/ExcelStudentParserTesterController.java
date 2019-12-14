@@ -29,6 +29,10 @@ public class ExcelStudentParserTesterController {
     public String test(){
         return "test-xslx-upload";
     }
+    @GetMapping("/test/test_student2")
+    public String test2(){
+        return "test-xslx-upload";
+    }
     @PostMapping("/importer/student")
     @ResponseBody
     public List<StudentDTO> importStudentList(HttpServletRequest request, @RequestParam("xsl-file") MultipartFile file){

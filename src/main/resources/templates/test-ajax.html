@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/core.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <title>Title</title>
+    <script>
+        function test(){
+            $.ajax({
+                type:"post",
+                url:"/api/json/login",
+                dataType : 'json',
+                contentType:'application/json;charset=UTF-8',
+                data:JSON.stringify({
+                    "login":"test",
+                    "password":"123456",
+                    "rememberMe":true
+                }),
+                async:true,
+                success:function(data){
+                    console.log(data);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<button onclick="test();">TEST</button>
+</body>
+</html>
