@@ -10,7 +10,7 @@
     <sql id="Base_Column_List">
         uid, account, password, type
     </sql>
-    <select id="findThroughID" parameterType="java.lang.String">
+    <select id="findThroughID" parameterType="java.lang.String" resultMap="BaseResultMap">
         (SELECT user.account, user.password, user.type, user.uid FROM user JOIN student s on user.uid = s.uid WHERE id_no = #{id_no}) UNION
         (SELECT user.account, user.password, user.type, user.uid FROM user JOIN teacher t on user.uid = t.uid WHERE work_id = #{id_no})
     </select>

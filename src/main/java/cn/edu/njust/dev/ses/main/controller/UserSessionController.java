@@ -60,7 +60,7 @@ public class UserSessionController {
                 case "associate":
                     loginResponseDTO.setNext("/associate/main");
             }
-            if(credentialsDTO.getRememberMe())
+            if(credentialsDTO.getRememberMe() != null && credentialsDTO.getRememberMe())
                 accountManagementService.logInAsRememberme(response, session);
             return ResultDTO.okOf(loginResponseDTO);
         }
