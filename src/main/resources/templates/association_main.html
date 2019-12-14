@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>协会管理系统</title>
+    <link rel="stylesheet" href="../static/css/layui.css">
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">协会管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=117991672,1221899612&fm=26&gp=0.jpg" class="layui-nav-img">
+                    编程爱好者协会
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">退出登录</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item"><a id="association_change_filter">更改筛选条件</a></li>
+                <li class="layui-nav-item"><a id="association_import_scores">导入选拔赛成绩</a></li>
+                <li class="layui-nav-item"><a id="association_change_password">修改密码</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body" >
+        <!-- 内容主体区域 -->
+        <iframe id="childPage" style="width:100%;height: 100%;" frameborder="0" src="association_change_filter.html"></iframe>
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © layui.com - 底部固定区域
+    </div>
+</div>
+<script src="../static/layui.js"></script>
+<script >
+    //JavaScript代码区域
+    layui.use('element', function(){
+        var $ = layui.jquery
+        ,element = layui.element;
+        element.on('nav(test)', function(elem){
+            var url = elem.attr("id")+".html";
+            $("#childPage").attr("src",url);
+        });
+    });
+</script>
+</body>
+</html>
