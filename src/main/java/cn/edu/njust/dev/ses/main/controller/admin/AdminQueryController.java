@@ -5,7 +5,6 @@ import cn.edu.njust.dev.ses.main.mapper.ApplicationMapper;
 import cn.edu.njust.dev.ses.main.mapper.CCFEventMapper;
 import cn.edu.njust.dev.ses.main.mapper.GradesEntryMapper;
 import cn.edu.njust.dev.ses.main.mapper.StudentMapper;
-import com.sun.org.apache.xpath.internal.objects.XNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -67,7 +67,7 @@ public class StudentQueryController {
         return null;
     }
     @ResponseBody
-    @PostMapping("/api/json/submit_app")
+    @PostMapping("/api/json/delete_app")
     public ResultDTO deleteApplication(HttpSession session, @RequestParam Integer aid/*CCF ID*/){
         //TODO 删除申请
         return null;
