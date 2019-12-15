@@ -1,4 +1,4 @@
-package cn.edu.njust.dev.ses.main.util;
+package cn.edu.njust.dev.ses.main.service;
 
 import cn.edu.njust.dev.ses.main.listener.SessionCollectionListener;
 import cn.edu.njust.dev.ses.main.mapper.UserMapper;
@@ -8,19 +8,17 @@ import cn.edu.njust.dev.ses.main.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.security.SecureRandom;
 import java.util.Date;
 
 @Service
-final public class AccountManagementUtils {
+final public class AccountManagementService {
     @Autowired
     private AccountService accountService;
     @Autowired
     private UserMapper userMapper;
+
 
     public void quickValidate(HttpServletRequest requestSession){
         Cookie[] cookies = requestSession.getCookies();
@@ -34,11 +32,12 @@ final public class AccountManagementUtils {
         }
         if(token != null){
             requestSession.getSession().setAttribute("logged_in_as", accountService.getUidByToken(token));
+
         }
     }
 
-    public void logInAsRememberme(HttpServletResponse response, HttpServletRequest request){
-        User loggedInUser = (User) request.getSession().getAttribute("logged_in_as");
+    public void logInAsRememberme(HttpServletResponse response, HttpSession session){
+        User loggedInUser = (User) session.getAttribute("logged_in_as");
         if(loggedInUser == null)
             return;
         SecureRandom random = new SecureRandom();

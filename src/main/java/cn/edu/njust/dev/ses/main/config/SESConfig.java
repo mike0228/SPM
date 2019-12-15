@@ -2,7 +2,7 @@ package cn.edu.njust.dev.ses.main.config;
 
 import cn.edu.njust.dev.ses.main.filter.SessionLoginFilter;
 import cn.edu.njust.dev.ses.main.listener.SessionCollectionListener;
-import cn.edu.njust.dev.ses.main.util.AccountManagementUtils;
+import cn.edu.njust.dev.ses.main.service.AccountManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class SESConfig implements WebMvcConfigurer {
     @Autowired
-    AccountManagementUtils accountManagement;
+    AccountManagementService accountManagement;
     @Bean
     public ServletListenerRegistrationBean listenerRegist(){
         ServletListenerRegistrationBean srb = new ServletListenerRegistrationBean();
