@@ -2,6 +2,7 @@ package cn.edu.njust.dev.ses.main.service;
 
 import cn.edu.njust.dev.ses.main.mapper.*;
 import cn.edu.njust.dev.ses.main.model.*;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -67,6 +68,15 @@ public class AccountService {
             return false;
         }
         request.setAttribute("logged_in_as", targetUser);
+        if(targetUser.getType().equals("student")){
+            StudentExample studentExample = new StudentExample();
+            studentExample.createCriteria().andUidEqualTo(targetUser.getUid());
+            request.setAttribute("student_info", studentMapper.selectByExample(studentExample));
+        }else if(targetUser.getType().equals("teacher")){
+            TeacherExample teacherExample = new TeacherExample();
+            teacherExample.createCriteria().andUidEqualTo(targetUser.getUid());
+            request.setAttribute("teacher_info", teacherMapper.selectByExample(teacherExample));
+        }
         return true;
     }
 
@@ -85,6 +95,9 @@ public class AccountService {
             user.setAccount(student.getClassNo());
             user.setPassword(substring);
             userMapper.insertSelective(user);
+            Student update = new Student();
+            update.setUid(user.getUid());
+            studentMapper.updateByExampleSelective(update, studentExample);
             return user;
         }
         return null;
