@@ -1,13 +1,12 @@
 package cn.edu.njust.dev.ses.main.service;
 
-import cn.edu.njust.dev.ses.main.mapper.UserMapper;
-import cn.edu.njust.dev.ses.main.mapper.UserSessionMapper;
-import cn.edu.njust.dev.ses.main.model.User;
-import cn.edu.njust.dev.ses.main.model.UserSession;
-import cn.edu.njust.dev.ses.main.model.UserSessionExample;
+import cn.edu.njust.dev.ses.main.mapper.*;
+import cn.edu.njust.dev.ses.main.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +16,12 @@ public class AccountService {
     private UserMapper userMapper;
     @Autowired
     private UserSessionMapper userSessionMapper;
+    @Autowired
+    private StudentMapper studentMapper;
+    @Autowired
+    private TeacherMapper teacherMapper;
+    @Autowired
+    private AccountExtendMapper accountExtendMapper;
 
     public User getUidByToken(String token){
         UserSessionExample example = new UserSessionExample();
@@ -43,5 +48,45 @@ public class AccountService {
     }
     public void registerToken(UserSession token){
         userSessionMapper.insertSelective(token);
+    }
+
+    public boolean logInAs(HttpSession request, User userInfo){
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andAccountEqualTo(userInfo.getAccount().toLowerCase());
+
+        List<User> users = userMapper.selectByExample(userExample);
+        User targetUser = users.isEmpty() ? null : users.get(0);
+        if(targetUser == null){
+            targetUser = accountExtendMapper.findThroughID(userInfo.getAccount());
+            if(targetUser == null){
+                targetUser = tryToCreateAccountThroughID(userInfo.getAccount(), userInfo.getPassword());
+                if(targetUser == null) return false;
+            }
+        }
+        if(!targetUser.getPassword().equals(userInfo.getPassword())){
+            return false;
+        }
+        request.setAttribute("logged_in_as", targetUser);
+        return true;
+    }
+
+    private User tryToCreateAccountThroughID(String id, String pwd){
+        List<Student> result;
+        StudentExample studentExample = new StudentExample();
+        studentExample.createCriteria().andStudentIdEqualTo(id);
+        result = studentMapper.selectByExample(studentExample);
+        if(!result.isEmpty()){
+            Student student = result.get(0);
+            String idNo = student.getIdNo();
+            String substring = idNo.substring(id.length() - 1 - 5, id.length() - 1);
+            if(!substring.equals(pwd)) return null;
+            User user = new User();
+            user.setType("student");
+            user.setAccount(student.getClassNo());
+            user.setPassword(substring);
+            userMapper.insertSelective(user);
+            return user;
+        }
+        return null;
     }
 }
