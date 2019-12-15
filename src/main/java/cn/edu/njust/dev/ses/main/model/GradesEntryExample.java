@@ -504,7 +504,7 @@ public class GradesEntryExample {
             return (Criteria) this;
         }
 
-        public Criteria andIsApprovedEqualTo(Boolean value) {
+        public Criteria andIsApprovedEqualTo(int value) {
             addCriterion("is_approved =", value, "isApproved");
             return (Criteria) this;
         }
