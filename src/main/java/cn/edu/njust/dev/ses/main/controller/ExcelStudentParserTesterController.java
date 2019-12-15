@@ -1,7 +1,9 @@
 package cn.edu.njust.dev.ses.main.controller;
 
+import cn.edu.njust.dev.ses.main.dto.GradesEntryDTO;
 import cn.edu.njust.dev.ses.main.dto.StudentDTO;
 import cn.edu.njust.dev.ses.main.mapper.UserMapper;
+import cn.edu.njust.dev.ses.main.model.GradesEntry;
 import cn.edu.njust.dev.ses.main.util.excelparser.ExcelUniversalParser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +39,20 @@ public class ExcelStudentParserTesterController {
             InputStream in = file.getInputStream();
             ExcelUniversalParser<StudentDTO> eup = new ExcelUniversalParser<>();
             result = eup.parseFrom(in, StudentDTO.class);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException ignored) {
+        }
+        return result;
+    }
+    @PostMapping("/importer/grades")
+    @ResponseBody
+    public List<GradesEntryDTO> importGradesEntryList(HttpServletRequest request, @RequestParam("xsl-file") MultipartFile file){
+        List<GradesEntryDTO> result = null;
+        try{
+            InputStream in = file.getInputStream();
+            ExcelUniversalParser<GradesEntryDTO> eup = new ExcelUniversalParser<>();
+            result = eup.parseFrom(in, GradesEntryDTO.class);
         } catch (IOException ex) {
             ex.printStackTrace();
         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException ignored) {
