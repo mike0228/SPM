@@ -1,8 +1,11 @@
 package cn.edu.njust.dev.ses.main.controller;
 
 import cn.edu.njust.dev.ses.main.dto.StudentDTO;
+import cn.edu.njust.dev.ses.main.mapper.StudentMapper;
 import cn.edu.njust.dev.ses.main.mapper.UserMapper;
+import cn.edu.njust.dev.ses.main.model.Student;
 import cn.edu.njust.dev.ses.main.util.excelparser.ExcelUniversalParser;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,9 +22,11 @@ import java.util.*;
 @Controller
 public class ExcelStudentParserTesterController {
     private final UserMapper userMapper;
+    private final StudentMapper studentMapper;
 
-    public ExcelStudentParserTesterController(UserMapper userMapper) {
+    public ExcelStudentParserTesterController(UserMapper userMapper, StudentMapper studentMapper) {
         this.userMapper = userMapper;
+        this.studentMapper = studentMapper;
     }
 
 
@@ -41,6 +46,11 @@ public class ExcelStudentParserTesterController {
             InputStream in = file.getInputStream();
             ExcelUniversalParser<StudentDTO> eup = new ExcelUniversalParser<>();
             result = eup.parseFrom(in, StudentDTO.class);
+            for(StudentDTO item: result){
+                Student student = new Student();
+                BeanUtils.copyProperties(item, student);
+                studentMapper.insertSelective(student);
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException ignored) {
