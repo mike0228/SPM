@@ -6,5 +6,5 @@ import lombok.Data;
 public class LoginCredentialsDTO {
     private String login;
     private String password;
-    private Boolean rememberMe;
+    private String rememberMe;
 }
