@@ -11,9 +11,9 @@ import javax.servlet.http.HttpSession;
 public class IndexController {
     @GetMapping("/")
     public String processIndex(HttpSession userSession){
-        User sessionUser = (User) userSession.getAttribute("logged_in_as");
+        User sessionUser = (User) userSession.getAttribute("logged_in_as");//获取登陆用户信息
         if(sessionUser != null){
-            String type = sessionUser.getType();
+            String type = sessionUser.getType();//根据用户类型返回不同的主页面
             if(type.equals("student")) return "redirect:/student/main";
             if(type.equals("associate")) return "redirect:/associate/main";
             if(type.equals("teacher")) return "redirect:/teacher/main";
