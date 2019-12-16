@@ -92,7 +92,7 @@ public class AccountService {
             if(!substring.equals(pwd)) return null;
             User user = new User();
             user.setType("student");
-            user.setAccount(student.getIdNo());
+            user.setAccount(student.getStudentId());
             user.setPassword(substring);
             userMapper.insertSelective(user);
             Student update = new Student();
