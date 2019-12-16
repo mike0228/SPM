@@ -63,4 +63,8 @@ public class AdminImporterController {
 
     @ResponseBody
     @RequestMapping("/api/json/confirm_student_import")
+    public ResultDTO confirmStudentImport(HttpSession session, @RequestParam Integer confirmId){
+        //TODO
+        return null;
+    }
 }
