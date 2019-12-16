@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.njust.dev.ses.main.mapper.GradesEntryAdvancedMapper">
+    <resultMap id="BaseCountResult" type="cn.edu.njust.dev.ses.main.dto.StatsDTO">
+        <id column="exam_no" jdbcType="INTEGER" property="examNo" />
+        <id column="eid" jdbcType="INTEGER" property="eid" />
+        <result column="exam_time" jdbcType="DATE" property="examTime" />
+        <result column="number" jdbcType="INTEGER" property="count" />
+    </resultMap>
+    <sql id="Base_Count_Column_List">
+        exam_no, exam_time, number, eid
+    </sql>
+    <select id="countByMinGrades" parameterType="java.lang.Integer" resultMap="BaseCountResult">
+        SELECT ccf_event.eid, ccf_event.exam_no, ccf_event.exam_time, COUNT(*) as numbers FROM spm_assignment.grades_entry NATURAL JOIN spm_assignment.ccf_event WHERE grades &gt;= ${minGrades} GROUP BY eid ;
+    </select>
+    <select id="countByMaxGrades" parameterType="java.lang.Integer" resultMap="BaseCountResult">
+        SELECT ccf_event.eid, ccf_event.exam_no, ccf_event.exam_time, COUNT(*) as numbers FROM spm_assignment.grades_entry NATURAL JOIN spm_assignment.ccf_event WHERE grades &lt;= ${maxGrades} GROUP BY eid ;
+    </select>
+</mapper>
