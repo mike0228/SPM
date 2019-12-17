@@ -45,10 +45,18 @@ public class StudentQueryController {
 
     @ResponseBody
     @RequestMapping("/api/json/all_grades")
-    public ResultDTO<List<GradesEntry>> getAllGradesEntries(HttpSession session, @RequestParam Boolean isOnHold){
+    public ResultDTO getAllGradesEntries(HttpSession session, @RequestParam Boolean isOnHold){//isOnHold决定是否要获取待审核的成绩
         //TODO 获取学生所有成绩
         //注：应用studentInfo内的学号获取。
-        return null;
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Student studentInfo = (Student) session.getAttribute("student_info");
+        if(sessionUser == null|| studentInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        GradesEntryExample gradesEntryExample=new GradesEntryExample();
+        gradesEntryExample.createCriteria().andStudentIdEqualTo(studentInfo.getIdNo()).andIsApprovedEqualTo(isOnHold);
+        List<GradesEntry> result=gradesEntryMapper.selectByExample(gradesEntryExample);
+        return ResultDTO.okOf(result);
     }
 
     @ResponseBody
@@ -56,7 +64,15 @@ public class StudentQueryController {
     public ResultDTO<?> deleteOnHoldEntry(HttpSession session, @RequestParam Integer entryID){
         //TODO 删除待审核成绩
         //注：应确认该成绩确实是待审核状态再删除，若不是待审核则不能删除。
-        return null;
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Student studentInfo = (Student) session.getAttribute("student_info");
+        if(sessionUser == null|| studentInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        GradesEntryExample gradesEntryExample=new GradesEntryExample();
+        gradesEntryExample.createCriteria().andIsApprovedEqualTo(false).andEidEqualTo(entryID);
+        int items=gradesEntryMapper.deleteByExample(gradesEntryExample);//删除记录条数，判断是否删除成功
+        return ResultDTO.okOf(items);
     }
 
     @ResponseBody
