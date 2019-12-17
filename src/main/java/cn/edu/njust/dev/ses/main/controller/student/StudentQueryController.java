@@ -1,11 +1,11 @@
 package cn.edu.njust.dev.ses.main.controller.student;
 
 import cn.edu.njust.dev.ses.main.dto.ResultDTO;
-import cn.edu.njust.dev.ses.main.mapper.ApplicationMapper;
-import cn.edu.njust.dev.ses.main.mapper.CCFEventMapper;
-import cn.edu.njust.dev.ses.main.mapper.GradesEntryMapper;
-import cn.edu.njust.dev.ses.main.mapper.StudentMapper;
+import cn.edu.njust.dev.ses.main.dto.SelectRankItemDTO;
+import cn.edu.njust.dev.ses.main.mapper.*;
 import cn.edu.njust.dev.ses.main.model.*;
+import cn.edu.njust.dev.ses.main.service.GlobalSettingsService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +29,10 @@ public class StudentQueryController {
     ApplicationMapper applicationMapper;
     @Autowired
     GradesEntryMapper gradesEntryMapper;
+    @Autowired
+    SelectRankEntryMapper selectRankEntryMapper;
+    @Autowired
+    GlobalSettingsService globalSettingsService;
 
     @ResponseBody
     @RequestMapping("/api/json/all_apps")
@@ -55,7 +60,7 @@ public class StudentQueryController {
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
         GradesEntryExample gradesEntryExample=new GradesEntryExample();
-        gradesEntryExample.createCriteria().andStudentIdEqualTo(studentInfo.getIdNo()).andIsApprovedEqualTo(isOnHold);
+        gradesEntryExample.createCriteria().andStudentIdEqualTo(studentInfo.getStudentId()).andIsApprovedEqualTo(isOnHold);
         List<GradesEntry> result=gradesEntryMapper.selectByExample(gradesEntryExample);
         return ResultDTO.okOf(result);
     }
@@ -73,56 +78,100 @@ public class StudentQueryController {
         GradesEntryExample gradesEntryExample=new GradesEntryExample();
         gradesEntryExample.createCriteria().andIsApprovedEqualTo(false).andEidEqualTo(entryID);
         int items=gradesEntryMapper.deleteByExample(gradesEntryExample);//删除记录条数，判断是否删除成功
-        if(items>0)
-            return ResultDTO.okOf(items);
-        return ResultDTO.errorOf(0,"数据删除失败");
+        return items > 0? ResultDTO.okOf() : ResultDTO.errorOf(0, "找不到该记录或者不能删除");
     }
 
     @ResponseBody
     @PostMapping("/api/json/submit_app")
-    public ResultDTO submitApplication(HttpSession session, @RequestParam Integer eid/*CCF ID*/){
-        //TODO 创建申请
-        //注：应判断该次 CCF 考试是否已开放申请且当前还可以申请（使用 appli_deadline，appli_starts_on 和 can_apply）
+    public ResultDTO submitApplication(HttpSession session, @RequestParam Integer eid){
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Student studentInfo = (Student) session.getAttribute("student_info");
         if(sessionUser == null|| studentInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
-        CCFEvent ccfEvent=ccfEventMapper.selectByPrimaryKey(eid);
-        if(new Date().compareTo(ccfEvent.getAppliDeadline())>0|new Date().compareTo(ccfEvent.getAppliStartsOn())<0|ccfEvent.getCanApply()==0) {
-            return ResultDTO.errorOf(0, "当前不能申请该ccf考试。");
-        }
-        Application application=new Application();
-        application.setAppTime(new Date());
-        application.setEid(eid);
+        ApplicationExample applicationExample2 = new ApplicationExample();
+        applicationExample2.createCriteria().andUidEqualTo(studentInfo.getUid()).andEidEqualTo(eid);
+        if(applicationMapper.countByExample(applicationExample2) > 0)
+            return ResultDTO.errorOf(0, "已经申请了该次考试。");
+
+        CCFEvent ccfEvent = ccfEventMapper.selectByPrimaryKey(eid);
+        if(ccfEvent == null)
+            return ResultDTO.errorOf(0, "不存在该考试 ID。");
+        if(ccfEvent.getCanApply() == 0)
+            return ResultDTO.errorOf(0, "该次考试的申请已经关闭。");
+        Date currentTime = new Date();
+
+        if(currentTime.after(ccfEvent.getAppliDeadline()))
+            return ResultDTO.errorOf(0, "该次考试的公费申请截止时间已过。");
+        if(currentTime.before(ccfEvent.getAppliStartsOn()))
+            return ResultDTO.errorOf(0, "该次考试的公费申请还未开放提交。");
+
+        Application application = new Application();
         application.setUid(studentInfo.getUid());
-        application.setAppStatus("pending review");
-        int items=applicationMapper.insertSelective(application);
-        if(items>0)
-            return ResultDTO.okOf(items);
-        return ResultDTO.errorOf(0,"数据插入失败");
+        application.setEid(eid);
+        application.setAppTime(currentTime);
+        ApplicationExample applicationExample = new ApplicationExample();
+        applicationExample.createCriteria().andAppStatusEqualTo("auto-approved").andUidEqualTo(studentInfo.getUid());
+        long autoApprovedChancesUsed = applicationMapper.countByExample(applicationExample);
+        GradesEntryExample gradesEntryExample = new GradesEntryExample();
+        gradesEntryExample.createCriteria().andStudentIdEqualTo(studentInfo.getStudentId()).andGradesGreaterThanOrEqualTo(globalSettingsService.getMidGradesForAutoApprovement()); //TODO Change so that it reflects the sitewide setting.
+        long qualifiedEntries = gradesEntryMapper.countByExample(gradesEntryExample);
+        if(qualifiedEntries > autoApprovedChancesUsed){
+            application.setAppStatus("auto-approved");
+        }
+        applicationMapper.insertSelective(application);
+        return ResultDTO.okOf();
     }
     @ResponseBody
     @PostMapping("/api/json/delete_app")
     public ResultDTO deleteApplication(HttpSession session, @RequestParam Integer aid/*CCF ID*/){
         //TODO 删除申请
-        //注：应判断当前申请是否还在等待审核,被审核过的申请不能删除
+        //注：为了保留各种记录，只能删除状态为 pending 的记录。
+        return null;
+    }
+    @ResponseBody
+    @PostMapping("/api/json/add_grades_for_review")
+    public ResultDTO addUnapprovedGradesEntry(HttpSession session, @RequestParam Integer eid,
+                                              @RequestParam Integer gradesProblem1,
+                                              @RequestParam Integer gradesProblem2,
+                                              @RequestParam Integer gradesProblem3,
+                                              @RequestParam Integer gradesProblem4,
+                                              @RequestParam Integer gradesProblem5){
+        //TODO 添加待审核成绩
+        //注：需将 is_approved 设成 false
+        return null;
+    }
+    @ResponseBody
+    @PostMapping("/api/json/all_ranks_result")
+    public ResultDTO obtainAllRankingResult(HttpSession session){
+        //TODO 列出该考生的所有选拔考试 rank
+        return null;
+    }
+
+    @ResponseBody
+    @PostMapping("/api/json/show_all_ranks")
+    public ResultDTO showRankingResult(HttpSession session, @RequestParam Integer eid){
+        //注：在之前的考试中 rank 信息是公开的，所以在网站上可以查询考试的 rank 状况
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Student studentInfo = (Student) session.getAttribute("student_info");
         if(sessionUser == null|| studentInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
-        ApplicationExample applicationExample=new ApplicationExample();
-        applicationExample.createCriteria().andAidEqualTo(aid).andAppStatusEqualTo("pending review");
-        List<Application> result=applicationMapper.selectByExample(applicationExample);
-        int items;
-        if(!result.isEmpty()) {
-            items = applicationMapper.deleteByExample(applicationExample);
-            if(items>0)
-                return ResultDTO.okOf(items);
-            else
-                return ResultDTO.errorOf(0,"删除记录失败");
+        ApplicationExample applicationExample = new ApplicationExample();
+        applicationExample.createCriteria().andUidEqualTo(studentInfo.getUid()).andEidEqualTo(eid).andAppStatusNotEqualTo("auto-approved");
+        if(applicationMapper.countByExample(applicationExample) == 0)
+            return ResultDTO.errorOf(0, "你没有参加该次选拔考试，不能查看该次考试的 rank 情况。");
+        SelectRankEntryExample selectRankEntryExample = new SelectRankEntryExample();
+        selectRankEntryExample.createCriteria().andEidEqualTo(eid);
+        List<SelectRankEntry> selectRankEntries = selectRankEntryMapper.selectByExample(selectRankEntryExample);
+        List<SelectRankItemDTO> selectRankItemDTOS = new ArrayList<>();
+        for(SelectRankEntry entry: selectRankEntries){
+            //将用户自己条目标出来，便于前端高亮显示
+            SelectRankItemDTO selectRankItemDTO = new SelectRankItemDTO();
+            BeanUtils.copyProperties(entry, selectRankItemDTO);
+            selectRankItemDTO.setIsSelf(entry.getUid().equals(studentInfo.getUid()));
+            selectRankItemDTOS.add(selectRankItemDTO);
         }
-        else return ResultDTO.errorOf(0,"该申请记录不存在");
+        return ResultDTO.okOf(selectRankItemDTOS);
     }
 }
