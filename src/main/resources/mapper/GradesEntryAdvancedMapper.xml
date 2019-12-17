@@ -7,15 +7,13 @@
         <result column="exam_time" jdbcType="DATE" property="examTime" />
         <result column="number" jdbcType="INTEGER" property="count" />
         <result column="avg_grades" jdbcType="DOUBLE" property="avgGrades"/>
-
+        <result column="min_grades" jdbcType="INTEGER" property="minGrades"/>
+        <result column="max_grades" jdbcType="INTEGER" property="maxGrades"/>
     </resultMap>
     <resultMap id="DistributionResult" type="cn.edu.njust.dev.ses.main.dto.DistributionShowcaseDTO">
         <result column="count" jdbcType="INTEGER" property="count"/>
         <result column="item" jdbcType="VARCHAR" property="item" />
     </resultMap>
-    <sql id="Base_Count_Column_List">
-        exam_no, exam_time, number, eid
-    </sql>
 
     <sql id="Example_Where_Clause">
         <!--
@@ -53,8 +51,9 @@
     </sql>
 
 
+
     <select id="countByExampleWithGroupByCCFEvent" parameterType="cn.edu.njust.dev.ses.main.model.GradesEntryExample" resultMap="BaseCountResult">
-        SELECT ccf_event.eid, ccf_event.exam_no, ccf_event.exam_time, COUNT(*) as `number`, AVG(grades_entry.grades) AS `avg_grades` FROM spm_assignment.grades_entry NATURAL JOIN spm_assignment.ccf_event
+        SELECT ccf_event.eid, ccf_event.exam_no, ccf_event.exam_time, COUNT(*) as `number`, AVG(grades_entry.grades) AS `avg_grades`, MIN(grades_entry.grades) AS `min_grades`, MAX(grades_entry.grades) AS `max_grades` FROM spm_assignment.grades_entry NATURAL JOIN spm_assignment.ccf_event
         <if test="_parameter != null">
             <include refid="Example_Where_Clause" />
         </if>
@@ -67,30 +66,30 @@
         SELECT ccf_event.eid, ccf_event.exam_no, ccf_event.exam_time, COUNT(*) as numbers FROM spm_assignment.grades_entry NATURAL JOIN spm_assignment.ccf_event WHERE grades &lt;= ${maxGrades} GROUP BY eid ;
     </select>-->
     <select id="getGradesDistributionByExample" parameterType="cn.edu.njust.dev.ses.main.model.GradesEntryExample" resultMap="DistributionResult">
-        SELECT case when `grades_entry`.`grades` &gt;= 0 AND `grades_entry`.`grades` &lt;= 50 then '1:(0,50]'
-                    when `grades_entry`.`grades` &gt; 50 AND `grades_entry`.`grades` &lt;= 100 then '2:(50,50]'
-                    when `grades_entry`.`grades` &gt; 100 AND `grades_entry`.`grades` &lt;= 150 then '3:(100,150]'
-                    when `grades_entry`.`grades` &gt; 150 AND `grades_entry`.`grades` &lt;= 200 then '4:(150,200]'
-                    when `grades_entry`.`grades` &gt; 200 AND `grades_entry`.`grades` &lt;= 250 then '5:(200,250]'
-                    when `grades_entry`.`grades` &gt; 250 AND `grades_entry`.`grades` &lt;= 300 then '6:(250,300]'
-                    when `grades_entry`.`grades` &gt;= 300 AND `grades_entry`.`grades` &lt;= 350 then '7:(300,350]'
-                    when `grades_entry`.`grades` &gt;= 350 AND `grades_entry`.`grades` &lt;= 400 then '8:(350,400]'
-                    when `grades_entry`.`grades` &gt;= 400 AND `grades_entry`.`grades` &lt;= 450 then '9:(400,450]'
-                    when `grades_entry`.`grades` &gt;= 450 AND `grades_entry`.`grades` &lt;= 500 then '10:(450,500]'
+        SELECT case when `grades_entry`.`grades` &gt;= 0 AND `grades_entry`.`grades` &lt;= 50 then '(0,50]'
+                    when `grades_entry`.`grades` &gt; 50 AND `grades_entry`.`grades` &lt;= 100 then '(50,50]'
+                    when `grades_entry`.`grades` &gt; 100 AND `grades_entry`.`grades` &lt;= 150 then '(100,150]'
+                    when `grades_entry`.`grades` &gt; 150 AND `grades_entry`.`grades` &lt;= 200 then '(150,200]'
+                    when `grades_entry`.`grades` &gt; 200 AND `grades_entry`.`grades` &lt;= 250 then '(200,250]'
+                    when `grades_entry`.`grades` &gt; 250 AND `grades_entry`.`grades` &lt;= 300 then '(250,300]'
+                    when `grades_entry`.`grades` &gt;= 300 AND `grades_entry`.`grades` &lt;= 350 then '(300,350]'
+                    when `grades_entry`.`grades` &gt;= 350 AND `grades_entry`.`grades` &lt;= 400 then '(350,400]'
+                    when `grades_entry`.`grades` &gt;= 400 AND `grades_entry`.`grades` &lt;= 450 then '(400,450]'
+                    when `grades_entry`.`grades` &gt;= 450 AND `grades_entry`.`grades` &lt;= 500 then '(450,500]'
                     ELSE 'unknown' END 'item', COUNT(*) as `count` FROM `grades_entry`
         <if test="_parameter != null">
             <include refid="Example_Where_Clause" />
         </if>
-        GROUP BY case when `grades_entry`.`grades` &gt;= 0 AND `grades_entry`.`grades` &lt;= 50 then '1:(0,50]'
-            when `grades_entry`.`grades` &gt; 50 AND `grades_entry`.`grades` &lt;= 100 then '2:(50,50]'
-            when `grades_entry`.`grades` &gt; 100 AND `grades_entry`.`grades` &lt;= 150 then '3:(100,150]'
-            when `grades_entry`.`grades` &gt; 150 AND `grades_entry`.`grades` &lt;= 200 then '4:(150,200]'
-            when `grades_entry`.`grades` &gt; 200 AND `grades_entry`.`grades` &lt;= 250 then '5:(200,250]'
-            when `grades_entry`.`grades` &gt; 250 AND `grades_entry`.`grades` &lt;= 300 then '6:(250,300]'
-            when `grades_entry`.`grades` &gt;= 300 AND `grades_entry`.`grades` &lt;= 350 then '7:(300,350]'
-            when `grades_entry`.`grades` &gt;= 350 AND `grades_entry`.`grades` &lt;= 400 then '8:(350,400]'
-            when `grades_entry`.`grades` &gt;= 400 AND `grades_entry`.`grades` &lt;= 450 then '9:(400,450]'
-            when `grades_entry`.`grades` &gt;= 450 AND `grades_entry`.`grades` &lt;= 500 then '10:(450,500]'
+        GROUP BY case when `grades_entry`.`grades` &gt;= 0 AND `grades_entry`.`grades` &lt;= 50 then '(0,50]'
+            when `grades_entry`.`grades` &gt; 50 AND `grades_entry`.`grades` &lt;= 100 then '(50,50]'
+            when `grades_entry`.`grades` &gt; 100 AND `grades_entry`.`grades` &lt;= 150 then '(100,150]'
+            when `grades_entry`.`grades` &gt; 150 AND `grades_entry`.`grades` &lt;= 200 then '(150,200]'
+            when `grades_entry`.`grades` &gt; 200 AND `grades_entry`.`grades` &lt;= 250 then '(200,250]'
+            when `grades_entry`.`grades` &gt; 250 AND `grades_entry`.`grades` &lt;= 300 then '(250,300]'
+            when `grades_entry`.`grades` &gt;= 300 AND `grades_entry`.`grades` &lt;= 350 then '(300,350]'
+            when `grades_entry`.`grades` &gt;= 350 AND `grades_entry`.`grades` &lt;= 400 then '(350,400]'
+            when `grades_entry`.`grades` &gt;= 400 AND `grades_entry`.`grades` &lt;= 450 then '(400,450]'
+            when `grades_entry`.`grades` &gt;= 450 AND `grades_entry`.`grades` &lt;= 500 then '(450,500]'
             ELSE 'unknown' END
     </select>
 
