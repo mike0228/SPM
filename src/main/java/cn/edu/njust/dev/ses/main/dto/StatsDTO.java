@@ -10,4 +10,5 @@ public class StatsDTO {
     private Integer examNo;
     private Date examTime;
     private Integer eid;
+    private Double avgGrades;
 }
