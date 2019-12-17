@@ -6,7 +6,7 @@
         <id column="eid" jdbcType="INTEGER" property="eid" />
         <result column="exam_time" jdbcType="DATE" property="examTime" />
         <result column="number" jdbcType="INTEGER" property="count" />
-        <result column="avgGrades" jdbcType="DOUBLE" property="avg_grades"/>
+        <result column="avg_grades" jdbcType="DOUBLE" property="avgGrades"/>
 
     </resultMap>
     <resultMap id="DistributionResult" type="cn.edu.njust.dev.ses.main.dto.DistributionShowcaseDTO">
@@ -54,7 +54,7 @@
 
 
     <select id="countByExampleWithGroupByCCFEvent" parameterType="cn.edu.njust.dev.ses.main.model.GradesEntryExample" resultMap="BaseCountResult">
-        SELECT ccf_event.eid, ccf_event.exam_no, ccf_event.exam_time, COUNT(*) as `count`, AVG(grades_entry.grades) AS `avg_grades` FROM spm_assignment.grades_entry NATURAL JOIN spm_assignment.ccf_event
+        SELECT ccf_event.eid, ccf_event.exam_no, ccf_event.exam_time, COUNT(*) as `number`, AVG(grades_entry.grades) AS `avg_grades` FROM spm_assignment.grades_entry NATURAL JOIN spm_assignment.ccf_event
         <if test="_parameter != null">
             <include refid="Example_Where_Clause" />
         </if>
@@ -77,7 +77,7 @@
                     when `grades_entry`.`grades` &gt;= 350 AND `grades_entry`.`grades` &lt;= 400 then '8:(350,400]'
                     when `grades_entry`.`grades` &gt;= 400 AND `grades_entry`.`grades` &lt;= 450 then '9:(400,450]'
                     when `grades_entry`.`grades` &gt;= 450 AND `grades_entry`.`grades` &lt;= 500 then '10:(450,500]'
-                    ELSE 'unknown' END 'item', COUNT(*) FROM `grades_entry`
+                    ELSE 'unknown' END 'item', COUNT(*) as `count` FROM `grades_entry`
         <if test="_parameter != null">
             <include refid="Example_Where_Clause" />
         </if>
