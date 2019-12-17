@@ -127,11 +127,20 @@ public class StudentQueryController {
     public ResultDTO deleteApplication(HttpSession session, @RequestParam Integer aid/*CCF ID*/){
         //TODO 删除申请
         //注：为了保留各种记录，只能删除状态为 pending 的记录。
-        return null;
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Student studentInfo = (Student) session.getAttribute("student_info");
+        if(sessionUser == null|| studentInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        ApplicationExample applicationExample=new ApplicationExample();
+        applicationExample.createCriteria().andAidEqualTo(aid).andAppStatusEqualTo("pending");
+        int items=applicationMapper.deleteByExample(applicationExample);
+        return items>0?ResultDTO.okOf():ResultDTO.errorOf(0,"找不到该记录或者不能删除");
     }
     @ResponseBody
     @PostMapping("/api/json/add_grades_for_review")
     public ResultDTO addUnapprovedGradesEntry(HttpSession session, @RequestParam Integer eid,
+                                              @RequestParam Integer grades,
                                               @RequestParam Integer gradesProblem1,
                                               @RequestParam Integer gradesProblem2,
                                               @RequestParam Integer gradesProblem3,
@@ -139,13 +148,35 @@ public class StudentQueryController {
                                               @RequestParam Integer gradesProblem5){
         //TODO 添加待审核成绩
         //注：需将 is_approved 设成 false
-        return null;
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Student studentInfo = (Student) session.getAttribute("student_info");
+        if(sessionUser == null|| studentInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        GradesEntry gradesEntry=new GradesEntry();
+        gradesEntry.setEid(eid);
+        gradesEntry.setGrades(grades);
+        gradesEntry.setGradesProblem1(gradesProblem1);
+        gradesEntry.setGradesProblem2(gradesProblem2);
+        gradesEntry.setGradesProblem3(gradesProblem3);
+        gradesEntry.setGradesProblem4(gradesProblem4);
+        gradesEntry.setGradesProblem5(gradesProblem5);
+        int items=gradesEntryMapper.insertSelective(gradesEntry);
+        return items>0?ResultDTO.okOf(gradesEntry):ResultDTO.errorOf(0,"添加记录失败");
     }
     @ResponseBody
     @PostMapping("/api/json/all_ranks_result")
     public ResultDTO obtainAllRankingResult(HttpSession session){
         //TODO 列出该考生的所有选拔考试 rank
-        return null;
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Student studentInfo = (Student) session.getAttribute("student_info");
+        if(sessionUser == null|| studentInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        SelectRankEntryExample selectRankEntryExample=new SelectRankEntryExample();
+        selectRankEntryExample.createCriteria().andUidEqualTo(studentInfo.getUid());
+        List<SelectRankEntry> result=selectRankEntryMapper.selectByExample(selectRankEntryExample);
+        return ResultDTO.okOf(result);
     }
 
     @ResponseBody
