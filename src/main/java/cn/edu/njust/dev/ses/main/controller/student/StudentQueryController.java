@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 
 
@@ -72,7 +73,9 @@ public class StudentQueryController {
         GradesEntryExample gradesEntryExample=new GradesEntryExample();
         gradesEntryExample.createCriteria().andIsApprovedEqualTo(false).andEidEqualTo(entryID);
         int items=gradesEntryMapper.deleteByExample(gradesEntryExample);//删除记录条数，判断是否删除成功
-        return ResultDTO.okOf(items);
+        if(items>0)
+            return ResultDTO.okOf(items);
+        return ResultDTO.errorOf(0,"数据删除失败");
     }
 
     @ResponseBody
@@ -80,12 +83,46 @@ public class StudentQueryController {
     public ResultDTO submitApplication(HttpSession session, @RequestParam Integer eid/*CCF ID*/){
         //TODO 创建申请
         //注：应判断该次 CCF 考试是否已开放申请且当前还可以申请（使用 appli_deadline，appli_starts_on 和 can_apply）
-        return null;
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Student studentInfo = (Student) session.getAttribute("student_info");
+        if(sessionUser == null|| studentInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        CCFEvent ccfEvent=ccfEventMapper.selectByPrimaryKey(eid);
+        if(new Date().compareTo(ccfEvent.getAppliDeadline())>0|new Date().compareTo(ccfEvent.getAppliStartsOn())<0|ccfEvent.getCanApply()==0) {
+            return ResultDTO.errorOf(0, "当前不能申请该ccf考试。");
+        }
+        Application application=new Application();
+        application.setAppTime(new Date());
+        application.setEid(eid);
+        application.setUid(studentInfo.getUid());
+        application.setAppStatus("pending review");
+        int items=applicationMapper.insertSelective(application);
+        if(items>0)
+            return ResultDTO.okOf(items);
+        return ResultDTO.errorOf(0,"数据插入失败");
     }
     @ResponseBody
     @PostMapping("/api/json/delete_app")
     public ResultDTO deleteApplication(HttpSession session, @RequestParam Integer aid/*CCF ID*/){
         //TODO 删除申请
-        return null;
+        //注：应判断当前申请是否还在等待审核,被审核过的申请不能删除
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Student studentInfo = (Student) session.getAttribute("student_info");
+        if(sessionUser == null|| studentInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        ApplicationExample applicationExample=new ApplicationExample();
+        applicationExample.createCriteria().andAidEqualTo(aid).andAppStatusEqualTo("pending review");
+        List<Application> result=applicationMapper.selectByExample(applicationExample);
+        int items;
+        if(!result.isEmpty()) {
+            items = applicationMapper.deleteByExample(applicationExample);
+            if(items>0)
+                return ResultDTO.okOf(items);
+            else
+                return ResultDTO.errorOf(0,"删除记录失败");
+        }
+        else return ResultDTO.errorOf(0,"该申请记录不存在");
     }
 }
