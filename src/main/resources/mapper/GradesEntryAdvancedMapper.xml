@@ -11,7 +11,7 @@
     </resultMap>
     <resultMap id="DistributionResult" type="cn.edu.njust.dev.ses.main.dto.DistributionShowcaseDTO">
         <result column="count" jdbcType="INTEGER" property="count"/>
-        <result column="item" jdbcType="STRING" property="item" />
+        <result column="item" jdbcType="VARCHAR" property="item" />
     </resultMap>
     <sql id="Base_Count_Column_List">
         exam_no, exam_time, number, eid
