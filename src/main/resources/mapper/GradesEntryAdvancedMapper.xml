@@ -67,11 +67,11 @@
     </select>-->
     <select id="getGradesDistributionByExample" parameterType="cn.edu.njust.dev.ses.main.model.GradesEntryExample" resultMap="DistributionResult">
         SELECT case when `grades_entry`.`grades` &gt;= 0 AND `grades_entry`.`grades` &lt;= 50 then '(0,50]'
-                    when `grades_entry`.`grades` &gt; 50 AND `grades_entry`.`grades` &lt;= 100 then '(50,50]'
-                    when `grades_entry`.`grades` &gt; 100 AND `grades_entry`.`grades` &lt;= 150 then '(100,150]'
-                    when `grades_entry`.`grades` &gt; 150 AND `grades_entry`.`grades` &lt;= 200 then '(150,200]'
-                    when `grades_entry`.`grades` &gt; 200 AND `grades_entry`.`grades` &lt;= 250 then '(200,250]'
-                    when `grades_entry`.`grades` &gt; 250 AND `grades_entry`.`grades` &lt;= 300 then '(250,300]'
+                    when `grades_entry`.`grades` &gt;= 50 AND `grades_entry`.`grades` &lt;= 100 then '(50,50]'
+                    when `grades_entry`.`grades` &gt;= 100 AND `grades_entry`.`grades` &lt;= 150 then '(100,150]'
+                    when `grades_entry`.`grades` &gt;= 150 AND `grades_entry`.`grades` &lt;= 200 then '(150,200]'
+                    when `grades_entry`.`grades` &gt;= 200 AND `grades_entry`.`grades` &lt;= 250 then '(200,250]'
+                    when `grades_entry`.`grades` &gt;= 250 AND `grades_entry`.`grades` &lt;= 300 then '(250,300]'
                     when `grades_entry`.`grades` &gt;= 300 AND `grades_entry`.`grades` &lt;= 350 then '(300,350]'
                     when `grades_entry`.`grades` &gt;= 350 AND `grades_entry`.`grades` &lt;= 400 then '(350,400]'
                     when `grades_entry`.`grades` &gt;= 400 AND `grades_entry`.`grades` &lt;= 450 then '(400,450]'
@@ -81,11 +81,11 @@
             <include refid="Example_Where_Clause" />
         </if>
         GROUP BY case when `grades_entry`.`grades` &gt;= 0 AND `grades_entry`.`grades` &lt;= 50 then '(0,50]'
-            when `grades_entry`.`grades` &gt; 50 AND `grades_entry`.`grades` &lt;= 100 then '(50,50]'
-            when `grades_entry`.`grades` &gt; 100 AND `grades_entry`.`grades` &lt;= 150 then '(100,150]'
-            when `grades_entry`.`grades` &gt; 150 AND `grades_entry`.`grades` &lt;= 200 then '(150,200]'
-            when `grades_entry`.`grades` &gt; 200 AND `grades_entry`.`grades` &lt;= 250 then '(200,250]'
-            when `grades_entry`.`grades` &gt; 250 AND `grades_entry`.`grades` &lt;= 300 then '(250,300]'
+            when `grades_entry`.`grades` &gt;= 50 AND `grades_entry`.`grades` &lt;= 100 then '(50,50]'
+            when `grades_entry`.`grades` &gt;= 100 AND `grades_entry`.`grades` &lt;= 150 then '(100,150]'
+            when `grades_entry`.`grades` &gt;= 150 AND `grades_entry`.`grades` &lt;= 200 then '(150,200]'
+            when `grades_entry`.`grades` &gt;= 200 AND `grades_entry`.`grades` &lt;= 250 then '(200,250]'
+            when `grades_entry`.`grades` &gt;= 250 AND `grades_entry`.`grades` &lt;= 300 then '(250,300]'
             when `grades_entry`.`grades` &gt;= 300 AND `grades_entry`.`grades` &lt;= 350 then '(300,350]'
             when `grades_entry`.`grades` &gt;= 350 AND `grades_entry`.`grades` &lt;= 400 then '(350,400]'
             when `grades_entry`.`grades` &gt;= 400 AND `grades_entry`.`grades` &lt;= 450 then '(400,450]'
