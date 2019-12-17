@@ -17,7 +17,7 @@ final public class GlobalSettingsService {
     public GlobalSettingsService(GlobalParameterMapper globalParameterMapper) {
         this.globalParameterMapper = globalParameterMapper;
     }
-    Logger logger = LoggerFactory.getLogger(GlobalSettingsService.class);
+    private Logger logger = LoggerFactory.getLogger(GlobalSettingsService.class);
 
     private boolean isInitialized = false;
     private final static Map<String, String> globalParamValueMap = new HashMap<>();
