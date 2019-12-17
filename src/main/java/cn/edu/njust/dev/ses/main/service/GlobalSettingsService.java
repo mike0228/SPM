@@ -19,7 +19,7 @@ final public class GlobalSettingsService {
     }
     private Logger logger = LoggerFactory.getLogger(GlobalSettingsService.class);
 
-    private boolean isInitialized = false;
+    private static boolean isInitialized = false;
     private final static Map<String, String> globalParamValueMap = new HashMap<>();
 
 
@@ -38,7 +38,7 @@ final public class GlobalSettingsService {
         return globalParamValueMap.get(param);
     }
     public Integer getMidGradesForAutoApprovement(){
-        String midgrades_for_autoapprove1 = globalParamValueMap.get("midgrades_for_autoapprove");
+        String midgrades_for_autoapprove1 = getValue("midgrades_for_autoapprove");
         if(midgrades_for_autoapprove1 == null) {
             logger.warn("\"midgrades_for_autoapprove\" is not found in the database, default value 300 is used instead.");
             return 300;
@@ -54,7 +54,7 @@ final public class GlobalSettingsService {
     }
 
     public Integer getMaxSponsoredParticipants(){
-        String maxSponsoredParticipants = globalParamValueMap.get("max_sponsored_participants");
+        String maxSponsoredParticipants = getValue("max_sponsored_participants");
         if(maxSponsoredParticipants == null) {
             logger.warn("\"max_sponsored_participants\" is not found in the database, default value 150 is used instead.");
             return 150;
