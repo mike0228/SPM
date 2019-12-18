@@ -2,11 +2,12 @@ package cn.edu.njust.dev.ses.main.dto;
 
 import cn.edu.njust.dev.ses.main.util.excelparser.annotation.ExcelField;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class StudentDTO extends GenericDTO {
-    @Getter
     private Integer uid;
     @ExcelField("姓名")
     private String name;

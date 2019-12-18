@@ -51,7 +51,14 @@
     </sql>
 
 
-
+    <select id="countByStudentExampleWithGroupByCCFEvent" parameterType="cn.edu.njust.dev.ses.main.model.StudentExample" resultMap="BaseCountResult">
+        SELECT ccf_event.eid, ccf_event.exam_no, ccf_event.exam_time, COUNT(*) as `number`, AVG(grades_entry.grades) AS `avg_grades`, MIN(grades_entry.grades) AS `min_grades`, MAX(grades_entry.grades) AS `max_grades`
+        FROM spm_assignment.grades_entry NATURAL JOIN spm_assignment.ccf_event NATURAL JOIN spm_assignment.student
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause" />
+        </if>
+        GROUP BY ccf_event.eid;
+    </select>
     <select id="countByExampleWithGroupByCCFEvent" parameterType="cn.edu.njust.dev.ses.main.model.GradesEntryExample" resultMap="BaseCountResult">
         SELECT ccf_event.eid, ccf_event.exam_no, ccf_event.exam_time, COUNT(*) as `number`, AVG(grades_entry.grades) AS `avg_grades`, MIN(grades_entry.grades) AS `min_grades`, MAX(grades_entry.grades) AS `max_grades` FROM spm_assignment.grades_entry NATURAL JOIN spm_assignment.ccf_event
         <if test="_parameter != null">
@@ -91,6 +98,16 @@
             when `grades_entry`.`grades` &gt;= 400 AND `grades_entry`.`grades` &lt;= 450 then '(400,450]'
             when `grades_entry`.`grades` &gt;= 450 AND `grades_entry`.`grades` &lt;= 500 then '(450,500]'
             ELSE 'unknown' END
+    </select>
+
+    <select id="getSponsoredParticipantsStats" resultMap="BaseCountResult">
+        SELECT ccf_event.eid, ccf_event.exam_no, ccf_event.exam_time, COUNT(*) as `number`,
+         AVG(`grades_entry`.`grades`) AS `avg_grades`,
+         MIN(`grades_entry`.`grades`) AS `min_grades`,
+         MAX(`grades_entry`.`grades`) AS `max_grades`
+         FROM `grades_entry` NATURAL JOIN `application` NATURAL JOIN `student` NATURAL JOIN `ccf_event`
+         WHERE `application`.`app_status` = 'approved' OR `application`.`app_status` = 'auto-approved' OR `application`.`app_status` = 'manually-approved'
+         GROUP BY eid;
     </select>
 
 </mapper>

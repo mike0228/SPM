@@ -51,7 +51,8 @@ public class StudentQueryController {
 
     @ResponseBody
     @RequestMapping("/api/json/all_grades")
-    public ResultDTO getAllGradesEntries(HttpSession session, @RequestParam Boolean isOnHold){//isOnHold决定是否要获取待审核的成绩
+    public ResultDTO getAllGradesEntries(HttpSession session, @RequestParam Boolean isOnHold){
+        //isOnHold决定是否要获取待审核的成绩
         //TODO 获取学生所有成绩
         //注：应用studentInfo内的学号获取。
         User sessionUser = (User) session.getAttribute("logged_in_as");
@@ -76,7 +77,7 @@ public class StudentQueryController {
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
         GradesEntryExample gradesEntryExample=new GradesEntryExample();
-        gradesEntryExample.createCriteria().andIsApprovedEqualTo(false).andEidEqualTo(entryID);
+        gradesEntryExample.createCriteria().andIsApprovedEqualTo(false).andEidEqualTo(entryID).andStudentIdEqualTo(studentInfo.getStudentId());
         int items=gradesEntryMapper.deleteByExample(gradesEntryExample);//删除记录条数，判断是否删除成功
         return items > 0? ResultDTO.okOf() : ResultDTO.errorOf(0, "找不到该记录或者不能删除");
     }
@@ -127,25 +128,58 @@ public class StudentQueryController {
     public ResultDTO deleteApplication(HttpSession session, @RequestParam Integer aid/*CCF ID*/){
         //TODO 删除申请
         //注：为了保留各种记录，只能删除状态为 pending 的记录。
-        return null;
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Student studentInfo = (Student) session.getAttribute("student_info");
+        if(sessionUser == null|| studentInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        ApplicationExample applicationExample=new ApplicationExample();
+        applicationExample.createCriteria().andAidEqualTo(aid).andAppStatusEqualTo("pending");
+        int items=applicationMapper.deleteByExample(applicationExample);
+        return items>0?ResultDTO.okOf():ResultDTO.errorOf(0,"找不到该记录或者不能删除");
     }
     @ResponseBody
     @PostMapping("/api/json/add_grades_for_review")
-    public ResultDTO addUnapprovedGradesEntry(HttpSession session, @RequestParam Integer eid,
-                                              @RequestParam Integer gradesProblem1,
-                                              @RequestParam Integer gradesProblem2,
-                                              @RequestParam Integer gradesProblem3,
-                                              @RequestParam Integer gradesProblem4,
-                                              @RequestParam Integer gradesProblem5){
+    public ResultDTO addUnapprovedGradesEntry(HttpSession session, @RequestParam Integer eid, @RequestParam Integer grades, @RequestParam Integer gradesProblem1, @RequestParam Integer gradesProblem2, @RequestParam Integer gradesProblem3, @RequestParam Integer gradesProblem4, @RequestParam Integer gradesProblem5){
         //TODO 添加待审核成绩
         //注：需将 is_approved 设成 false
-        return null;
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Student studentInfo = (Student) session.getAttribute("student_info");
+        if(sessionUser == null|| studentInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        GradesEntryExample gradesEntryExample = new GradesEntryExample();
+        gradesEntryExample.createCriteria().andEidEqualTo(eid).andStudentIdEqualTo(studentInfo.getStudentId());
+        if(gradesEntryMapper.countByExample(gradesEntryExample) > 0){
+            return ResultDTO.errorOf(0, "该用户该次考试已经有成绩，不能再提交。");
+        }
+
+        GradesEntry gradesEntry=new GradesEntry();
+        gradesEntry.setEid(eid);
+        gradesEntry.setStudentId(studentInfo.getStudentId());
+        gradesEntry.setGrades(grades);
+        gradesEntry.setIsApproved(false);
+        gradesEntry.setGradesProblem1(gradesProblem1);
+        gradesEntry.setGradesProblem2(gradesProblem2);
+        gradesEntry.setGradesProblem3(gradesProblem3);
+        gradesEntry.setGradesProblem4(gradesProblem4);
+        gradesEntry.setGradesProblem5(gradesProblem5);
+        int items = gradesEntryMapper.insertSelective(gradesEntry);
+        return ResultDTO.okOf();
     }
     @ResponseBody
     @PostMapping("/api/json/all_ranks_result")
     public ResultDTO obtainAllRankingResult(HttpSession session){
         //TODO 列出该考生的所有选拔考试 rank
-        return null;
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Student studentInfo = (Student) session.getAttribute("student_info");
+        if(sessionUser == null|| studentInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        SelectRankEntryExample selectRankEntryExample=new SelectRankEntryExample();
+        selectRankEntryExample.createCriteria().andUidEqualTo(studentInfo.getUid());
+        List<SelectRankEntry> result=selectRankEntryMapper.selectByExample(selectRankEntryExample);
+        return ResultDTO.okOf(result);
     }
 
     @ResponseBody
