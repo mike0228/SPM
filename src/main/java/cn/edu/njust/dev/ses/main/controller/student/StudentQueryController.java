@@ -76,7 +76,7 @@ public class StudentQueryController {
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
         GradesEntryExample gradesEntryExample=new GradesEntryExample();
-        gradesEntryExample.createCriteria().andIsApprovedEqualTo(false).andEidEqualTo(entryID);
+        gradesEntryExample.createCriteria().andIsApprovedEqualTo(false).andEidEqualTo(entryID).andStudentIdEqualTo(studentInfo.getStudentId());
         int items=gradesEntryMapper.deleteByExample(gradesEntryExample);//删除记录条数，判断是否删除成功
         return items > 0? ResultDTO.okOf() : ResultDTO.errorOf(0, "找不到该记录或者不能删除");
     }
@@ -153,16 +153,23 @@ public class StudentQueryController {
         if(sessionUser == null|| studentInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
+        GradesEntryExample gradesEntryExample = new GradesEntryExample();
+        gradesEntryExample.createCriteria().andEidEqualTo(eid).andStudentIdEqualTo(studentInfo.getStudentId());
+        if(gradesEntryMapper.countByExample(gradesEntryExample) > 0){
+            return ResultDTO.errorOf(0, "该用户该次考试已经有成绩，不能再提交。");
+        }
+
         GradesEntry gradesEntry=new GradesEntry();
         gradesEntry.setEid(eid);
+        gradesEntry.setStudentId(studentInfo.getStudentId());
         gradesEntry.setGrades(grades);
         gradesEntry.setGradesProblem1(gradesProblem1);
         gradesEntry.setGradesProblem2(gradesProblem2);
         gradesEntry.setGradesProblem3(gradesProblem3);
         gradesEntry.setGradesProblem4(gradesProblem4);
         gradesEntry.setGradesProblem5(gradesProblem5);
-        int items=gradesEntryMapper.insertSelective(gradesEntry);
-        return items>0?ResultDTO.okOf(gradesEntry):ResultDTO.errorOf(0,"添加记录失败");
+        int items = gradesEntryMapper.insertSelective(gradesEntry);
+        return ResultDTO.okOf();
     }
     @ResponseBody
     @PostMapping("/api/json/all_ranks_result")
