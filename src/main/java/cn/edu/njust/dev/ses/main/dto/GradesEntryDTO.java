@@ -2,7 +2,9 @@ package cn.edu.njust.dev.ses.main.dto;
 
 import cn.edu.njust.dev.ses.main.util.excelparser.annotation.ExcelField;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class GradesEntryDTO extends GenericDTO {
     private Integer gid;
