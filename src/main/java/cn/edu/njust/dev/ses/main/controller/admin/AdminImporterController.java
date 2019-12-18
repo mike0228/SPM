@@ -26,6 +26,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -60,6 +61,7 @@ public class AdminImporterController {
         }
         TempStorageObject<List<StudentDTO>> tempStorageObject = new TempStorageObject<>();
         tempStorageObject.setData(result);
+        tempStorageObject.setCreationDate(new Date());
 
         tempStorageObject.setId(RandomUtils.nextInt());
         session.setAttribute("last_result_student_import", tempStorageObject);
@@ -95,11 +97,36 @@ public class AdminImporterController {
 
         TempStorageObject<List<GradesEntryDTO>> tempStorageObject = new TempStorageObject<>();
         tempStorageObject.setData(result);
+        tempStorageObject.setCreationDate(new Date());
 
         tempStorageObject.setId(RandomUtils.nextInt());
         session.setAttribute("last_result_grades_import", tempStorageObject);
         return ResultDTO.okOf(result);
     }
+
+    @ResponseBody
+    @RequestMapping("/api/json/import_select_ranks_via_excel")
+    public ResultDTO importSelectRankEntryThroughExcel(HttpSession session, @RequestParam MultipartFile file){
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        if(sessionUser == null|| !sessionUser.getType().equals("associate")){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        //TODO
+        return null;
+    }
+
+    @ResponseBody
+    @RequestMapping("/api/json/confirm_rank_import")
+    public ResultDTO confirmRankImport(HttpSession session, @RequestParam Integer confirmID){
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        if(sessionUser == null|| !sessionUser.getType().equals("associate")){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        //TODO
+        return null;
+    }
+
+
 
     @ResponseBody
     @RequestMapping("/api/json/confirm_grades_import")
