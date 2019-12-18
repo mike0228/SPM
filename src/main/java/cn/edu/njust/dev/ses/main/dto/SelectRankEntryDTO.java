@@ -13,8 +13,6 @@ public class SelectRankEntryDTO  extends GenericDTO {
     private String name;
     @ExcelField("学号")
     private String studentId;
-//    @ExcelField("证件号码")
-//    private String idNo;
     @ExcelField("年级")
     private Integer grade;
     @ExcelField("身份证号码")
