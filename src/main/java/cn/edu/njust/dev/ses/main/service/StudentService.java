@@ -1,32 +1,29 @@
 package cn.edu.njust.dev.ses.main.service;
 
 import cn.edu.njust.dev.ses.main.mapper.GradesEntryMapper;
+import cn.edu.njust.dev.ses.main.mapper.StudentMapper;
 import cn.edu.njust.dev.ses.main.model.GradesEntry;
+import cn.edu.njust.dev.ses.main.model.GradesEntryExample;
+import cn.edu.njust.dev.ses.main.model.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
+import java.util.List;
 
+@Service
 public class StudentService {
-    final
+    @Autowired
+    StudentMapper studentMapper;
+    @Autowired
     GradesEntryMapper gradesEntryMapper;
 
-    public StudentService(GradesEntryMapper gradesEntryMapper) {
-        this.gradesEntryMapper = gradesEntryMapper;
-    }
-
-    public void insert(int student_id, int grades) {
-
-    }
-
-    public void uploadEntryGrades(int student_id, int grades) {
+    public void insertStudentRecordAndUpdateGradesEntry(Student student){
+        studentMapper.insertSelective(student);
+        GradesEntryExample gradesEntryExample = new GradesEntryExample();
+        gradesEntryExample.createCriteria().andIdNoEqualTo(student.getIdNo());
         GradesEntry gradesEntry = new GradesEntry();
-        gradesEntry.setEid(student_id);
-        gradesEntry.setGid(student_id);
-        gradesEntry.setUid(student_id);
-        gradesEntry.setGrades(grades);
-        gradesEntry.setIsApproved(false);
-        gradesEntry.setMaxGrades(grades);
-        gradesEntryMapper.insert(gradesEntry);
+        gradesEntry.setStudentId(student.getStudentId());
+        gradesEntryMapper.updateByExampleSelective(gradesEntry, gradesEntryExample);
     }
+
 }
