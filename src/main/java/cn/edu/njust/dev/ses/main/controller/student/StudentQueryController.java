@@ -176,6 +176,7 @@ public class StudentQueryController {
         gradesEntry.setEid(eid);
         gradesEntry.setStudentId(studentInfo.getStudentId());
         gradesEntry.setGrades(grades);
+        gradesEntry.setIsApproved(false);
         gradesEntry.setGradesProblem1(gradesProblem1);
         gradesEntry.setGradesProblem2(gradesProblem2);
         gradesEntry.setGradesProblem3(gradesProblem3);

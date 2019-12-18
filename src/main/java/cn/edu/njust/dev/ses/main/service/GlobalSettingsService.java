@@ -37,7 +37,7 @@ final public class GlobalSettingsService {
         if(!isInitialized) updateCachedValues();
         return globalParamValueMap.get(param);
     }
-    public Integer getMidGradesForAutoApprovement(){
+    public int getMidGradesForAutoApprovement(){
         String midgrades_for_autoapprove1 = getValue("midgrades_for_autoapprove");
         if(midgrades_for_autoapprove1 == null) {
             logger.warn("\"midgrades_for_autoapprove\" is not found in the database, default value 300 is used instead.");
@@ -53,7 +53,7 @@ final public class GlobalSettingsService {
         }
     }
 
-    public Integer getMaxSponsoredParticipants(){
+    public int getMaxSponsoredParticipants(){
         String maxSponsoredParticipants = getValue("max_sponsored_participants");
         if(maxSponsoredParticipants == null) {
             logger.warn("\"max_sponsored_participants\" is not found in the database, default value 150 is used instead.");
