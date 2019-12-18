@@ -9,6 +9,7 @@ final public class Utils {
         return email.matches(regex);
     }
 
+
     @Contract(value = "null -> false", pure = true)
     public static boolean isValidPwd(String password){
         return password != null&& password.length() >= 6;

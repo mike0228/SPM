@@ -34,7 +34,7 @@
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
-        <table tableName="global_parameters" domainObjectName="GlobalParameter"></table>
+        <table tableName="global_parameters" domainObjectName="GlobalParameter"/>
         <table tableName="user" domainObjectName="User">
             <generatedKey column="uid" sqlStatement="MySql" identity="true"/>
         </table>
@@ -44,6 +44,9 @@
         <table tableName="grades_entry" domainObjectName="GradesEntry">
             <generatedKey column="gid" sqlStatement="MySql" identity="true"/>
             <columnOverride column="is_approved" javaType="java.lang.Boolean" jdbcType="BOOLEAN" />
+        </table>
+        <table tableName="grades_entry_proof" domainObjectName="GradesEntryProof">
+            <generatedKey column="gid" sqlStatement="MySql" identity="true"/>
         </table>
         <table tableName="application" domainObjectName="Application">
             <generatedKey column="aid" sqlStatement="MySql" identity="true"/>

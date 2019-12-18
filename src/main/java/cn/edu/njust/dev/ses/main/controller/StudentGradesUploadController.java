@@ -21,7 +21,7 @@ public class StudentGradesUploadController {
     @RequestMapping("/test/student/upload")
     @ResponseBody
     public String uploadStudentGrades(HttpServletRequest request, @RequestParam("student_id") int student_id, @RequestParam("grades") int grades){
-        studentService.uploadEntryGrades(student_id,grades);
+        //studentService.uploadEntryGrades(student_id,grades);
         return "AOK";
     }
     @GetMapping("/test/student_upload")
