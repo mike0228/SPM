@@ -3,6 +3,8 @@ package cn.edu.njust.dev.ses.main.mapper;
 import cn.edu.njust.dev.ses.main.model.CCFEvent;
 import cn.edu.njust.dev.ses.main.model.CCFEventExample;
 import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
 

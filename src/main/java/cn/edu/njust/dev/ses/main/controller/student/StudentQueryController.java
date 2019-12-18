@@ -4,6 +4,7 @@ import cn.edu.njust.dev.ses.main.dto.ResultDTO;
 import cn.edu.njust.dev.ses.main.dto.SelectRankItemDTO;
 import cn.edu.njust.dev.ses.main.mapper.*;
 import cn.edu.njust.dev.ses.main.model.*;
+import cn.edu.njust.dev.ses.main.service.AliyunSupport;
 import cn.edu.njust.dev.ses.main.service.GlobalSettingsService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 
 @Controller
@@ -33,6 +38,10 @@ public class StudentQueryController {
     SelectRankEntryMapper selectRankEntryMapper;
     @Autowired
     GlobalSettingsService globalSettingsService;
+    @Autowired
+    GradesEntryProofMapper gradesEntryProofMapper;
+    @Autowired
+    AliyunSupport aliyunSupport;
 
     @ResponseBody
     @RequestMapping("/api/json/all_apps")
@@ -140,7 +149,16 @@ public class StudentQueryController {
     }
     @ResponseBody
     @PostMapping("/api/json/add_grades_for_review")
-    public ResultDTO addUnapprovedGradesEntry(HttpSession session, @RequestParam Integer eid, @RequestParam Integer grades, @RequestParam Integer gradesProblem1, @RequestParam Integer gradesProblem2, @RequestParam Integer gradesProblem3, @RequestParam Integer gradesProblem4, @RequestParam Integer gradesProblem5){
+    public ResultDTO addUnapprovedGradesEntry(HttpSession session,
+                                              @RequestParam Integer eid,
+                                              @RequestParam Integer grades,
+                                              @RequestParam Integer gradesProblem1,
+                                              @RequestParam Integer gradesProblem2,
+                                              @RequestParam Integer gradesProblem3,
+                                              @RequestParam Integer gradesProblem4,
+                                              @RequestParam Integer gradesProblem5,
+                                              @RequestParam MultipartFile file
+                                              ) throws IOException {
         //TODO 添加待审核成绩
         //注：需将 is_approved 设成 false
         User sessionUser = (User) session.getAttribute("logged_in_as");
@@ -164,7 +182,11 @@ public class StudentQueryController {
         gradesEntry.setGradesProblem3(gradesProblem3);
         gradesEntry.setGradesProblem4(gradesProblem4);
         gradesEntry.setGradesProblem5(gradesProblem5);
+        GradesEntryProof gradesEntryProof = new GradesEntryProof();
+        gradesEntryProof.setGid(gradesEntry.getGid());
+        gradesEntryProof.setProofUrl(aliyunSupport.upload(file.getInputStream(), file.getOriginalFilename()));
         int items = gradesEntryMapper.insertSelective(gradesEntry);
+        int items2 = gradesEntryProofMapper.insertSelective(gradesEntryProof);
         return ResultDTO.okOf();
     }
     @ResponseBody
