@@ -51,7 +51,8 @@ public class StudentQueryController {
 
     @ResponseBody
     @RequestMapping("/api/json/all_grades")
-    public ResultDTO getAllGradesEntries(HttpSession session, @RequestParam Boolean isOnHold){//isOnHold决定是否要获取待审核的成绩
+    public ResultDTO getAllGradesEntries(HttpSession session, @RequestParam Boolean isOnHold){
+        //isOnHold决定是否要获取待审核的成绩
         //TODO 获取学生所有成绩
         //注：应用studentInfo内的学号获取。
         User sessionUser = (User) session.getAttribute("logged_in_as");
@@ -139,13 +140,7 @@ public class StudentQueryController {
     }
     @ResponseBody
     @PostMapping("/api/json/add_grades_for_review")
-    public ResultDTO addUnapprovedGradesEntry(HttpSession session, @RequestParam Integer eid,
-                                              @RequestParam Integer grades,
-                                              @RequestParam Integer gradesProblem1,
-                                              @RequestParam Integer gradesProblem2,
-                                              @RequestParam Integer gradesProblem3,
-                                              @RequestParam Integer gradesProblem4,
-                                              @RequestParam Integer gradesProblem5){
+    public ResultDTO addUnapprovedGradesEntry(HttpSession session, @RequestParam Integer eid, @RequestParam Integer grades, @RequestParam Integer gradesProblem1, @RequestParam Integer gradesProblem2, @RequestParam Integer gradesProblem3, @RequestParam Integer gradesProblem4, @RequestParam Integer gradesProblem5){
         //TODO 添加待审核成绩
         //注：需将 is_approved 设成 false
         User sessionUser = (User) session.getAttribute("logged_in_as");
