@@ -6,12 +6,18 @@ import lombok.Data;
 public class ResultDTO<T> {
     private Integer code;
     private String message;
+    private String detailedMessage;
     private T data;
 
     public static ResultDTO errorOf(Integer code, String message) {
+        return errorOf(code, message, "");
+    }
+
+    public static ResultDTO errorOf(Integer code, String message, String details) {
         ResultDTO resultDTO = new ResultDTO();
         resultDTO.setCode(code);
         resultDTO.setMessage(message);
+        resultDTO.setDetailedMessage(details);
         return resultDTO;
     }
 
