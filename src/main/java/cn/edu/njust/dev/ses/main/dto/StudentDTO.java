@@ -2,11 +2,12 @@ package cn.edu.njust.dev.ses.main.dto;
 
 import cn.edu.njust.dev.ses.main.util.excelparser.annotation.ExcelField;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class StudentDTO extends GenericDTO {
-    @Getter
     private Integer uid;
     @ExcelField("姓名")
     private String name;
@@ -14,7 +15,7 @@ public class StudentDTO extends GenericDTO {
     private String studentId;
     @ExcelField("性别")
     private String gender;
-    @ExcelField({"身份证号", "身份证"})
+    @ExcelField({"身份证号", "身份证", "证件号码"})
     private String idNo;
     @ExcelField(value = "民族", required = false)
     private String ethnicGroup;

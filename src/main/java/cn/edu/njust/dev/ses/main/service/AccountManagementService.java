@@ -1,9 +1,10 @@
 package cn.edu.njust.dev.ses.main.service;
 
 import cn.edu.njust.dev.ses.main.listener.SessionCollectionListener;
+import cn.edu.njust.dev.ses.main.mapper.StudentMapper;
+import cn.edu.njust.dev.ses.main.mapper.TeacherMapper;
 import cn.edu.njust.dev.ses.main.mapper.UserMapper;
-import cn.edu.njust.dev.ses.main.model.User;
-import cn.edu.njust.dev.ses.main.model.UserSession;
+import cn.edu.njust.dev.ses.main.model.*;
 import cn.edu.njust.dev.ses.main.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,10 @@ final public class AccountManagementService {
     private AccountService accountService;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private TeacherMapper teacherMapper;
+    @Autowired
+    private StudentMapper studentMapper;
 
 
     public void quickValidate(HttpServletRequest requestSession){
@@ -85,10 +90,21 @@ final public class AccountManagementService {
             User logged_in_as = (User) session.getAttribute("logged_in_as");
             if(logged_in_as != null&& logged_in_as.getUid().equals(user.getUid())){
                 session.setAttribute("logged_in_as", user);
+                if(logged_in_as.getType().equals("student")){
+                    StudentExample studentExample = new StudentExample();
+                    studentExample.createCriteria().andUidEqualTo(logged_in_as.getUid());
+                    session.setAttribute("student_info", studentMapper.selectByExample(studentExample));
+                }else if(logged_in_as.getType().equals("teacher")){
+                    TeacherExample teacherExample = new TeacherExample();
+                    teacherExample.createCriteria().andUidEqualTo(logged_in_as.getUid());
+                    session.setAttribute("teacher_info", teacherMapper.selectByExample(teacherExample));
+                }
             }
+
         }
     }
-    public void logoutUserFromAllSessions(Long uid){
+    public void logoutUserFromAllSessions(Integer uid){
+        if(uid == null) return;
         for(HttpSession session: SessionCollectionListener.getList()){
             User logged_in_as = (User) session.getAttribute("logged_in_as");
             if(logged_in_as != null&& logged_in_as.getUid().equals(uid)){
