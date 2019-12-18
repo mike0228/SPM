@@ -29,7 +29,7 @@ final public class GlobalSettingsService {
     public void updateCachedValues(){
         globalParamValueMap.clear();
         for(GlobalParameter globalParameter: globalParameterMapper.selectByExample(new GlobalParameterExample())){
-            globalParamValueMap.put(globalParameter.getKey(), globalParameter.getValue());
+            globalParamValueMap.put(globalParameter.getParam(), globalParameter.getValue());
         }
         isInitialized = true;
     }
