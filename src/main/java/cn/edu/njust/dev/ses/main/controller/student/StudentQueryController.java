@@ -9,7 +9,10 @@ import cn.edu.njust.dev.ses.main.service.GlobalSettingsService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
@@ -154,7 +157,7 @@ public class StudentQueryController {
                                               @RequestParam Integer gradesProblem3,
                                               @RequestParam Integer gradesProblem4,
                                               @RequestParam Integer gradesProblem5,
-                                              @RequestParam MultipartFile proofFile
+                                              @RequestParam MultipartFile file
                                               ) throws IOException {
         //TODO 添加待审核成绩
         //注：需将 is_approved 设成 false
@@ -180,7 +183,7 @@ public class StudentQueryController {
         gradesEntry.setGradesProblem5(gradesProblem5);
         GradesEntryProof gradesEntryProof = new GradesEntryProof();
         gradesEntryProof.setGid(gradesEntry.getGid());
-        gradesEntryProof.setProofUrl(aliyunSupport.upload(proofFile.getInputStream(), proofFile.getOriginalFilename()));
+        gradesEntryProof.setProofUrl(aliyunSupport.upload(file.getInputStream(), file.getOriginalFilename()));
         int items = gradesEntryMapper.insertSelective(gradesEntry);
         int items2 = gradesEntryProofMapper.insertSelective(gradesEntryProof);
         return ResultDTO.okOf();
