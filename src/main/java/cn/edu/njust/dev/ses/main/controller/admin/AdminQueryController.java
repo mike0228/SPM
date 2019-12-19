@@ -187,7 +187,8 @@ public class AdminQueryController {
     @ResponseBody
     @RequestMapping("/api/json/modify_grades_entry")
     public ResultDTO modifyGradesEntry(HttpSession session,
-                                    @RequestParam Integer eid,
+//                                  @RequestParam Integer eid,
+                                    @RequestParam Integer gid,
                                     @RequestParam(required = false) Integer grades,
                                     @RequestParam(required = false) Integer gradesProblem1,
                                     @RequestParam(required = false) Integer gradesProblem2,
@@ -195,7 +196,20 @@ public class AdminQueryController {
                                     @RequestParam(required = false) Integer gradesProblem4,
                                     @RequestParam(required = false) Integer gradesProblem5){
         //TODO 修改成绩项
-        return null;
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
+        if(sessionUser == null|| teacherInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        GradesEntry gradesEntry=gradesEntryMapper.selectByPrimaryKey(gid);
+        gradesEntry.setGrades(grades);
+        gradesEntry.setGradesProblem1(gradesProblem1);
+        gradesEntry.setGradesProblem2(gradesProblem2);
+        gradesEntry.setGradesProblem3(gradesProblem3);
+        gradesEntry.setGradesProblem4(gradesProblem4);
+        gradesEntry.setGradesProblem5(gradesProblem5);
+        int items=gradesEntryMapper.insertSelective(gradesEntry);
+        return ResultDTO.okOf();
     }
 
     @ResponseBody
