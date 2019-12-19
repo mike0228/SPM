@@ -78,8 +78,25 @@ public class AdminQueryController {
         return ResultDTO.okOf();
     }
 
+
     @ResponseBody
     @RequestMapping("/api/json/delete_ccf_event")
+    public ResultDTO deleteCCFEvent(HttpSession session, @RequestParam List<Integer> eid){
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
+        if(sessionUser == null|| teacherInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        if(eid.isEmpty())
+            return ResultDTO.errorOf(0, "指定要删除的考试编号。");
+        CCFEventExample ccfEventExample = new CCFEventExample();
+        ccfEventExample.createCriteria().andEidIn(eid);
+
+        return ResultDTO.okOf(ccfEventMapper.deleteByExample(ccfEventExample));
+    }
+
+    @ResponseBody
+    @RequestMapping("/api/json/modify_ccf_event")
     public ResultDTO modifyCCFEvent(HttpSession session,
                                     @RequestParam Integer eid,
                                     @RequestParam(required = false) Integer number,
@@ -119,36 +136,51 @@ public class AdminQueryController {
     @ResponseBody
     @RequestMapping("/api/json/approve_grades_entry")
     public ResultDTO approveGradesEntry(HttpSession session,
-                                        @RequestParam List<Integer> gids){
+                                        @RequestParam List<Integer> gid){
 
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
         if(sessionUser == null|| teacherInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
-
+        if(gid.isEmpty())
+            return ResultDTO.errorOf(0, "指定要批准的成绩条目编号。");
         GradesEntry gradesEntry = new GradesEntry();
         gradesEntry.setIsApproved(true);
         GradesEntryExample gradesEntryExample = new GradesEntryExample();
-        gradesEntryExample.createCriteria().andGidIn(gids);
+        gradesEntryExample.createCriteria().andGidIn(gid);
         gradesEntryMapper.updateByExampleSelective(gradesEntry, gradesEntryExample);
+        deleteGradesEntryProofs(gid);
         return ResultDTO.okOf();
     }
 
     @ResponseBody
     @RequestMapping("/api/json/disapprove_grades_entry")
     public ResultDTO disapproveGradesEntryAndDelete(HttpSession session,
-                                                    @RequestParam List<Integer> gids){
+                                                    @RequestParam List<Integer> gid){
         //TODO 可要求学生更改凭证
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
         if(sessionUser == null|| teacherInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
+        if(gid.isEmpty())
+            return ResultDTO.errorOf(0, "指定要拒绝的成绩条目编号。");
+        deleteGradesEntryProofs(gid);
+
         GradesEntryExample gradesEntryExample = new GradesEntryExample();
-        gradesEntryExample.createCriteria().andGidIn(gids);
-        gradesEntryMapper.deleteByExample(gradesEntryExample);
-        return ResultDTO.okOf();
+        gradesEntryExample.createCriteria().andGidIn(gid);
+        return ResultDTO.okOf(gradesEntryMapper.deleteByExample(gradesEntryExample));
+    }
+
+    private void deleteGradesEntryProofs(List<Integer> gid) {
+        GradesEntryProofExample gradesEntryProofExample = new GradesEntryProofExample();
+        gradesEntryProofExample.createCriteria().andGidIn(gid);
+        List<GradesEntryProof> gradesEntryProofs = gradesEntryProofMapper.selectByExample(gradesEntryProofExample);
+        for(GradesEntryProof gradesEntryProof: gradesEntryProofs){
+            fileService.deleteFileFromAliyun(gradesEntryProof.getProofUrl());
+            gradesEntryProofMapper.deleteByPrimaryKey(gradesEntryProof.getGid());
+        }
     }
 
     @ResponseBody
@@ -308,8 +340,6 @@ public class AdminQueryController {
                                          @RequestParam(required = false) List<Integer> eids,
                                          @RequestParam(required = false) Integer minPoint,
                                          @RequestParam(required = false) Integer maxPoint){
-        //TODO 列出成绩
-        //注：不显示未验证的成绩
 
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");

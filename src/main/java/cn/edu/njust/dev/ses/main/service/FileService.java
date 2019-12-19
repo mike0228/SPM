@@ -50,4 +50,10 @@ public class FileService {
         ossClient.shutdown();
         return resource;
     }
+
+    public void deleteFileFromAliyun(String fileName){
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        ossClient.deleteObject(bucketName, fileName);
+        ossClient.shutdown();
+    }
 }
