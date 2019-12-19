@@ -5,10 +5,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>CCF报名系统</title>
-  <link rel="stylesheet" href="../../static/css/layui.css" media="all">
+  <link rel="stylesheet" href="/css/layui.css" media="all">
 
-  <script src="../../static/layui.js"></script>
-  <script src="../../static/jquery-3.4.1.js"></script>
+  <script src="/layui.js"></script>
+  <script src="/jquery-3.4.1.js"></script>
 </head>
 
 <body class="layui-layout-body">
@@ -48,14 +48,26 @@
         <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
         <ul class="layui-nav layui-nav-tree" lay-filter="test">
           <li class="layui-nav-item ">
-            <a>成绩审核</a>
+            <a>信息录入</a>
+            <dl class="layui-nav-child">
+              <dd><a id="ccfEvent">考试录入</a></dd>
+              <dd><a id="scoreList">成绩列表</a></dd>
+              <dd><a id="scoreAnalysis">成绩分析</a></dd>
+            </dl>
+          </li>
+          <li class="layui-nav-item ">
+            <a id="scoreCheck">成绩审核</a>
+            <dl class="layui-nav-child">
+              <dd><a id="">学生个人成绩</a></dd>
+              <dd><a id="">选拔赛成绩</a></dd>
+            </dl>
           </li>
           <li class="layui-nav-item ">
             <a>CCF成绩</a>
             <dl class="layui-nav-child">
               <dd><a id="scoreImport">成绩导入</a></dd>
-              <dd><a id="scoreExport">成绩列表</a></dd>
-              <dd><a id="scoreImport">成绩分析</a></dd>
+              <dd><a id="scoreList">成绩列表</a></dd>
+              <dd><a id="scoreAnalysis">成绩分析</a></dd>
             </dl>
           </li>
          
@@ -66,7 +78,7 @@
 
     <div class="layui-body">
       <!-- 内容主体区域 -->
-      <iframe id="childPage" style="width: 100%;height: 99%;" frameborder="0" scrolling="no" src="111.html"></iframe>
+      <iframe id="childPage" style="width: 100%;height: 99%;" frameborder="0" scrolling="no" src="information.html"></iframe>
     </div>
 
     <div class="layui-footer" style="text-align: center;">
@@ -82,14 +94,14 @@
       element.on('nav(test)', function (elem) {
         console.log(elem);
         if(elem.attr("id")!=null){
-           var url = elem.attr("id") + ".html";
+           var url = elem.attr("id");
         $("#childPage").attr("src", url);
         }
       });
       element.on('nav(user)', function (elem) {
         console.log(elem);
         if(elem.attr("id")!=null){
-          var url = elem.attr("id") + ".html";
+          var url = elem.attr("id");
           $("#childPage").attr("src", url);
         }
       });

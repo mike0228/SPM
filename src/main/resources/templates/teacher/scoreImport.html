@@ -3,10 +3,10 @@
 
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="../../static/css/layui.css" media="all">
-  <link rel="stylesheet" href="../../static/css/admin.css" media="all">
-  <script src="../../static/layui.js"></script>
-  <script src="../../static/lay/modules/echarts.min.js"></script>
+  <link rel="stylesheet" href="/css/layui.css" media="all">
+  <link rel="stylesheet" href="/css/admin.css" media="all">
+  <script src="/layui.js"></script>
+  <script src="/lay/modules/echarts.min.js"></script>
 </head>
 
 <style>
@@ -24,23 +24,51 @@
 <body>
   <div class="page">
     <div class="little-header">
-      <blockquote class="layui-elem-quote">成绩列表</blockquote>
+      <blockquote class="layui-elem-quote">成绩导入</blockquote>
     </div>
     <div>
       <button type="button" class="layui-btn" id="test1">
         <i class="layui-icon">&#xe67c;</i>上传名单
       </button>
     </div>
-<!-- 
-    <div class="demoTable">
-      搜索商户：
-      <div class="layui-inline">
-        <input class="layui-input" name="keyword" id="demoReload" autocomplete="off">
-      </div>
-      <button class="layui-btn" data-type="reload">搜索</button>
-    </div> -->
 
-    <table class="layui-table" id="demo" lay-filter="test"></table>
+
+
+    <form class="layui-form" action="">
+      <div class="layui-form-item">
+        <label class="layui-form-label">请输入考试批次</label>
+        <div class="layui-input-block">
+          <input type="text" name="title" required  lay-verify="required" placeholder="考试批次(例如: 16)" autocomplete="off" class="layui-input">
+        </div>
+      </div>
+      <input type="hidden" name=""  lay-verify="required" placeholder="考试批次(例如: 16)" autocomplete="off" class="layui-input">
+    </form>
+    <script>
+      layui.use('upload', function () {
+        var upload = layui.upload;
+
+        //执行实例
+        var uploadInst = upload.render({
+          elem: '#test1' //绑定元素
+          ,
+          url: '/api/json/import_student_via_excel/' //上传接口
+          ,
+          accept: 'file',
+          exts: 'xls|xlsx',
+          done: function (res) {
+            if(res.code==200){
+              layer.msg(res.c, {icon: 6});
+            }
+          },
+          error: function () {
+            //请求异常回调
+          }
+        });
+      });
+    </script>
+
+
+    <table class="layui-table" id="demo" lay-filter="test" style="display: none;"></table>
 
 
     <script type="text/html" id="barDemo">
@@ -53,27 +81,6 @@
 
 
 
-    <script>
-      layui.use('upload', function () {
-        var upload = layui.upload;
-
-        //执行实例
-        var uploadInst = upload.render({
-          elem: '#test1' //绑定元素
-            ,
-          url: '/upload/' //上传接口
-            ,
-          accept: 'file',
-          exts: 'xls|xlsx',
-          done: function (res) {
-            //上传完毕回调
-          },
-          error: function () {
-            //请求异常回调
-          }
-        });
-      });
-    </script>
 
 
     <script>
@@ -112,73 +119,73 @@
         });
 
 
-        table.render({
-          elem: '#demo',
-          toolbar: '#toolbarDemo'
-            //,height: 600
-            ,
-          url: '../json/data.json' //数据接口
-            ,
-          page: true //开启分页
-            ,
-          id: 'testReload',
-          cols: [
-            [ //表头
-              {
-                checkbox: true,
-                fixed: true
-              },
-              {
-                field: 'id',
-                title: 'ID',
-                width: 80,
-                sort: true,
-                fixed: 'left'
-              }, {
-                field: 'username',
-                title: '姓名',
-                width: 80
-              }, {
-                field: 'sex',
-                title: '性别',
-                width: 80,
-                sort: true
-              }, {
-                field: 'city',
-                title: '班级',
-                width: 80
-              }, {
-                field: 'sign',
-                title: '年级',
-                width: 177
-              }, {
-                field: 'experience',
-                title: '成绩',
-                width: 80,
-                sort: true
-              }, {
-                field: 'score',
-                title: '成绩2',
-                width: 80,
-                sort: true
-              }, {
-                field: 'classify',
-                title: '成绩3',
-                width: 80
-              }, {
-                field: 'wealth',
-                title: '手机号',
-                width: 135,
-                sort: true
-              }, {
-                field: 'right',
-                title: '操作',
-                width: 177,
-                toolbar: "#barDemo"
-              }
-            ]
-          ]
-        });
+        // table.render({
+        //   elem: '#demo',
+        //   toolbar: '#toolbarDemo'
+        //     //,height: 600
+        //     ,
+        //   url: '../json/data.json' //数据接口
+        //     ,
+        //   page: true //开启分页
+        //     ,
+        //   id: 'testReload',
+        //   cols: [
+        //     [ //表头
+        //       {
+        //         checkbox: true,
+        //         fixed: true
+        //       },
+        //       {
+        //         field: 'id',
+        //         title: 'ID',
+        //         width: 80,
+        //         sort: true,
+        //         fixed: 'left'
+        //       }, {
+        //         field: 'username',
+        //         title: '姓名',
+        //         width: 80
+        //       }, {
+        //         field: 'sex',
+        //         title: '性别',
+        //         width: 80,
+        //         sort: true
+        //       }, {
+        //         field: 'city',
+        //         title: '班级',
+        //         width: 80
+        //       }, {
+        //         field: 'sign',
+        //         title: '年级',
+        //         width: 177
+        //       }, {
+        //         field: 'experience',
+        //         title: '成绩',
+        //         width: 80,
+        //         sort: true
+        //       }, {
+        //         field: 'score',
+        //         title: '成绩2',
+        //         width: 80,
+        //         sort: true
+        //       }, {
+        //         field: 'classify',
+        //         title: '成绩3',
+        //         width: 80
+        //       }, {
+        //         field: 'wealth',
+        //         title: '手机号',
+        //         width: 135,
+        //         sort: true
+        //       }, {
+        //         field: 'right',
+        //         title: '操作',
+        //         width: 177,
+        //         toolbar: "#barDemo"
+        //       }
+        //     ]
+        //   ]
+        // });
 
         $('.demoTable .layui-btn').on('click', function () {
           var type = $(this).data('type');

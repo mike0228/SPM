@@ -3,10 +3,10 @@
 
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="../../static/css/layui.css" media="all">
-  <link rel="stylesheet" href="../../static/css/admin.css" media="all">
-  <script src="../../static/layui.js"></script>
-  <script src="../../static/lay/modules/echarts.min.js"></script>
+  <link rel="stylesheet" href="/css/layui.css" media="all">
+  <link rel="stylesheet" href="/css/admin.css" media="all">
+  <script src="/layui.js"></script>
+  <script src="/lay/modules/echarts.min.js"></script>
 </head>
 
 <style>
@@ -25,11 +25,6 @@
   <div class="page">
     <div class="little-header">
       <blockquote class="layui-elem-quote">成绩列表</blockquote>
-    </div>
-    <div class="uploadBtn">
-      <button type="button" class="layui-btn" id="test1">
-        <i class="layui-icon">&#xe67c;</i>上传名单
-      </button>
     </div>
 
     <div class="demoTable">
@@ -50,31 +45,6 @@
         <button class="layui-btn layui-btn-sm " lay-event="edit">编辑</button>
       </div>
     </script>
-
-
-
-    <script>
-      layui.use('upload', function () {
-        var upload = layui.upload;
-
-        //执行实例
-        var uploadInst = upload.render({
-          elem: '#test1' //绑定元素
-            ,
-          url: '/upload/' //上传接口
-            ,
-          accept: 'file',
-          exts: 'xls|xlsx',
-          done: function (res) {
-            //上传完毕回调
-          },
-          error: function () {
-            //请求异常回调
-          }
-        });
-      });
-    </script>
-
 
     <script>
       layui.use('table', function () {
