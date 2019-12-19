@@ -160,6 +160,7 @@ public class AdminImporterController {
             BeanUtils.copyProperties(selectRankEntryDTO, selectRankEntry);
             count += selectRankEntryMapper.insertSelective(selectRankEntry);
         }
+        session.removeAttribute("last_result_select_ranks_import");
         return ResultDTO.okOf(count);
     }
 
@@ -186,6 +187,7 @@ public class AdminImporterController {
             BeanUtils.copyProperties(gradesEntryDTO, gradesEntry);
             count += gradesEntryMapper.insertSelective(gradesEntry);
         }
+        session.removeAttribute("last_result_grades_import");
         return ResultDTO.okOf(count);
     }
 
@@ -213,6 +215,7 @@ public class AdminImporterController {
             studentService.insertStudentRecordAndUpdateGradesEntry(student);
             count ++;
         }
+        session.removeAttribute("last_result_student_import");
         return ResultDTO.okOf(count);
     }
 }
