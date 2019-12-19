@@ -4,9 +4,9 @@ import cn.edu.njust.dev.ses.main.dto.DistributionShowcaseDTO;
 import cn.edu.njust.dev.ses.main.dto.StatsDTO;
 import cn.edu.njust.dev.ses.main.dto.StudentDTO;
 import cn.edu.njust.dev.ses.main.mapper.GradesEntryAdvancedMapper;
+import cn.edu.njust.dev.ses.main.mapper.StudentExtendMapper;
 import cn.edu.njust.dev.ses.main.mapper.UserMapper;
 import cn.edu.njust.dev.ses.main.model.DetailedGradesEntryExample;
-import cn.edu.njust.dev.ses.main.model.GradesEntryExample;
 import cn.edu.njust.dev.ses.main.util.excelparser.ExcelUniversalParser;
 import org.jetbrains.annotations.TestOnly;
 import org.springframework.stereotype.Controller;
@@ -27,10 +27,12 @@ import java.util.List;
 public class ExcelStudentParserTesterController {
     private final UserMapper userMapper;
     private final GradesEntryAdvancedMapper gradesEntryAdvancedMapper;
+    private final StudentExtendMapper studentExtendMapper;
 
-    public ExcelStudentParserTesterController(UserMapper userMapper, GradesEntryAdvancedMapper gradesEntryAdvancedMapper) {
+    public ExcelStudentParserTesterController(UserMapper userMapper, GradesEntryAdvancedMapper gradesEntryAdvancedMapper, StudentExtendMapper studentExtendMapper) {
         this.userMapper = userMapper;
         this.gradesEntryAdvancedMapper = gradesEntryAdvancedMapper;
+        this.studentExtendMapper = studentExtendMapper;
     }
 
 
@@ -47,6 +49,11 @@ public class ExcelStudentParserTesterController {
     @GetMapping("/test/test-mapper2")
     public List<StatsDTO> test4(){
         return gradesEntryAdvancedMapper.countByDetailedExampleWithGroupByCCFEvent(new DetailedGradesEntryExample());
+    }
+    @ResponseBody
+    @GetMapping("/test/test-mapper3")
+    public List<String> test5(){
+        return studentExtendMapper.getAllAvailableInstitutes();
     }
 
     @GetMapping("/test/test_student2")

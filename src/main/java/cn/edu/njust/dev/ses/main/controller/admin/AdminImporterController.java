@@ -103,15 +103,14 @@ public class AdminImporterController {
 
     @ResponseBody
     @RequestMapping("/api/json/import_select_ranks_via_excel")
-    public ResultDTO importSelectRankEntryThroughExcel(HttpSession session, @RequestParam MultipartFile file,
-                                                       @RequestParam Integer eid/*SelectRank id*/){
+    public ResultDTO importSelectRankEntryThroughExcel(HttpSession session, @RequestParam MultipartFile file){
         User sessionUser = (User) session.getAttribute("logged_in_as");
         if(sessionUser == null|| !sessionUser.getType().equals("associate")){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
         //TODO
         //注：上传学生选拔考试的成绩
-        List<SelectRankEntryDTO> result = null;
+        List<SelectRankEntryDTO> result;
         try{
             InputStream in = file.getInputStream();
             ExcelUniversalParser<SelectRankEntryDTO> eup = new ExcelUniversalParser<>();
@@ -141,7 +140,7 @@ public class AdminImporterController {
 
     @ResponseBody
     @RequestMapping("/api/json/confirm_rank_import")
-    public ResultDTO confirmRankImport(HttpSession session, @RequestParam Integer confirmId){
+    public ResultDTO confirmRankImport(HttpSession session, @RequestParam Integer confirmId, @RequestParam Integer eid){
         User sessionUser = (User) session.getAttribute("logged_in_as");
         if(sessionUser == null|| !sessionUser.getType().equals("associate")){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
@@ -158,6 +157,7 @@ public class AdminImporterController {
         for(SelectRankEntryDTO selectRankEntryDTO : tempStorageObject.getData()){
             SelectRankEntry selectRankEntry = new SelectRankEntry();
             BeanUtils.copyProperties(selectRankEntryDTO, selectRankEntry);
+            selectRankEntry.setEid(eid);
             count += selectRankEntryMapper.insertSelective(selectRankEntry);
         }
         session.removeAttribute("last_result_select_ranks_import");
@@ -168,7 +168,7 @@ public class AdminImporterController {
 
     @ResponseBody
     @RequestMapping("/api/json/confirm_grades_import")
-    public ResultDTO confirmGradesImport(HttpSession session, @RequestParam Integer confirmId){
+    public ResultDTO confirmGradesImport(HttpSession session, @RequestParam Integer confirmId, @RequestParam Integer eid){
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
         if(sessionUser == null|| teacherInfo == null){
@@ -185,6 +185,7 @@ public class AdminImporterController {
         for(GradesEntryDTO gradesEntryDTO : tempStorageObject.getData()){
             GradesEntry gradesEntry = new GradesEntry();
             BeanUtils.copyProperties(gradesEntryDTO, gradesEntry);
+            gradesEntry.setEid(eid);
             count += gradesEntryMapper.insertSelective(gradesEntry);
         }
         session.removeAttribute("last_result_grades_import");

@@ -3,9 +3,11 @@ package cn.edu.njust.dev.ses.main.controller;
 import cn.edu.njust.dev.ses.main.dto.ResultDTO;
 import cn.edu.njust.dev.ses.main.dto.api.LoginCredentialsDTO;
 import cn.edu.njust.dev.ses.main.dto.api.LoginResponseDTO;
+import cn.edu.njust.dev.ses.main.mapper.UserMapper;
 import cn.edu.njust.dev.ses.main.model.User;
 import cn.edu.njust.dev.ses.main.service.AccountManagementService;
 import cn.edu.njust.dev.ses.main.service.AccountService;
+import cn.edu.njust.dev.ses.main.util.Utils;
 import org.jetbrains.annotations.TestOnly;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -15,14 +17,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+@SuppressWarnings("rawtypes")
 @Controller
 public class UserSessionController {
     final private AccountService accountService;
     final private AccountManagementService accountManagementService;
+    final private UserMapper userMapper;
 
-    public UserSessionController(AccountService accountService, AccountManagementService accountManagementService) {
+    public UserSessionController(AccountService accountService, AccountManagementService accountManagementService, UserMapper userMapper) {
         this.accountService = accountService;
         this.accountManagementService = accountManagementService;
+        this.userMapper = userMapper;
     }
 
     @GetMapping("/test/testAJAX")
@@ -77,5 +82,26 @@ public class UserSessionController {
         accountManagementService.logoutAndInvalidateSession(request, response);
         return "redirect:/";
     }
+
+    @RequestMapping("/api/json/change_password")
+    @ResponseBody
+    @CrossOrigin
+    public ResultDTO changePassword(HttpServletRequest request, HttpServletResponse response, @RequestParam String password, @RequestParam String oldPassword){
+        User loggedInAs = (User) request.getSession().getAttribute("logged_in_as");
+        if(loggedInAs == null){
+            return ResultDTO.errorOf(0, "登录失效，请重新登录。");
+        }
+        if(!Utils.isValidPwd(password)) {
+            return ResultDTO.errorOf(0, "新密码无效。");
+        }
+        User targetInDatabase = userMapper.selectByPrimaryKey(loggedInAs.getUid());
+        if(targetInDatabase == null) return ResultDTO.errorOf(0, "错误，请重新登录");
+        if(!targetInDatabase.getPassword().matches(oldPassword))
+            return ResultDTO.errorOf(0, "旧密码错误。");
+        targetInDatabase.setPassword(password);
+        userMapper.updateByPrimaryKey(targetInDatabase);
+        return ResultDTO.okOf();
+    }
+
 
 }

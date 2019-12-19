@@ -3,20 +3,29 @@ package cn.edu.njust.dev.ses.main.controller.admin;
 import cn.edu.njust.dev.ses.main.dto.ResultDTO;
 import cn.edu.njust.dev.ses.main.mapper.*;
 import cn.edu.njust.dev.ses.main.model.*;
+import cn.edu.njust.dev.ses.main.service.FileService;
+import com.aliyun.oss.OSSException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings("rawtypes")
 @Controller
 public class AdminQueryController {
     @Autowired
@@ -29,6 +38,10 @@ public class AdminQueryController {
     GradesEntryMapper gradesEntryMapper;
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    GradesEntryProofMapper gradesEntryProofMapper;
+    @Autowired
+    FileService fileService;
 
     @ResponseBody
     @RequestMapping(value = "/api/json/create_ccf_event")
@@ -298,5 +311,42 @@ public class AdminQueryController {
 
         List<GradesEntry> gradesEntries = gradesEntryMapper.selectByExample(gradesEntryExample);
         return ResultDTO.okOf(gradesEntries);
+    }
+
+    @RequestMapping("/api/grades_proof/{gid}")
+    public ResponseEntity loadGradesProof(HttpSession session, HttpServletRequest request, @PathVariable Integer gid){
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
+        Student studentInfo = (Student) session.getAttribute("student_info");
+        if(sessionUser == null)
+            return ResponseEntity.status(403).body("用户未登录。");
+        GradesEntryProof gradesEntryProof = gradesEntryProofMapper.selectByPrimaryKey(gid);
+        GradesEntry gradesEntry = gradesEntryMapper.selectByPrimaryKey(gid);
+
+        if(studentInfo != null){
+            if(gradesEntry == null || gradesEntryProof == null|| !gradesEntry.getStudentId().equals(studentInfo.getStudentId()))
+                return ResponseEntity.status(403).body("无权获取该文件。");
+        }else if(gradesEntry == null || gradesEntryProof == null){
+            return ResponseEntity.status(403).body("找不到要求的文件。");
+        }
+
+        if(studentInfo == null && teacherInfo == null)
+            return ResponseEntity.status(403).body("无权获取该文件。");
+
+        try {
+            String fileName = gradesEntryProof.getProofUrl();
+            Resource resource = fileService.loadFileFromAliyunAsResource(fileName);
+            String contentType = request.getServletContext().getMimeType(fileName);
+            if(contentType == null) {
+                contentType = "application/octet-stream";
+            }
+            return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"" + fileName + "\"")
+                    .body(resource);
+
+        } catch (IOException | OSSException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(404).body(e.getLocalizedMessage());
+        }
     }
 }

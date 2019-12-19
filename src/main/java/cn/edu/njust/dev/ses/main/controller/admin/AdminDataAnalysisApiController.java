@@ -5,6 +5,7 @@ import cn.edu.njust.dev.ses.main.dto.ResultDTO;
 import cn.edu.njust.dev.ses.main.dto.StatsDTO;
 import cn.edu.njust.dev.ses.main.mapper.ApplicationExtendMapper;
 import cn.edu.njust.dev.ses.main.mapper.GradesEntryAdvancedMapper;
+import cn.edu.njust.dev.ses.main.mapper.StudentExtendMapper;
 import cn.edu.njust.dev.ses.main.model.CCFEventExample;
 import cn.edu.njust.dev.ses.main.model.DetailedGradesEntryExample;
 import cn.edu.njust.dev.ses.main.model.Teacher;
@@ -12,6 +13,7 @@ import cn.edu.njust.dev.ses.main.model.User;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xmlbeans.impl.soap.Detail;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,9 +25,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings("rawtypes")
+@Controller
 public class AdminDataAnalysisApiController {
     @Autowired
     GradesEntryAdvancedMapper gradesEntryAdvancedMapper;
+    @Autowired
+    StudentExtendMapper studentExtendMapper;
 
     private final static SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); //TODO correspond with front-end
 
@@ -78,7 +84,7 @@ public class AdminDataAnalysisApiController {
     }
 
     @ResponseBody
-    @RequestMapping("/api/json/grades_value_distribution")
+    @RequestMapping("/api/json/stats/grades_value_distribution")
     public ResultDTO obtainDistribution(HttpSession session,
                                         @RequestParam(required = false) List<Integer> eids,
                                         @RequestParam(required = false) String laterThan,
@@ -120,7 +126,7 @@ public class AdminDataAnalysisApiController {
     }
 
     @ResponseBody
-    @RequestMapping("/api/json/distribution_of_sponsored")
+    @RequestMapping("/api/json/stats/distribution_of_sponsored")
     public ResultDTO obtainDistributionOfSponsored(HttpSession session){
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
@@ -128,6 +134,17 @@ public class AdminDataAnalysisApiController {
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
         return ResultDTO.okOf(gradesEntryAdvancedMapper.getSponsoredParticipantsStats());
+    }
+
+    @ResponseBody
+    @RequestMapping("/api/json/all_institutes")
+    public ResultDTO obtrainAllAvailableInstitutes(HttpSession session){
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
+        if(sessionUser == null|| teacherInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        return ResultDTO.okOf(studentExtendMapper.getAllAvailableInstitutes());
     }
 
 }

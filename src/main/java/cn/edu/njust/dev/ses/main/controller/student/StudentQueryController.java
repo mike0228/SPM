@@ -4,7 +4,7 @@ import cn.edu.njust.dev.ses.main.dto.ResultDTO;
 import cn.edu.njust.dev.ses.main.dto.SelectRankItemDTO;
 import cn.edu.njust.dev.ses.main.mapper.*;
 import cn.edu.njust.dev.ses.main.model.*;
-import cn.edu.njust.dev.ses.main.service.AliyunSupport;
+import cn.edu.njust.dev.ses.main.service.FileService;
 import cn.edu.njust.dev.ses.main.service.GlobalSettingsService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +17,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Objects;
 
 
+@SuppressWarnings("rawtypes")
 @Controller
 public class StudentQueryController {
     @Autowired
@@ -41,7 +41,7 @@ public class StudentQueryController {
     @Autowired
     GradesEntryProofMapper gradesEntryProofMapper;
     @Autowired
-    AliyunSupport aliyunSupport;
+    FileService fileService;
 
     @ResponseBody
     @RequestMapping("/api/json/all_apps")
@@ -184,7 +184,7 @@ public class StudentQueryController {
         gradesEntry.setGradesProblem5(gradesProblem5);
         GradesEntryProof gradesEntryProof = new GradesEntryProof();
         gradesEntryProof.setGid(gradesEntry.getGid());
-        gradesEntryProof.setProofUrl(aliyunSupport.upload(file.getInputStream(), file.getOriginalFilename()));
+        gradesEntryProof.setProofUrl(fileService.upload(file.getInputStream(), Objects.requireNonNull(file.getOriginalFilename())));
         int items = gradesEntryMapper.insertSelective(gradesEntry);
         int items2 = gradesEntryProofMapper.insertSelective(gradesEntryProof);
         return ResultDTO.okOf();
