@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -67,5 +68,14 @@ public class UserSessionController {
         return ResultDTO.errorOf(0, "登录名或密码错误。");
     }
 
+    @RequestMapping("/api/logout")
+    @CrossOrigin
+    public String doLogOut(HttpServletRequest request, HttpServletResponse response){
+        if(request.getSession().getAttribute("logged_in_as") == null){
+            return "redirect:/";
+        }
+        accountManagementService.logoutAndInvalidateSession(request, response);
+        return "redirect:/";
+    }
 
 }

@@ -80,6 +80,8 @@ final public class AccountManagementService {
         }
 
         requestSession.getSession().removeAttribute("logged_in_as");
+        requestSession.getSession().removeAttribute("teacher_info");
+        requestSession.getSession().removeAttribute("student_info");
     }
 
     public void updateAllSessionsForUser(Integer uid){
