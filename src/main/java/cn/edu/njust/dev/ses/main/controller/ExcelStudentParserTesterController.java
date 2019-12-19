@@ -5,6 +5,7 @@ import cn.edu.njust.dev.ses.main.dto.StatsDTO;
 import cn.edu.njust.dev.ses.main.dto.StudentDTO;
 import cn.edu.njust.dev.ses.main.mapper.GradesEntryAdvancedMapper;
 import cn.edu.njust.dev.ses.main.mapper.UserMapper;
+import cn.edu.njust.dev.ses.main.model.DetailedGradesEntryExample;
 import cn.edu.njust.dev.ses.main.model.GradesEntryExample;
 import cn.edu.njust.dev.ses.main.util.excelparser.ExcelUniversalParser;
 import org.jetbrains.annotations.TestOnly;
@@ -40,12 +41,12 @@ public class ExcelStudentParserTesterController {
     @ResponseBody
     @GetMapping("/test/test-mapper")
     public List<DistributionShowcaseDTO> test3(){
-        return gradesEntryAdvancedMapper.getGradesDistributionByExample(new GradesEntryExample());
+        return gradesEntryAdvancedMapper.getGradesDistributionByExample(new DetailedGradesEntryExample());
     }
     @ResponseBody
     @GetMapping("/test/test-mapper2")
     public List<StatsDTO> test4(){
-        return gradesEntryAdvancedMapper.countByExampleWithGroupByCCFEvent(new GradesEntryExample());
+        return gradesEntryAdvancedMapper.countByDetailedExampleWithGroupByCCFEvent(new DetailedGradesEntryExample());
     }
 
     @GetMapping("/test/test_student2")

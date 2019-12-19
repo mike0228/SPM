@@ -60,6 +60,10 @@
         <table tableName="select_rank_entry" domainObjectName="SelectRankEntry">
             <generatedKey column="reid" sqlStatement="MySql" identity="true"/>
         </table>
+        <table tableName="detailed_grades_entry" domainObjectName="DetailedGradesEntry"
+               enableInsert="false" enableSelectByPrimaryKey="false" enableUpdateByPrimaryKey="false"
+               enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
+               enableUpdateByExample="false"/>
 
 
     </context>

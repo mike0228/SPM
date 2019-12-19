@@ -51,52 +51,59 @@
     </sql>
 
 
-    <select id="countByStudentExampleWithGroupByCCFEvent" parameterType="cn.edu.njust.dev.ses.main.model.StudentExample" resultMap="BaseCountResult">
-        SELECT ccf_event.eid, ccf_event.exam_no, ccf_event.exam_time, COUNT(*) as `number`, AVG(grades_entry.grades) AS `avg_grades`, MIN(grades_entry.grades) AS `min_grades`, MAX(grades_entry.grades) AS `max_grades`
-        FROM spm_assignment.grades_entry NATURAL JOIN spm_assignment.ccf_event NATURAL JOIN spm_assignment.student
+    <select id="countByDetailedExampleWithGroupByCCFEvent" parameterType="cn.edu.njust.dev.ses.main.model.DetailedGradesEntryExample" resultMap="BaseCountResult">
+        SELECT eid, exam_no, exam_time, COUNT(*) as `number`, AVG(grades) AS `avg_grades`, MIN(grades) AS `min_grades`, MAX(grades) AS `max_grades`
+        FROM spm_assignment.detailed_grades_entry
         <if test="_parameter != null">
             <include refid="Example_Where_Clause" />
         </if>
-        GROUP BY ccf_event.eid;
+        GROUP BY eid;
     </select>
-    <select id="countByExampleWithGroupByCCFEvent" parameterType="cn.edu.njust.dev.ses.main.model.GradesEntryExample" resultMap="BaseCountResult">
+<!--    <select id="countByExampleWithGroupByCCFEvent" parameterType="cn.edu.njust.dev.ses.main.model.GradesEntryExample" resultMap="BaseCountResult">
         SELECT ccf_event.eid, ccf_event.exam_no, ccf_event.exam_time, COUNT(*) as `number`, AVG(grades_entry.grades) AS `avg_grades`, MIN(grades_entry.grades) AS `min_grades`, MAX(grades_entry.grades) AS `max_grades` FROM spm_assignment.grades_entry NATURAL JOIN spm_assignment.ccf_event
         <if test="_parameter != null">
             <include refid="Example_Where_Clause" />
         </if>
         GROUP BY ccf_event.eid;
     </select>
+    <select id="countByCCFExampleWithGroupByCCFEvent" parameterType="cn.edu.njust.dev.ses.main.model.CCFEventExample" resultMap="BaseCountResult">
+        SELECT ccf_event.eid, ccf_event.exam_no, ccf_event.exam_time, COUNT(*) as `number`, AVG(grades_entry.grades) AS `avg_grades`, MIN(grades_entry.grades) AS `min_grades`, MAX(grades_entry.grades) AS `max_grades` FROM spm_assignment.grades_entry NATURAL JOIN spm_assignment.ccf_event
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause" />
+        </if>
+        GROUP BY ccf_event.eid;
+    </select>-->
 <!--    <select id="countByMinGrades" parameterType="java.lang.Integer" resultMap="BaseCountResult">
         SELECT ccf_event.eid, ccf_event.exam_no, ccf_event.exam_time, COUNT(*) as numbers FROM spm_assignment.grades_entry NATURAL JOIN spm_assignment.ccf_event WHERE grades &gt;= ${minGrades} GROUP BY eid ;
     </select>
     <select id="countByMaxGrades" parameterType="java.lang.Integer" resultMap="BaseCountResult">
         SELECT ccf_event.eid, ccf_event.exam_no, ccf_event.exam_time, COUNT(*) as numbers FROM spm_assignment.grades_entry NATURAL JOIN spm_assignment.ccf_event WHERE grades &lt;= ${maxGrades} GROUP BY eid ;
     </select>-->
-    <select id="getGradesDistributionByExample" parameterType="cn.edu.njust.dev.ses.main.model.GradesEntryExample" resultMap="DistributionResult">
-        SELECT case when `grades_entry`.`grades` &gt;= 0 AND `grades_entry`.`grades` &lt;= 50 then '(0,50]'
-                    when `grades_entry`.`grades` &gt;= 50 AND `grades_entry`.`grades` &lt;= 100 then '(50,50]'
-                    when `grades_entry`.`grades` &gt;= 100 AND `grades_entry`.`grades` &lt;= 150 then '(100,150]'
-                    when `grades_entry`.`grades` &gt;= 150 AND `grades_entry`.`grades` &lt;= 200 then '(150,200]'
-                    when `grades_entry`.`grades` &gt;= 200 AND `grades_entry`.`grades` &lt;= 250 then '(200,250]'
-                    when `grades_entry`.`grades` &gt;= 250 AND `grades_entry`.`grades` &lt;= 300 then '(250,300]'
-                    when `grades_entry`.`grades` &gt;= 300 AND `grades_entry`.`grades` &lt;= 350 then '(300,350]'
-                    when `grades_entry`.`grades` &gt;= 350 AND `grades_entry`.`grades` &lt;= 400 then '(350,400]'
-                    when `grades_entry`.`grades` &gt;= 400 AND `grades_entry`.`grades` &lt;= 450 then '(400,450]'
-                    when `grades_entry`.`grades` &gt;= 450 AND `grades_entry`.`grades` &lt;= 500 then '(450,500]'
-                    ELSE 'unknown' END 'item', COUNT(*) as `count` FROM `grades_entry`
+    <select id="getGradesDistributionByExample" parameterType="cn.edu.njust.dev.ses.main.model.DetailedGradesEntryExample" resultMap="DistributionResult">
+        SELECT case when `detailed_grades_entry`.`grades` &gt;= 0 AND `detailed_grades_entry`.`grades` &lt;= 50 then '(0,50]'
+                    when `detailed_grades_entry`.`grades` &gt;= 50 AND `detailed_grades_entry`.`grades` &lt;= 100 then '(50,50]'
+                    when `detailed_grades_entry`.`grades` &gt;= 100 AND `detailed_grades_entry`.`grades` &lt;= 150 then '(100,150]'
+                    when `detailed_grades_entry`.`grades` &gt;= 150 AND `detailed_grades_entry`.`grades` &lt;= 200 then '(150,200]'
+                    when `detailed_grades_entry`.`grades` &gt;= 200 AND `detailed_grades_entry`.`grades` &lt;= 250 then '(200,250]'
+                    when `detailed_grades_entry`.`grades` &gt;= 250 AND `detailed_grades_entry`.`grades` &lt;= 300 then '(250,300]'
+                    when `detailed_grades_entry`.`grades` &gt;= 300 AND `detailed_grades_entry`.`grades` &lt;= 350 then '(300,350]'
+                    when `detailed_grades_entry`.`grades` &gt;= 350 AND `detailed_grades_entry`.`grades` &lt;= 400 then '(350,400]'
+                    when `detailed_grades_entry`.`grades` &gt;= 400 AND `detailed_grades_entry`.`grades` &lt;= 450 then '(400,450]'
+                    when `detailed_grades_entry`.`grades` &gt;= 450 AND `detailed_grades_entry`.`grades` &lt;= 500 then '(450,500]'
+                    ELSE 'unknown' END 'item', COUNT(*) as `count` FROM `detailed_grades_entry`
         <if test="_parameter != null">
             <include refid="Example_Where_Clause" />
         </if>
-        GROUP BY case when `grades_entry`.`grades` &gt;= 0 AND `grades_entry`.`grades` &lt;= 50 then '(0,50]'
-            when `grades_entry`.`grades` &gt;= 50 AND `grades_entry`.`grades` &lt;= 100 then '(50,50]'
-            when `grades_entry`.`grades` &gt;= 100 AND `grades_entry`.`grades` &lt;= 150 then '(100,150]'
-            when `grades_entry`.`grades` &gt;= 150 AND `grades_entry`.`grades` &lt;= 200 then '(150,200]'
-            when `grades_entry`.`grades` &gt;= 200 AND `grades_entry`.`grades` &lt;= 250 then '(200,250]'
-            when `grades_entry`.`grades` &gt;= 250 AND `grades_entry`.`grades` &lt;= 300 then '(250,300]'
-            when `grades_entry`.`grades` &gt;= 300 AND `grades_entry`.`grades` &lt;= 350 then '(300,350]'
-            when `grades_entry`.`grades` &gt;= 350 AND `grades_entry`.`grades` &lt;= 400 then '(350,400]'
-            when `grades_entry`.`grades` &gt;= 400 AND `grades_entry`.`grades` &lt;= 450 then '(400,450]'
-            when `grades_entry`.`grades` &gt;= 450 AND `grades_entry`.`grades` &lt;= 500 then '(450,500]'
+        GROUP BY case when `detailed_grades_entry`.`grades` &gt;= 0 AND `detailed_grades_entry`.`grades` &lt;= 50 then '(0,50]'
+            when `detailed_grades_entry`.`grades` &gt;= 50 AND `detailed_grades_entry`.`grades` &lt;= 100 then '(50,50]'
+            when `detailed_grades_entry`.`grades` &gt;= 100 AND `detailed_grades_entry`.`grades` &lt;= 150 then '(100,150]'
+            when `detailed_grades_entry`.`grades` &gt;= 150 AND `detailed_grades_entry`.`grades` &lt;= 200 then '(150,200]'
+            when `detailed_grades_entry`.`grades` &gt;= 200 AND `detailed_grades_entry`.`grades` &lt;= 250 then '(200,250]'
+            when `detailed_grades_entry`.`grades` &gt;= 250 AND `detailed_grades_entry`.`grades` &lt;= 300 then '(250,300]'
+            when `detailed_grades_entry`.`grades` &gt;= 300 AND `detailed_grades_entry`.`grades` &lt;= 350 then '(300,350]'
+            when `detailed_grades_entry`.`grades` &gt;= 350 AND `detailed_grades_entry`.`grades` &lt;= 400 then '(350,400]'
+            when `detailed_grades_entry`.`grades` &gt;= 400 AND `detailed_grades_entry`.`grades` &lt;= 450 then '(400,450]'
+            when `detailed_grades_entry`.`grades` &gt;= 450 AND `detailed_grades_entry`.`grades` &lt;= 500 then '(450,500]'
             ELSE 'unknown' END
     </select>
 

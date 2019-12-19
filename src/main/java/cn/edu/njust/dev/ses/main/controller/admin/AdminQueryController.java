@@ -3,7 +3,7 @@ package cn.edu.njust.dev.ses.main.controller.admin;
 import cn.edu.njust.dev.ses.main.dto.ResultDTO;
 import cn.edu.njust.dev.ses.main.mapper.*;
 import cn.edu.njust.dev.ses.main.model.*;
-import com.sun.org.apache.xpath.internal.objects.XNull;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,9 +38,6 @@ public class AdminQueryController {
                                     @RequestParam String selectExamTime,
                                     @RequestParam String appliDeadline,
                                     @RequestParam String appliStartsOn) throws ParseException {
-        //TODO 创建 CCF 考试记录
-        //注：默认需将 can_apply 设为 1.
-        //eid 自动生成
 
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
@@ -70,7 +67,44 @@ public class AdminQueryController {
 
     @ResponseBody
     @RequestMapping("/api/json/delete_ccf_event")
-    public ResultDTO deleteCCFEvent(HttpSession session,
+    public ResultDTO modifyCCFEvent(HttpSession session,
+                                    @RequestParam Integer eid,
+                                    @RequestParam(required = false) Integer number,
+                                    @RequestParam(required = false) String examTime,
+                                    @RequestParam(required = false) String selectExamTime,
+                                    @RequestParam(required = false) String appliDeadline,
+                                    @RequestParam(required = false) String appliStartsOn,
+                                    @RequestParam(required = false) String canApply) throws ParseException {
+
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
+        if(sessionUser == null|| teacherInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        CCFEvent ccfEvent = new CCFEvent();
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); //TODO correspond with front-end
+        Date examTimeD = formatter.parse(examTime);
+        Date selectExamTimeD = formatter.parse(selectExamTime);
+        Date appliDeadlineD = formatter.parse(appliDeadline);
+        Date appliStartsOnD = formatter.parse(appliStartsOn);
+
+        ccfEvent.setEid(eid);
+        ccfEvent.setExamNo(number);
+        ccfEvent.setExamTime(examTimeD);
+        ccfEvent.setSelectExamTime(selectExamTimeD);
+        ccfEvent.setAppliDeadline(appliDeadlineD);
+        ccfEvent.setCanApply((byte) (StringUtils.isBlank(canApply)? 0: 1));
+        ccfEvent.setAppliStartsOn(appliStartsOnD);
+
+        int result = ccfEventMapper.updateByPrimaryKey(ccfEvent);
+
+        return result > 0? ResultDTO.okOf(): ResultDTO.errorOf(0, "找不到要修改的项目。");
+    }
+
+    @ResponseBody
+    @RequestMapping("/api/json/modify_ccf_event")
+    public ResultDTO modifyCCFEvent(HttpSession session,
                                     @RequestParam Integer eid){
         //TODO
 
@@ -88,7 +122,6 @@ public class AdminQueryController {
     @RequestMapping("/api/json/approve_grades_entry")
     public ResultDTO approveGradesEntry(HttpSession session,
                                         @RequestParam List<Integer> gids){
-        //TODO 同意成绩
 
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
@@ -96,12 +129,11 @@ public class AdminQueryController {
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
 
-        for (Integer item: gids){
-            GradesEntry gradesEntry = new GradesEntry();
-            gradesEntry.setGid(item);
-            gradesEntry.setIsApproved(true);
-            gradesEntryMapper.updateByPrimaryKeySelective(gradesEntry);
-        }
+        GradesEntry gradesEntry = new GradesEntry();
+        gradesEntry.setIsApproved(true);
+        GradesEntryExample gradesEntryExample = new GradesEntryExample();
+        gradesEntryExample.createCriteria().andGidIn(gids);
+        gradesEntryMapper.updateByExampleSelective(gradesEntry, gradesEntryExample);
         return ResultDTO.okOf();
     }
 
@@ -109,16 +141,15 @@ public class AdminQueryController {
     @RequestMapping("/api/json/disapprove_grades_entry")
     public ResultDTO disapproveGradesEntryAndDelete(HttpSession session,
                                                     @RequestParam List<Integer> gids){
-        //TODO 不同意成绩并删除
+        //TODO 可要求学生更改凭证
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
         if(sessionUser == null|| teacherInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
-
-        for (Integer item:gids){
-            gradesEntryMapper.deleteByPrimaryKey(item);
-        }
+        GradesEntryExample gradesEntryExample = new GradesEntryExample();
+        gradesEntryExample.createCriteria().andGidIn(gids);
+        gradesEntryMapper.deleteByExample(gradesEntryExample);
         return ResultDTO.okOf();
     }
 
@@ -127,6 +158,11 @@ public class AdminQueryController {
     public ResultDTO addGradesEntry(HttpSession session,
                                     @RequestParam Integer eid,
                                     @RequestParam Integer grades,
+                                    @RequestParam Integer gradesProblem1,
+                                    @RequestParam Integer gradesProblem2,
+                                    @RequestParam Integer gradesProblem3,
+                                    @RequestParam Integer gradesProblem4,
+                                    @RequestParam Integer gradesProblem5,
                                     @RequestParam String studentID){
         //TODO 手动添加成绩
         //max_grade = 500
@@ -137,20 +173,40 @@ public class AdminQueryController {
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
 
-        StudentExample studentExample = new StudentExample();
-        studentExample.createCriteria().andStudentIdEqualTo(studentID);
-        if (studentMapper.selectByExample(studentExample).isEmpty()) {
-            return ResultDTO.errorOf(0,"不存在该学生");
-        }
+//        StudentExample studentExample = new StudentExample();
+//        studentExample.createCriteria().andStudentIdEqualTo(studentID);
+//        List<Student> students = studentMapper.selectByExample(studentExample);
+//        if (students.isEmpty()) {
+//            return ResultDTO.errorOf(0,"不存在该学生，请先添加学生再导入");
+//        }
 
         GradesEntry gradesEntry = new GradesEntry();
         gradesEntry.setIsApproved(true);
         gradesEntry.setEid(eid);
         gradesEntry.setGrades(grades);
         gradesEntry.setStudentId(studentID);
+        gradesEntry.setGradesProblem1(gradesProblem1);
+        gradesEntry.setGradesProblem2(gradesProblem2);
+        gradesEntry.setGradesProblem3(gradesProblem3);
+        gradesEntry.setGradesProblem4(gradesProblem4);
+        gradesEntry.setGradesProblem5(gradesProblem5);
 
         gradesEntryMapper.insertSelective(gradesEntry);
         return ResultDTO.okOf();
+    }
+
+    @ResponseBody
+    @RequestMapping("/api/json/modify_grades_entry")
+    public ResultDTO modifyGradesEntry(HttpSession session,
+                                    @RequestParam Integer eid,
+                                    @RequestParam(required = false) Integer grades,
+                                    @RequestParam(required = false) Integer gradesProblem1,
+                                    @RequestParam(required = false) Integer gradesProblem2,
+                                    @RequestParam(required = false) Integer gradesProblem3,
+                                    @RequestParam(required = false) Integer gradesProblem4,
+                                    @RequestParam(required = false) Integer gradesProblem5){
+        //TODO 修改成绩项
+        return null;
     }
 
     @ResponseBody
@@ -229,19 +285,11 @@ public class AdminQueryController {
         }
 
         GradesEntryExample gradesEntryExample = new GradesEntryExample();
-        if(!eids.isEmpty())
-            for(Integer eid: eids){
-                GradesEntryExample.Criteria criteria = gradesEntryExample.createCriteria().andEidEqualTo(eid).andIsApprovedEqualTo(true);
+        GradesEntryExample.Criteria criteria = gradesEntryExample.createCriteria().andEidIn(eids).andIsApprovedEqualTo(true);
 
-                if(minPoint != null) criteria.andGradesGreaterThanOrEqualTo(minPoint);
-                if(maxPoint != null) criteria.andGradesLessThanOrEqualTo(maxPoint);
-                gradesEntryExample.or(criteria);
-            }
-        else{
-            GradesEntryExample.Criteria criteria = gradesEntryExample.createCriteria().andIsApprovedEqualTo(true);
-            if(minPoint != null) criteria.andGradesGreaterThanOrEqualTo(minPoint);
-            if(maxPoint != null) criteria.andGradesLessThanOrEqualTo(maxPoint);
-        }
+        if(minPoint != null) criteria.andGradesGreaterThanOrEqualTo(minPoint);
+        if(maxPoint != null) criteria.andGradesLessThanOrEqualTo(maxPoint);
+
         List<GradesEntry> gradesEntries = gradesEntryMapper.selectByExample(gradesEntryExample);
         return ResultDTO.okOf(gradesEntries);
     }

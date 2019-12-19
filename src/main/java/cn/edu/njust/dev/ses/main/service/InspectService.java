@@ -19,7 +19,7 @@ public class InspectService {
     public List<GradesEntryDTO> GetByIsApproved(){
         GradesEntryExample example = new GradesEntryExample();
         GradesEntryExample.Criteria criteria = example.createCriteria();
-        criteria.andIsApprovedEqualTo(0);
+        criteria.andIsApprovedEqualTo(false);
         List<GradesEntry> gradesEntries =gradesEntryMapper.selectByExample(example);
         List<GradesEntryDTO> gradesEntryDTOS = gradesEntries.stream().map(q->{
             GradesEntryDTO gradesEntryDTO = new GradesEntryDTO();

@@ -14,21 +14,18 @@ import cn.edu.njust.dev.ses.main.util.excelparser.ExcelUniversalParser;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.thymeleaf.TemplateEngine;
 
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings("rawtypes")
 @Controller
 public class AdminImporterController {
     @Autowired
