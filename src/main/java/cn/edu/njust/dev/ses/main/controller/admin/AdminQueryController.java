@@ -102,21 +102,6 @@ public class AdminQueryController {
         return result > 0? ResultDTO.okOf(): ResultDTO.errorOf(0, "找不到要修改的项目。");
     }
 
-    @ResponseBody
-    @RequestMapping("/api/json/modify_ccf_event")
-    public ResultDTO modifyCCFEvent(HttpSession session,
-                                    @RequestParam Integer eid){
-        //TODO
-
-        User sessionUser = (User) session.getAttribute("logged_in_as");
-        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
-        if(sessionUser == null|| teacherInfo == null){
-            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
-        }
-
-        ccfEventMapper.deleteByPrimaryKey(eid);
-        return ResultDTO.okOf();
-    }
 
     @ResponseBody
     @RequestMapping("/api/json/approve_grades_entry")
@@ -164,21 +149,12 @@ public class AdminQueryController {
                                     @RequestParam Integer gradesProblem4,
                                     @RequestParam Integer gradesProblem5,
                                     @RequestParam String studentID){
-        //TODO 手动添加成绩
-        //max_grade = 500
-        //is_approved = true
+
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
         if(sessionUser == null|| teacherInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
-
-//        StudentExample studentExample = new StudentExample();
-//        studentExample.createCriteria().andStudentIdEqualTo(studentID);
-//        List<Student> students = studentMapper.selectByExample(studentExample);
-//        if (students.isEmpty()) {
-//            return ResultDTO.errorOf(0,"不存在该学生，请先添加学生再导入");
-//        }
 
         GradesEntry gradesEntry = new GradesEntry();
         gradesEntry.setIsApproved(true);
@@ -220,7 +196,6 @@ public class AdminQueryController {
                                 @RequestParam(required = false) String profession,
                                 @RequestParam String classNo,
                                 @RequestParam(required = false) String phoneNo){
-        //TODO 手动添加学生
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
         if(sessionUser == null|| teacherInfo == null){
@@ -239,6 +214,37 @@ public class AdminQueryController {
 
         studentMapper.insertSelective(student);
         return ResultDTO.okOf();
+    }
+
+    @RequestMapping("/api/json/modify_student")
+    public ResultDTO modifyStudent(HttpSession session,
+                                @RequestParam String studentID,
+                                @RequestParam(required = false) String gender,
+                                @RequestParam(required = false) String idNo,
+                                @RequestParam(required = false) Integer admissionYear,
+                                @RequestParam(required = false) String institute,
+                                @RequestParam(required = false) String profession,
+                                @RequestParam(required = false) String classNo,
+                                @RequestParam(required = false) String phoneNo){
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
+        if(sessionUser == null|| teacherInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+
+        Student student = new Student();
+        student.setGender(gender);
+        student.setIdNo(idNo);
+        student.setAdmissionYear(admissionYear);
+        student.setInstitute(institute);
+        student.setProfession(profession);
+        student.setClassNo(classNo);
+        student.setPhoneNo(phoneNo);
+
+        StudentExample studentExample = new StudentExample();
+        studentExample.createCriteria().andStudentIdEqualTo(studentID);
+        int count = studentMapper.updateByExampleSelective(student, studentExample);
+        return count > 0? ResultDTO.okOf(): ResultDTO.errorOf(0, "找不到要修改的记录。");
     }
 
     @ResponseBody
