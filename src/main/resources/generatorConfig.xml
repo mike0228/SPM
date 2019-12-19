@@ -45,9 +45,7 @@
             <generatedKey column="gid" sqlStatement="MySql" identity="true"/>
             <columnOverride column="is_approved" javaType="java.lang.Boolean" jdbcType="BOOLEAN" />
         </table>
-        <table tableName="grades_entry_proof" domainObjectName="GradesEntryProof">
-            <generatedKey column="gid" sqlStatement="MySql" identity="true"/>
-        </table>
+        <table tableName="grades_entry_proof" domainObjectName="GradesEntryProof"/>
         <table tableName="application" domainObjectName="Application">
             <generatedKey column="aid" sqlStatement="MySql" identity="true"/>
         </table>
