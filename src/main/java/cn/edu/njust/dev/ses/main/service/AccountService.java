@@ -88,7 +88,7 @@ public class AccountService {
         if(!result.isEmpty()){
             Student student = result.get(0);
             String idNo = student.getIdNo();
-            String substring = idNo.substring(id.length() - 1 - 5, id.length() - 1);//取学号后5位作为密码
+            String substring = idNo.substring(idNo.length() - 5);//取学号后5位作为密码
             if(!substring.equals(pwd)) return null;
             User user = new User();
             user.setType("student");
