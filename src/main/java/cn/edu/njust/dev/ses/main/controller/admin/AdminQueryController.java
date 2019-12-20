@@ -6,6 +6,7 @@ import cn.edu.njust.dev.ses.main.model.*;
 import cn.edu.njust.dev.ses.main.service.FileService;
 import com.aliyun.oss.OSSException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -43,6 +44,8 @@ public class AdminQueryController {
     UserMapper userMapper;
     @Autowired
     GradesEntryProofMapper gradesEntryProofMapper;
+    @Autowired
+    DetailedGradesEntryMapper detailedGradesEntryMapper;
     @Autowired
     FileService fileService;
 
@@ -253,9 +256,34 @@ public class AdminQueryController {
     }
 
     @ResponseBody
+    @RequestMapping("/api/json/list_students")
+    public ResultDTO obtainStudents(HttpSession session,
+                                    @RequestParam(required = false) List<String> institute,
+                                    @RequestParam(required = false) Integer admissionYear,
+                                    @RequestParam(required = false) List<String> classNo,
+                                    @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer limit){
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
+        if(sessionUser == null|| teacherInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        StudentExample studentExample = new StudentExample();
+        StudentExample.Criteria criteria = studentExample.createCriteria();
+
+        if(institute != null &&!institute.isEmpty()) criteria.andInstituteIn(institute);
+        if(admissionYear != null) criteria.andAdmissionYearEqualTo(admissionYear);
+        if(classNo != null && !classNo.isEmpty()) criteria.andClassNoIn(classNo);
+        RowBounds rowBounds = page != null && limit != null ? new RowBounds(limit * (page - 1), limit) : new RowBounds();
+
+        List<Student> students = studentMapper.selectByExampleWithRowbounds(studentExample, rowBounds);
+        return ResultDTO.okOf(students, studentMapper.countByExample(studentExample));
+    }
+
+    @ResponseBody
     @RequestMapping("/api/json/add_student")
     public ResultDTO addStudent(HttpSession session,
-                                @RequestParam String studentID,
+                                @RequestParam String studentId,
+                                @RequestParam String name,
                                 @RequestParam String gender,
                                 @RequestParam String idNo,
                                 @RequestParam Integer admissionYear,
@@ -270,8 +298,9 @@ public class AdminQueryController {
         }
 
         Student student = new Student();
-        student.setStudentId(studentID);
+        student.setStudentId(studentId);
         student.setGender(gender);
+        student.setName(name);
         student.setIdNo(idNo);
         student.setAdmissionYear(admissionYear);
         student.setInstitute(institute);
@@ -283,9 +312,10 @@ public class AdminQueryController {
         return ResultDTO.okOf();
     }
 
+    @ResponseBody
     @RequestMapping("/api/json/modify_student")
     public ResultDTO modifyStudent(HttpSession session,
-                                @RequestParam String studentID,
+                                @RequestParam String studentId,
                                 @RequestParam(required = false) String gender,
                                 @RequestParam(required = false) String idNo,
                                 @RequestParam(required = false) Integer admissionYear,
@@ -309,7 +339,7 @@ public class AdminQueryController {
         student.setPhoneNo(phoneNo);
 
         StudentExample studentExample = new StudentExample();
-        studentExample.createCriteria().andStudentIdEqualTo(studentID);
+        studentExample.createCriteria().andStudentIdEqualTo(studentId);
         int count = studentMapper.updateByExampleSelective(student, studentExample);
         return count > 0? ResultDTO.okOf(): ResultDTO.errorOf(0, "找不到要修改的记录。");
     }
@@ -317,7 +347,7 @@ public class AdminQueryController {
     @ResponseBody
     @RequestMapping("/api/json/delete_student")
     public ResultDTO deleteStudent(HttpSession session,
-                                   @RequestParam List<String> studentIds){
+                                   @RequestParam List<String> studentId){
         //TODO 删除学生
         //注：也要删除与其相关联的学生用户（如果有）。
 
@@ -327,7 +357,7 @@ public class AdminQueryController {
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
 
-        for (String item:studentIds){
+        for (String item:studentId){
             StudentExample studentExample = new StudentExample();
             studentExample.createCriteria().andStudentIdEqualTo(item);
             List<Student> students = studentMapper.selectByExample(studentExample);
@@ -345,9 +375,12 @@ public class AdminQueryController {
     @ResponseBody
     @RequestMapping("/api/json/obtain_grades")
     public ResultDTO obtainGradesEntries(HttpSession session,
-                                         @RequestParam(required = false) List<Integer> eids,
+                                         @RequestParam(required = false) List<Integer> eid,
+                                         @RequestParam(required = false) String isApproved,
+                                         @RequestParam(required = false) String institute,
                                          @RequestParam(required = false) Integer minPoint,
-                                         @RequestParam(required = false) Integer maxPoint){
+                                         @RequestParam(required = false) Integer maxPoint,
+                                         @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer limit){
 
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
@@ -355,14 +388,17 @@ public class AdminQueryController {
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
 
-        GradesEntryExample gradesEntryExample = new GradesEntryExample();
-        GradesEntryExample.Criteria criteria = gradesEntryExample.createCriteria().andEidIn(eids).andIsApprovedEqualTo(true);
+        DetailedGradesEntryExample gradesEntryExample = new DetailedGradesEntryExample();
+        DetailedGradesEntryExample.Criteria criteria = gradesEntryExample.createCriteria();
 
+        if(eid != null&& !eid.isEmpty()) criteria.andEidIn(eid);
+        if(StringUtils.isNotBlank(institute)) criteria.andInstituteEqualTo(institute);
         if(minPoint != null) criteria.andGradesGreaterThanOrEqualTo(minPoint);
         if(maxPoint != null) criteria.andGradesLessThanOrEqualTo(maxPoint);
-
-        List<GradesEntry> gradesEntries = gradesEntryMapper.selectByExample(gradesEntryExample);
-        return ResultDTO.okOf(gradesEntries);
+        if(StringUtils.isNotBlank(isApproved)) criteria.andIsApprovedEqualTo((byte) (isApproved.equals("on") ? 1: 0));
+        RowBounds rowBounds = page != null && limit != null ? new RowBounds(limit * (page - 1), limit) : new RowBounds();
+        List<DetailedGradesEntry> gradesEntries = detailedGradesEntryMapper.selectByExampleWithRowbounds(gradesEntryExample, rowBounds);
+        return ResultDTO.okOf(gradesEntries, detailedGradesEntryMapper.countByExample(gradesEntryExample));
     }
 
     @RequestMapping("/api/grades_proof/{gid}")

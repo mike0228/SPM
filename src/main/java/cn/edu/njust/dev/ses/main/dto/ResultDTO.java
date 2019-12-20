@@ -6,6 +6,7 @@ import lombok.Data;
 public class ResultDTO<T> {
     private Integer code;
     private String message;
+    private Long count;
     private String detailedMessage;
     private T data;
 
@@ -22,17 +23,19 @@ public class ResultDTO<T> {
     }
 
     public static ResultDTO okOf() {
-        ResultDTO resultDTO = new ResultDTO();
-        resultDTO.setCode(200);
-        resultDTO.setMessage("请求成功");
-        return resultDTO;
+        return okOf(null, null);
     }
 
     public static <T> ResultDTO okOf(T t) {
+        return okOf(t, null);
+    }
+
+    public static <T> ResultDTO okOf(T t, Long count){
         ResultDTO resultDTO = new ResultDTO();
         resultDTO.setCode(200);
         resultDTO.setMessage("请求成功");
         resultDTO.setData(t);
+        resultDTO.setCount(count);
         return resultDTO;
     }
 }

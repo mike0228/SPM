@@ -40,6 +40,12 @@ public class AdminMainController {
     public String ccfEvent(HttpSession session){
         return "teacher/ccfEvent";
     }
+    @RequestMapping("/teacher/studentEvent")
+    public String studentEvent(HttpSession session){
+        return "teacher/studentEvent";
+    }
+    @RequestMapping("/teacher/gradeEvent")
+    public String gradeEvent(HttpSession session){ return "teacher/gradeEvent"; }
 
 
 

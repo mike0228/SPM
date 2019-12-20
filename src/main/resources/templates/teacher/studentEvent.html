@@ -35,7 +35,7 @@
 <body>
 <div class="page">
     <div class="little-header">
-        <blockquote class="layui-elem-quote">CCF Event</blockquote>
+        <blockquote class="layui-elem-quote">Student Event</blockquote>
     </div>
 
     <table class="layui-table" id="demo" lay-filter="test"></table>
@@ -89,10 +89,11 @@
                 console.log(data);
                 if (layEvent === 'del') { //删除
                     layer.confirm('确认要删除吗', function (index) {
-                        $.get("/api/json/delete_ccf_event?eid=" + data.eid, {},
+                        $.get("/api/json/delete_student?studentId=" + data.studentId, {},
                             function (response) {
                                 if (response.code == 200) {
-                                    obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                    layui.table.reload('testReload');
+                                    //obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
 
                                     layer.close(index);
                                     layer.msg("删除成功");
@@ -104,17 +105,15 @@
                     });
                 } else if (layEvent === 'edit') { //编辑
                     //do something
-                    $("#examNo2").val(data.examNo);
-                    $("#examTime2").val(data.examTime);
-                    $("#selectExamTime2").val(data.selectExamTime);
-                    $("#appliStartsOn2").val(data.appliStartsOn);
-                    $("#appliDeadline2").val(data.appliDeadline);
-                    if(data.canApply == 1)
-                        $("#canApply2").attr("checked", "");
-                    else
-                        $("#canApply2").removeAttr("checked");
-                    $("#eid2").val(data.eid);
-                    layui.form.render('checkbox', 'modify');
+                    $("#studentId2").val(data.studentId);
+                    $("#name2").val(data.name);
+                    $("#gender2").val(data.gender);
+                    $("#idNo2").val(data.idNo);
+                    $("#admissionYear2").val(data.admissionYear);
+                    $("#institute2").val(data.institute);
+                    $("#profession2").val(data.profession);
+                    $("#classNo2").val(data.classNo);
+                    $("#phoneNo2").val(data.phoneNo);
 
                     layer.open({
                         title: '编辑',
@@ -133,7 +132,7 @@
                 toolbar: '#toolbarDemo'
                 //,height: 600
                 ,
-                url: '/api/json/available_events' //数据接口
+                url: '/api/json/list_students' //数据接口
                 , response: {
                     statusName: 'code' //规定数据状态的字段名称，默认：code
                     , statusCode: 200 //规定成功的状态码，默认：0
@@ -157,34 +156,47 @@
                         //     fixed: 'left'
                         // },
                         {
-                        field: 'examNo',
-                        title: '正式考试批次',
+                            field: 'studentId',
+                            title: '学号',
+                            sort: true
+                        }, {
+                        field: 'name',
+                        title: '姓名',
                         sort: true
                     }, {
-                        field: 'examTime',
-                        title: '正式考试时间',
+                        field: 'gender',
+                        title: '性别',
                         sort: true
                     }, {
-                        field: 'selectExamTime',
-                        title: '选拔考试时间',
+                        field: 'idNo',
+                        title: '证件号码',
                         sort: true
                     }, {
-                        field: 'appliStartsOn',
-                        title: '选拔考试申请开始时间',
+                        field: 'admissionYear',
+                        title: '入学年份',
                         sort: true
                     }, {
-                        field: 'appliDeadline',
-                        title: '选拔考试申请截止时间',
+                        field: 'institute',
+                        title: '学院',
                         sort: true
                     }, {
-                        field: 'canApply',
-                        title: '是否开放申请',
-                        sort: true,
+                        field: 'profession',
+                        title: '专业',
+                        sort: true
+                    }, {
+                        field: 'classNo',
+                        title: '班级',
+                        sort: true
+                    }, {
+                        field: 'phoneNo',
+                        title: '联系方式',
+                        sort: true
+                    }, {
+                        fixed: 'right',
                         width: 150,
-                        templet: function (d) {
-                            return d.canApply == 1 ? '是' : '否';
-                        }
-                    }, {fixed: 'right', width: 150, align: 'center', toolbar: '#barDemo'}
+                        align: 'center',
+                        toolbar: '#barDemo'
+                    }
                     ]
                 ]
             });
@@ -206,181 +218,188 @@
 <div id="form1" style="padding: 20px; display: none;">
     <form class="layui-form" id="addform" lay-filter="create">
         <div class="layui-form-item">
-            <label class="layui-form-label">考试批次</label>
+            <label class="layui-form-label">学号</label>
             <div class="layui-input-inline">
-                <input type="text" name="number" id="examNo" required lay-verify="required" class="layui-input">
+                <input type="text" name="studentId" id="studentId" required lay-verify="required" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">正式考试时间</label>
+            <label class="layui-form-label">姓名</label>
             <div class="layui-input-inline">
-                <input type="text" name="examTime" id="examTime" required lay-verify="required" class="layui-input">
+                <input type="text" name="name" id="name" required lay-verify="required" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-inline">
+                <input type="text" name="gender" id="gender" required lay-verify="required" class="layui-input">
             </div>
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label">选拔考试时间</label>
+            <label class="layui-form-label">证件号码</label>
             <div class="layui-input-inline">
-                <input type="text" name="selectExamTime" id="selectExamTime" required lay-verify="required"
+                <input type="text" name="idNo" id="idNo" required lay-verify="required"
                        class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">选拔考试申请开始时间</label>
+            <label class="layui-form-label">入学年份</label>
             <div class="layui-input-inline">
-                <input type="text" name="appliStartsOn" id="appliStartsOn" required lay-verify="required"
+                <input type="text" name="admissionYear" id="admissionYear" required lay-verify="required"
                        class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">选拔考试申请截止时间</label>
+            <label class="layui-form-label">学院</label>
             <div class="layui-input-inline">
-                <input type="text" name="appliDeadline" id="appliDeadline" required lay-verify="required"
+                <input type="text" name="institute" id="institute" required lay-verify="required"
                        class="layui-input">
             </div>
         </div>
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label">是否开放申请</label>
+            <label class="layui-form-label">专业</label>
             <div class="layui-input-inline">
-                <input type="checkbox" name="canApply" id="canApply"lay-skin="switch" lay-text="ON|OFF" checked>
+                <input type="text" name="profession" id="profession" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">班级</label>
+            <div class="layui-input-inline">
+                <input type="text" name="classNo" id="classNo" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">联系方式</label>
+            <div class="layui-input-inline">
+                <input type="text" name="phoneNo" id="phoneNo" required lay-verify="required"
+                       class="layui-input">
             </div>
         </div>
 
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <button type="submit" class="layui-btn" >提交</button>
+                <button type="submit" class="layui-btn">提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
         </div>
-
     </form>
-
 </div>
 
 
 <div id="form2" style="padding: 20px; display: none;">
     <form class="layui-form" id="modifyform" lay-filter="modify">
         <div class="layui-form-item">
-            <label class="layui-form-label">考试批次</label>
+            <label class="layui-form-label">学号</label>
             <div class="layui-input-inline">
-                <input type="text" name="number" id="examNo2" required lay-verify="required" class="layui-input">
+                <input type="text" name="studentId" id="studentId2" required lay-verify="required" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">正式考试时间</label>
+            <label class="layui-form-label">姓名</label>
             <div class="layui-input-inline">
-                <input type="text" name="examTime" id="examTime2" required lay-verify="required" class="layui-input">
+                <input type="text" name="name" id="name2" required lay-verify="required" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-inline">
+                <input type="text" name="gender" id="gender2" required lay-verify="required" class="layui-input">
             </div>
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label">选拔考试时间</label>
+            <label class="layui-form-label">证件号码</label>
             <div class="layui-input-inline">
-                <input type="text" name="selectExamTime" id="selectExamTime2" required lay-verify="required"
+                <input type="text" name="idNo" id="idNo2" required lay-verify="required"
                        class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">选拔考试申请开始时间</label>
+            <label class="layui-form-label">入学年份</label>
             <div class="layui-input-inline">
-                <input type="text" name="appliStartsOn" id="appliStartsOn2" required lay-verify="required"
+                <input type="text" name="admissionYear" id="admissionYear2" required lay-verify="required"
                        class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">选拔考试申请截止时间</label>
+            <label class="layui-form-label">学院</label>
             <div class="layui-input-inline">
-                <input type="text" name="appliDeadline" id="appliDeadline2" required lay-verify="required"
+                <input type="text" name="institute" id="institute2" required lay-verify="required"
                        class="layui-input">
             </div>
         </div>
 
 
         <div class="layui-form-item">
-            <label class="layui-form-label">是否开放申请</label>
+            <label class="layui-form-label">专业</label>
             <div class="layui-input-inline">
-                <input type="checkbox" name="canApply"  id="canApply2" lay-skin="switch" lay-text="ON|OFF">
+                <input type="text" name="profession" id="profession2" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">班级</label>
+            <div class="layui-input-inline">
+                <input type="text" name="classNo" id="classNo2" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">联系方式</label>
+            <div class="layui-input-inline">
+                <input type="text" name="phoneNo" id="phoneNo2" required lay-verify="required"
+                       class="layui-input">
             </div>
         </div>
 
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <button type="submit" class="layui-btn" >提交</button>
+                <button type="submit" class="layui-btn">提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
         </div>
-        <input type="hidden" name="eid" id="eid2">
 
     </form>
 
 </div>
-
 <script>
     //Demo
-    function useLayDateMultiple(cls) {
-        layui.use('laydate', function () {
-            var laydate = layui.laydate;
-            lay('#' + cls).each(function () {
-                laydate.render({
-                    elem: this,
-                    trigger: 'click'
-                });
-            });
-        });
-    }
-
-    useLayDateMultiple('examTime');
-    useLayDateMultiple('selectExamTime');
-    useLayDateMultiple('appliStartsOn');
-    useLayDateMultiple('appliDeadline');
-
-    useLayDateMultiple('examTime2');
-    useLayDateMultiple('selectExamTime2');
-    useLayDateMultiple('appliStartsOn2');
-    useLayDateMultiple('appliDeadline2');
-
-
-        $('#addform').submit(function () {
-                $.post("/api/json/create_ccf_event", $("#addform").serialize(),
-                    function (response) {
-                        if (response.code == 200) {
-                            layer.close(layer.index);
-                            layer.msg("添加成功");
-                            layui.table.reload('testReload');
-                        } else {
-
-                            layer.msg(response.message);
-                        }
-                    }
-
-                );
-                return false;
-            }
-
-        );
-    $('#modifyform').submit(function () {
-            $.post("/api/json/modify_ccf_event", $("#modifyform").serialize(),
+    $('#addform').submit(function () {
+            $.post("/api/json/add_student", $("#addform").serialize(),
                 function (response) {
                     if (response.code == 200) {
                         layer.close(layer.index);
-                        layer.msg("修改成功");
+                        layer.msg("添加成功");
                         layui.table.reload('testReload');
                     } else {
 
                         layer.msg(response.message);
                     }
                 }
-
             );
             return false;
         }
-
     );
-
-
-
+    $('#modifyform').submit(function () {
+            $.post("/api/json/modify_student", $("#modifyform").serialize(),
+                function (response) {
+                    if (response.code == 200) {
+                        layer.close(layer.index);
+                        layer.msg("修改成功");
+                        layui.table.reload('testReload');
+                    } else {
+                        layer.msg(response.message);
+                    }
+                }
+            );
+            return false;
+        }
+    );
 </script>
 
 
