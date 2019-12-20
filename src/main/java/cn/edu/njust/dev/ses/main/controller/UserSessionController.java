@@ -96,7 +96,7 @@ public class UserSessionController {
         }
         User targetInDatabase = userMapper.selectByPrimaryKey(loggedInAs.getUid());
         if(targetInDatabase == null) return ResultDTO.errorOf(0, "错误，请重新登录");
-        if(!targetInDatabase.getPassword().matches(oldPassword))
+        if(!targetInDatabase.getPassword().equals(oldPassword))
             return ResultDTO.errorOf(0, "旧密码错误。");
         targetInDatabase.setPassword(password);
         userMapper.updateByPrimaryKey(targetInDatabase);
