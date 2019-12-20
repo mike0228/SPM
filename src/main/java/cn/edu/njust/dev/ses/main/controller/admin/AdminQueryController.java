@@ -26,6 +26,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.SQLNonTransientException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -48,6 +49,8 @@ public class AdminQueryController {
     DetailedGradesEntryMapper detailedGradesEntryMapper;
     @Autowired
     FileService fileService;
+    @Autowired
+    SelectRankEntryMapper selectRankEntryMapper;
 
     @ResponseBody
     @RequestMapping(value = "/api/json/create_ccf_event")
@@ -125,10 +128,25 @@ public class AdminQueryController {
         CCFEvent ccfEvent = new CCFEvent();
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); //TODO correspond with front-end
-        Date examTimeD = formatter.parse(examTime);
-        Date selectExamTimeD = formatter.parse(selectExamTime);
-        Date appliDeadlineD = formatter.parse(appliDeadline);
-        Date appliStartsOnD = formatter.parse(appliStartsOn);
+        Date examTimeD = null;
+        Date selectExamTimeD = null;
+        Date appliDeadlineD = null;
+        Date appliStartsOnD = null;
+        try {
+            examTimeD = formatter.parse(examTime);
+            selectExamTimeD = formatter.parse(selectExamTime);
+            appliDeadlineD = formatter.parse(appliDeadline);
+            appliStartsOnD = formatter.parse(appliStartsOn);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return ResultDTO.errorOf(0, "日期格式不正确。");
+        }
+        if(examTimeD.before(selectExamTimeD))
+            return ResultDTO.errorOf(0, "正式考试早于选拔考试时间。");
+        if(selectExamTimeD.before(appliDeadlineD))
+            return ResultDTO.errorOf(0, "选拔考试时间早于申请截止时间。");
+        if(appliDeadlineD.before(appliStartsOnD))
+            return ResultDTO.errorOf(0, "申请截止时间早于开放申请时间。");
 
         ccfEvent.setEid(eid);
         ccfEvent.setExamNo(number);
@@ -415,6 +433,66 @@ public class AdminQueryController {
         RowBounds rowBounds = page != null && limit != null ? new RowBounds(limit * (page - 1), limit) : new RowBounds();
         List<DetailedGradesEntry> gradesEntries = detailedGradesEntryMapper.selectByExampleWithRowbounds(gradesEntryExample, rowBounds);
         return ResultDTO.okOf(gradesEntries, detailedGradesEntryMapper.countByExample(gradesEntryExample));
+    }
+
+    @ResponseBody
+    @RequestMapping("/api/json/obtain_select_exam_rank")
+    public ResultDTO obtainSelectExamRank(HttpSession session, @RequestParam Integer eid,
+                                          @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer limit){
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
+        if(sessionUser == null|| teacherInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        SelectRankEntryExample selectRankEntryExample = new SelectRankEntryExample();
+        selectRankEntryExample.createCriteria().andEidEqualTo(eid);
+        selectRankEntryExample.setOrderByClause("rank ASC");
+        RowBounds rowBounds = page != null && limit != null ? new RowBounds(limit * (page - 1), limit) : new RowBounds();
+        List<SelectRankEntry> selectRankEntries = selectRankEntryMapper.selectByExampleWithRowbounds(selectRankEntryExample, rowBounds);
+        return ResultDTO.okOf(selectRankEntries, selectRankEntryMapper.countByExample(selectRankEntryExample));
+    }
+
+    final static List<String> availableStatus = Arrays.asList("not confirmed", "pending", "auto-approved", "approved", "manually-approved", "failed");
+
+    @ResponseBody
+    @RequestMapping("/api/json/obtain_application")
+    public ResultDTO obtainApplication(HttpSession session, @RequestParam Integer eid, @RequestParam(required = false) List<String> status,
+                                       @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer limit){
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
+        if(sessionUser == null|| teacherInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        ApplicationExample applicationExample = new ApplicationExample();
+        ApplicationExample.Criteria criteria = applicationExample.createCriteria().andEidEqualTo(eid);
+        if(status != null&& !status.isEmpty()){
+            for(String statusItem: status){
+                if(!availableStatus.contains(statusItem)){
+                    return ResultDTO.errorOf(0, "无效的状态代码 "+statusItem+"。");
+                }
+            }
+            criteria.andAppStatusIn(status);
+        }
+        RowBounds rowBounds = page != null && limit != null ? new RowBounds(limit * (page - 1), limit) : new RowBounds();
+        List<Application> applications = applicationMapper.selectByExampleWithRowbounds(applicationExample, rowBounds);
+        return ResultDTO.okOf(applications, applicationMapper.countByExample(applicationExample));
+    }
+
+    @RequestMapping("/api/json/change_application_status")
+    public ResultDTO changeAppStatus(HttpSession session, @RequestParam Integer eid, @RequestParam String status){
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
+        if(sessionUser == null|| teacherInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        Application application = applicationMapper.selectByPrimaryKey(eid);
+        if(application == null)
+            return ResultDTO.errorOf(0, "找不到该申请。");
+        if(!availableStatus.contains(status))
+            return ResultDTO.errorOf(0, "无效的状态。");
+        application.setAppStatus(status);
+        applicationMapper.updateByPrimaryKey(application);
+        return ResultDTO.okOf();
     }
 
     @RequestMapping("/api/grades_proof/{gid}")
