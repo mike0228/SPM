@@ -47,9 +47,15 @@ public class AdminMainController {
     @RequestMapping("/teacher/gradeEvent")
     public String gradeEvent(HttpSession session){ return "teacher/gradeEvent"; }
 
-    @RequestMapping("/teacher/selectEvent")
-    public String selectEvent(HttpSession session){ return "teacher/selectEvent"; }
 
+
+
+    @RequestMapping("/associate/main")
+    public String associateMain(HttpSession session){ return "association_main"; }
+    @RequestMapping("/associate/association_change_filter")
+    public String associateChangeFilter(HttpSession session){ return "association_change_filter"; }
+    @RequestMapping("/associate/association_import_scores")
+    public String associateImportScores(HttpSession session){ return "association_import_scores"; }
 
 
 }

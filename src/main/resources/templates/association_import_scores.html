@@ -21,6 +21,7 @@
     </div>
 
     <table class="layui-table" id="demo" lay-filter="test"></table>
+
     <script type="text/html" id="toolbarDemo">
         <div class="layui-btn-container">
             <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="add">添加</button>
@@ -85,14 +86,11 @@
                     });
                 } else if (layEvent === 'edit') { //编辑
                     //do something
-                    $("#studentId").val(data.studentId);
                     $("#name").val(data.name);
-                    $("#grades").val(data.grades);
-                    $("#gradesProblem1").val(data.gradesProblem1);
-                    $("#gradesProblem2").val(data.gradesProblem2);
-                    $("#gradesProblem3").val(data.gradesProblem3);
-                    $("#gradesProblem4").val(data.gradesProblem4);
-                    $("#gradesProblem5").val(data.gradesProblem5);
+                    $("#studentId").val(data.studentId);
+                    $("#grade").val(data.grade);
+                    $("#idNo").val(data.idNo);
+                    $("#rank").val(data.rank);
 
 
                     layer.open({
@@ -112,7 +110,7 @@
                 toolbar: '#toolbarDemo'
                 //,height: 600
                 ,
-                url: '/api/json/obtain_grades' //数据接口
+                url: '/api/json/import_select_ranks_via_excel' //数据接口
                 , response: {
                     statusName: 'code' //规定数据状态的字段名称，默认：code
                     , statusCode: 200 //规定成功的状态码，默认：0
@@ -129,7 +127,7 @@
                             fixed: true
                         },
                         {
-                        field:'id',
+                        field:'reid',
                         title:'序号',
                         sort: true
                     }, {
@@ -141,15 +139,15 @@
                         title: '学号',
                         sort: true
                     }, {
-                        field: 'grades',
+                        field: 'grade',
                         title: '年级',
                         sort: true
                     }, {
-                        field: 'gradesProblem1',
+                        field: 'idNo',
                         title: '身份证号码',
                         sort: true
                     }, {
-                        field: 'gradesProblem2',
+                        field: 'rank',
                         title: '选拔赛rank',
                         sort: true
                     }, {
