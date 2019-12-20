@@ -104,11 +104,11 @@ final public class AccountManagementService {
                 if(logged_in_as.getType().equals("student")){
                     StudentExample studentExample = new StudentExample();
                     studentExample.createCriteria().andUidEqualTo(logged_in_as.getUid());
-                    session.setAttribute("student_info", studentMapper.selectByExample(studentExample));
+                    session.setAttribute("student_info", studentMapper.selectByExample(studentExample).get(0));
                 }else if(logged_in_as.getType().equals("teacher")){
                     TeacherExample teacherExample = new TeacherExample();
                     teacherExample.createCriteria().andUidEqualTo(logged_in_as.getUid());
-                    session.setAttribute("teacher_info", teacherMapper.selectByExample(teacherExample));
+                    session.setAttribute("teacher_info", teacherMapper.selectByExample(teacherExample).get(0));
                 }
             }
 

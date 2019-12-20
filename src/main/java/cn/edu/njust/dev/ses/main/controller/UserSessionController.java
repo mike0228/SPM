@@ -100,6 +100,7 @@ public class UserSessionController {
             return ResultDTO.errorOf(0, "旧密码错误。");
         targetInDatabase.setPassword(password);
         userMapper.updateByPrimaryKey(targetInDatabase);
+        accountManagementService.updateAllSessionsForUser(targetInDatabase.getUid());
         return ResultDTO.okOf();
     }
 
