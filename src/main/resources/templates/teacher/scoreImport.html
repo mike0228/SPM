@@ -2,296 +2,155 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="/css/layui.css" media="all">
-  <link rel="stylesheet" href="/css/admin.css" media="all">
-  <script src="/layui.js"></script>
-  <script src="/lay/modules/echarts.min.js"></script>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/admin.css" media="all">
+    <script src="/layui.js"></script>
+    <script src="/jquery-3.4.1.js"></script>
 </head>
 
 <style>
-  html {
-    width: 100%;
-    height: 100%;
-  }
+    html {
+        width: 100%;
+        height: 100%;
+    }
 
-  body {
-    width: 100%;
-    height: 100%;
-  }
+    body {
+        width: 100%;
+        height: 100%;
+    }
 </style>
 
 <body>
-  <div class="page">
+<div class="page">
     <div class="little-header">
-      <blockquote class="layui-elem-quote">成绩导入</blockquote>
+        <blockquote class="layui-elem-quote">成绩导入</blockquote>
     </div>
     <div>
-      <button type="button" class="layui-btn" id="test1">
-        <i class="layui-icon">&#xe67c;</i>上传名单
-      </button>
+        <button type="button" class="layui-btn" id="test1">
+            <i class="layui-icon">&#xe67c;</i>上传名单
+        </button>
     </div>
 
 
-
-    <form class="layui-form" action="">
-      <div class="layui-form-item">
-        <label class="layui-form-label">请输入考试批次</label>
-        <div class="layui-input-block">
-          <input type="text" name="title" required  lay-verify="required" placeholder="考试批次(例如: 16)" autocomplete="off" class="layui-input">
+    <form class="layui-form" id="dataUpload">
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: auto">请输入考试批次</label>
+            <div class="layui-input-inline" style="width: 360px">
+                <select  id="eidlist" name="eid" lay-filter="eid" lay-verify="required">
+                </select>
+            </div>
         </div>
-      </div>
-      <input type="hidden" name=""  lay-verify="required" placeholder="考试批次(例如: 16)" autocomplete="off" class="layui-input">
+        <input type="hidden" name="confirmId" id="confirmId">
+        <div class="layui-form-item">
+            <button type="button" class="layui-btn" onclick="dataUpload()">确认上传</button>
+        </div>
     </form>
+
+
     <script>
-      layui.use('upload', function () {
-        var upload = layui.upload;
+        layui.use(['form','layer'], function () {
+            var form = layui.form;
+            var $ =layui.jquery;
+            $.ajax({
+                url: '/api/json/available_events',
+                dataType: 'json',
+                type: 'get',
+                success: function (res) {
+                    $.each(res.data, function (index, item) {
+                        var text="场次:"+item.examNo +"  开始时间:"+ item.examTime;
+                        $('#eidlist').append(new Option(text, item.eid));// 下拉菜单里添加元素
+                    });
+                    layui.form.render("select");
+                }
+            });
+        })
+        function dataUpload() {
+            $.post("/api/json/confirm_grades_import", $("#dataUpload").serialize(),
+                function (res) {
+                if(res.code==200){
+                    layer.msg("上传成功");
+                }else
+                {
+                    layer.msg(res.message);
+                }
+            });
+        }
 
-        //执行实例
-        var uploadInst = upload.render({
-          elem: '#test1' //绑定元素
-          ,
-          url: '/api/json/import_student_via_excel/' //上传接口
-          ,
-          accept: 'file',
-          exts: 'xls|xlsx',
-          done: function (res) {
-            if(res.code==200){
-              layer.msg(res.c, {icon: 6});
-            }
-          },
-          error: function () {
-            //请求异常回调
-          }
-        });
-      });
     </script>
-
 
     <table class="layui-table" id="demo" lay-filter="test" style="display: none;"></table>
 
 
-    <script type="text/html" id="barDemo">
-      <div class="layui-btn-container">
-        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="add">添加</button>
-        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</button>
-        <button class="layui-btn layui-btn-sm " lay-event="edit">编辑</button>
-      </div>
-    </script>
-
-
-
-
-
     <script>
-      layui.use('table', function () {
-        var table = layui.table;
-        var $ = layui.jquery;
-        var active = {
-            reload: function(){
-                var demoReload = $('#demoReload');
 
-                table.reload('testReload', {
-                    where: {
-                        keyword: demoReload.val()
-                    }
-                });
-            }
-        };
-        //监听事件
-        table.on('toolbar(test)', function (obj) {
-          var checkStatus = table.checkStatus(obj.config.id);
-          switch (obj.event) {
-            case 'add':
-              layer.open({
-                title: '添加信息',
-                type: 1,
-                content: $('#form1')
-              })
-              break;
-            case 'delete':
-              layer.msg('删除');
-              break;
-            case 'update':
-              layer.msg('编辑');
-              break;
-          };
-        });
-
-
-        // table.render({
-        //   elem: '#demo',
-        //   toolbar: '#toolbarDemo'
-        //     //,height: 600
-        //     ,
-        //   url: '../json/data.json' //数据接口
-        //     ,
-        //   page: true //开启分页
-        //     ,
-        //   id: 'testReload',
-        //   cols: [
-        //     [ //表头
-        //       {
-        //         checkbox: true,
-        //         fixed: true
-        //       },
-        //       {
-        //         field: 'id',
-        //         title: 'ID',
-        //         width: 80,
-        //         sort: true,
-        //         fixed: 'left'
-        //       }, {
-        //         field: 'username',
-        //         title: '姓名',
-        //         width: 80
-        //       }, {
-        //         field: 'sex',
-        //         title: '性别',
-        //         width: 80,
-        //         sort: true
-        //       }, {
-        //         field: 'city',
-        //         title: '班级',
-        //         width: 80
-        //       }, {
-        //         field: 'sign',
-        //         title: '年级',
-        //         width: 177
-        //       }, {
-        //         field: 'experience',
-        //         title: '成绩',
-        //         width: 80,
-        //         sort: true
-        //       }, {
-        //         field: 'score',
-        //         title: '成绩2',
-        //         width: 80,
-        //         sort: true
-        //       }, {
-        //         field: 'classify',
-        //         title: '成绩3',
-        //         width: 80
-        //       }, {
-        //         field: 'wealth',
-        //         title: '手机号',
-        //         width: 135,
-        //         sort: true
-        //       }, {
-        //         field: 'right',
-        //         title: '操作',
-        //         width: 177,
-        //         toolbar: "#barDemo"
-        //       }
-        //     ]
-        //   ]
-        // });
-
-        $('.demoTable .layui-btn').on('click', function () {
-          var type = $(this).data('type');
-          active[type] ? active[type].call(this) : '';
-        });
-
-        //监听工具条 
-        table.on('tool(test)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
-          var data = obj.data; //获得当前行数据
-          var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
-          var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
-
-          if (layEvent === 'add') { //添加
-            //do somehing
-            layer.open({
-              type: 1,
-              content: $("#form1")
-            })
-          } else if (layEvent === 'del') { //删除
-            layer.confirm('真的删除行么', function (index) {
-              obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
-              layer.close(index);
-              //向服务端发送删除指令
-            });
-          } else if (layEvent === 'edit') { //编辑
-            //do something
-            layer.open({
-              title:'编辑',
-              type: 1,
-              content: $("#form1")
-            })
-            
-          } else if (layEvent === 'LAYTABLE_TIPS') {
-            layer.alert('Hi，头部工具栏扩展的右侧图标。');
-          }
-        });
-
-
-      });
     </script>
-  </div>
+    <script>
+        layui.use(['upload', 'table'], function () {
+            var upload = layui.upload;
+            var $ = layui.jquery;
+            //执行实例
+            var uploadInst = upload.render({
+                elem: '#test1' //绑定元素
+                ,
+                url: '/api/json/import_grades_via_excel/' //上传接口
+                ,
+                accept: 'file',
+                exts: 'xls|xlsx',
+                done: function (res) {
+                    if (res.code == 200) {
+                        layer.msg("解析成功", {icon: 6});
+                       $("#confirmId").val(res.data.id);
+                        layui.table.render({
+                            elem: '#demo',
+                            data: res.data.data,
+                            page: true, //开启分页
+                            id: 'testReload',
+                            cols: [
+                                [ //表头
+                                    {
+                                        field: 'idNo',
+                                        title: '证件号码',
+                                        sort: true
+                                    }, {
+                                    field: 'grades',
+                                    title: '总分',
+                                    sort: true
+                                }, {
+                                    field: 'gradesProblem1',
+                                    title: '第一题',
+                                    sort: true
+                                }, {
+                                    field: 'gradesProblem2',
+                                    title: '第二题',
+                                    sort: true
+                                }, {
+                                    field: 'gradesProblem3',
+                                    title: '第三题',
+                                    sort: true
+                                }, {
+                                    field: 'gradesProblem4',
+                                    title: '第四题',
+                                    sort: true
+                                }, {
+                                    field: 'gradesProblem5',
+                                    title: '第五题',
+                                    sort: true
+                                }
+                                ]
+                            ]
+                        });
 
 
+                    }
+                },
+                error: function () {
+                    //请求异常回调
+                }
+            });
+        });
+    </script>
+</div>
 
 </body>
-
-
-
-<form id="form1" class="layui-form" action="" style="display: none;">
-  <div class="layui-form-item">
-    <label class="layui-form-label">输入框</label>
-    <div class="layui-input-block">
-      <input type="text" name="title" required lay-verify="required" placeholder="请输入标题" autocomplete="off"
-        class="layui-input">
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label class="layui-form-label">密码框</label>
-    <div class="layui-input-inline">
-      <input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off"
-        class="layui-input">
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label class="layui-form-label">选择框</label>
-    <div class="layui-input-block">
-      <select name="city" lay-verify="required">
-        <option value=""></option>
-        <option value="0">北京</option>
-        <option value="1">上海</option>
-        <option value="2">广州</option>
-        <option value="3">深圳</option>
-        <option value="4">杭州</option>
-      </select>
-    </div>
-  </div>
-
-
-  <div class="layui-form-item">
-    <label class="layui-form-label">单选框</label>
-    <div class="layui-input-block">
-      <input type="radio" name="sex" value="男" title="男">
-      <input type="radio" name="sex" value="女" title="女" checked>
-    </div>
-  </div>
-
-  <div class="layui-form-item">
-    <div class="layui-input-block">
-      <button class="layui-btn" lay-submit lay-filter="formDemo">提交</button>
-      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-    </div>
-  </div>
-</form>
-
-<script>
-  //Demo
-  layui.use('form', function () {
-    var form = layui.form;
-
-    //监听提交
-    form.on('submit(formDemo)', function (data) {
-      layer.msg(JSON.stringify(data.field));
-      return false;
-    });
-  });
-</script>
-
-
 </html>

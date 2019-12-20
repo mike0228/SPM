@@ -430,6 +430,7 @@ public class AdminQueryController {
         if(minPoint != null) criteria.andGradesGreaterThanOrEqualTo(minPoint);
         if(maxPoint != null) criteria.andGradesLessThanOrEqualTo(maxPoint);
         if(StringUtils.isNotBlank(isApproved)) criteria.andIsApprovedEqualTo((byte) (isApproved.equals("on") ? 1: 0));
+        else criteria.andIsApprovedEqualTo((byte) 1);
         RowBounds rowBounds = page != null && limit != null ? new RowBounds(limit * (page - 1), limit) : new RowBounds();
         List<DetailedGradesEntry> gradesEntries = detailedGradesEntryMapper.selectByExampleWithRowbounds(gradesEntryExample, rowBounds);
         return ResultDTO.okOf(gradesEntries, detailedGradesEntryMapper.countByExample(gradesEntryExample));

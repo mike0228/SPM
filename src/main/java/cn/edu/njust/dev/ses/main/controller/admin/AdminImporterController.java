@@ -62,7 +62,7 @@ public class AdminImporterController {
 
         tempStorageObject.setId(RandomUtils.nextInt());
         session.setAttribute("last_result_student_import", tempStorageObject);
-        return ResultDTO.okOf(result);
+        return ResultDTO.okOf(tempStorageObject);
     }
 
     @ResponseBody
@@ -98,7 +98,7 @@ public class AdminImporterController {
 
         tempStorageObject.setId(RandomUtils.nextInt());
         session.setAttribute("last_result_grades_import", tempStorageObject);
-        return ResultDTO.okOf(result);
+        return ResultDTO.okOf(tempStorageObject);
     }
 
     @ResponseBody
@@ -135,7 +135,7 @@ public class AdminImporterController {
 
         tempStorageObject.setId(RandomUtils.nextInt());
         session.setAttribute("last_result_select_ranks_import", tempStorageObject);
-        return ResultDTO.okOf(result);
+        return ResultDTO.okOf(tempStorageObject);
     }
 
     @ResponseBody
