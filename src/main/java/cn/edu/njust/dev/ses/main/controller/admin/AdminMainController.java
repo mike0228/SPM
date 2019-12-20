@@ -47,6 +47,9 @@ public class AdminMainController {
     @RequestMapping("/teacher/gradeEvent")
     public String gradeEvent(HttpSession session){ return "teacher/gradeEvent"; }
 
+    @RequestMapping("/teacher/selectEvent")
+    public String selectEvent(HttpSession session){ return "teacher/selectEvent"; }
+
 
 
 }
