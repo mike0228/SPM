@@ -51,133 +51,151 @@
         <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     </script>
-        <script>
-            layui.use('table', function () {
-                var table = layui.table;
-                var $ = layui.jquery;
-                var active = {
-                    reload: function () {
-                        var demoReload = $('#demoReload');
+    <script>
+        layui.use('table', function () {
+            var table = layui.table;
+            var $ = layui.jquery;
+            var active = {
+                reload: function () {
+                    var demoReload = $('#demoReload');
 
-                        table.reload('testReload', {
-                            where: {
-                                keyword: demoReload.val()
-                            }
-                        });
-                    }
-                };
+                    table.reload('testReload', {
+                        where: {
+                            keyword: demoReload.val()
+                        }
+                    });
+                }
+            };
 
-                //监听事件
-                table.on('toolbar(test)', function (obj) {
-                    var checkStatus = table.checkStatus(obj.config.id);
-                    console.log(obj.config.id.tr);
-                    console.log(checkStatus);
-                    if (obj.event == "add") {
-                        layer.open({
-                            title: '添加',
-                            type: 1,
-                            content: $('#form1'),
-                        })
-                    }
-                    ;
-                });
-                //监听工具条
-                table.on('tool(test)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
-                    var data = obj.data; //获得当前行数据
-                    var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
-                    var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
-                    if (layEvent === 'del') { //删除
-                        layer.confirm('确认要删除吗', function (index) {
-                            $.get( "/api/json/delete_ccf_event?eid="+data.eid, {},
-                                function(response){
-                                        if(response.code==200){
-                                            obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
-
-                                            layer.close(index);
-                                            layer.msg("删除成功");
-                                        }else{
-                                            layer.close(index);
-                                            layer.msg(response.message);
-                                        }
-                                });
-                        });
-                    } else if (layEvent === 'edit') { //编辑
-                        //do something
-                        layer.open({
-                            title: '编辑',
-                            type: 1,
-                            content: $("#form1")
-                        })
-
-                    } else if (layEvent === 'LAYTABLE_TIPS') {
-                        layer.alert('Hi，头部工具栏扩展的右侧图标。');
-                    }
-                });
-
-
-                table.render({
-                    elem: '#demo',
-                    toolbar: '#toolbarDemo'
-                    //,height: 600
-                    ,
-                    url: '/api/json/available_events' //数据接口
-                    , response: {
-                        statusName: 'code' //规定数据状态的字段名称，默认：code
-                        , statusCode: 200 //规定成功的状态码，默认：0
-                        , msgName: 'message' //规定状态信息的字段名称，默认：msg
-                        , dataName: 'data' //规定数据列表的字段名称，默认：data
-                    },
-                    page: true //开启分页
-                    ,
-                    id: 'testReload',
-                    cols: [
-                        [ //表头
-                            {
-                                checkbox: true,
-                                fixed: true
-                            },
-                            {
-                                field: 'eid',
-                                title: 'ID',
-                                width: 80,
-                                sort: true,
-                                fixed: 'left'
-                            }, {
-                            field: 'examNo',
-                            title: '正式考试批次',
-                        }, {
-                            field: 'examTime',
-                            title: '正式考试时间',
-                            sort: true
-                        }, {
-                            field: 'selectExamTime',
-                            title: '选拔考试时间',
-                        }, {
-                            field: 'appliStartsOn',
-                            title: '选拔考试申请开始时间',
-                            sort: true
-                        }, {
-                            field: 'appliDeadline',
-                            title: '选拔考试申请截止时间',
-                        }, {
-                            field: 'canApply',
-                            title: '是否开放申请',
-                            width: 150,
-                            templet: function (d) {
-                                return d ? '是' : '否';
-                            }
-                        }, {fixed: 'right', width: 150, align: 'center', toolbar: '#barDemo'}
-                        ]
-                    ]
-                });
-
-                $('.demoTable .layui-btn').on('click', function () {
-                    var type = $(this).data('type');
-                    active[type] ? active[type].call(this) : '';
-                });
-
-
+            //监听事件
+            table.on('toolbar(test)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                console.log(obj.config.id.tr);
+                console.log(checkStatus);
+                if (obj.event == "add") {
+                    layer.open({
+                        title: '添加',
+                        type: 1,
+                        content: $('#form1'),
+                    })
+                }
+                ;
             });
+            //监听工具条
+            table.on('tool(test)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+                console.log(data);
+                if (layEvent === 'del') { //删除
+                    layer.confirm('确认要删除吗', function (index) {
+                        $.get("/api/json/delete_ccf_event?eid=" + data.eid, {},
+                            function (response) {
+                                if (response.code == 200) {
+                                    obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+
+                                    layer.close(index);
+                                    layer.msg("删除成功");
+                                } else {
+                                    layer.close(index);
+                                    layer.msg(response.message);
+                                }
+                            });
+                    });
+                } else if (layEvent === 'edit') { //编辑
+                    //do something
+                    $("#examNo2").val(data.examNo);
+                    $("#examTime2").val(data.examTime);
+                    $("#selectExamTime2").val(data.selectExamTime);
+                    $("#appliStartsOn2").val(data.appliStartsOn);
+                    $("#appliDeadline2").val(data.appliDeadline);
+                    if(data.canApply == 1)
+                        $("#canApply2").attr("checked", "");
+                    else
+                        $("#canApply2").removeAttr("checked");
+                    $("#eid2").val(data.eid);
+                    layui.form.render('checkbox', 'modify');
+
+                    layer.open({
+                        title: '编辑',
+                        type: 1,
+                        content: $("#form2")
+                    })
+
+                } else if (layEvent === 'LAYTABLE_TIPS') {
+                    layer.alert('Hi，头部工具栏扩展的右侧图标。');
+                }
+            });
+
+
+            table.render({
+                elem: '#demo',
+                toolbar: '#toolbarDemo'
+                //,height: 600
+                ,
+                url: '/api/json/available_events' //数据接口
+                , response: {
+                    statusName: 'code' //规定数据状态的字段名称，默认：code
+                    , statusCode: 200 //规定成功的状态码，默认：0
+                    , msgName: 'message' //规定状态信息的字段名称，默认：msg
+                    , dataName: 'data' //规定数据列表的字段名称，默认：data
+                },
+                page: true //开启分页
+                ,
+                id: 'testReload',
+                cols: [
+                    [ //表头
+                        {
+                            checkbox: true,
+                            fixed: true
+                        },
+                        // {
+                        //     field: 'eid',
+                        //     title: 'ID',
+                        //     width: 80,
+                        //     sort: true,
+                        //     fixed: 'left'
+                        // },
+                        {
+                        field: 'examNo',
+                        title: '正式考试批次',
+                        sort: true
+                    }, {
+                        field: 'examTime',
+                        title: '正式考试时间',
+                        sort: true
+                    }, {
+                        field: 'selectExamTime',
+                        title: '选拔考试时间',
+                        sort: true
+                    }, {
+                        field: 'appliStartsOn',
+                        title: '选拔考试申请开始时间',
+                        sort: true
+                    }, {
+                        field: 'appliDeadline',
+                        title: '选拔考试申请截止时间',
+                        sort: true
+                    }, {
+                        field: 'canApply',
+                        title: '是否开放申请',
+                        sort: true,
+                        width: 150,
+                        templet: function (d) {
+                            return d.canApply == 1 ? '是' : '否';
+                        }
+                    }, {fixed: 'right', width: 150, align: 'center', toolbar: '#barDemo'}
+                    ]
+                ]
+            });
+
+            $('.demoTable .layui-btn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+
+        });
     </script>
 </div>
 
@@ -186,7 +204,7 @@
 
 
 <div id="form1" style="padding: 20px; display: none;">
-    <form class="layui-form" id="addform" action="/api/json/create_ccf_event">
+    <form class="layui-form" id="addform" lay-filter="create">
         <div class="layui-form-item">
             <label class="layui-form-label">考试批次</label>
             <div class="layui-input-inline">
@@ -226,13 +244,13 @@
         <div class="layui-form-item">
             <label class="layui-form-label">是否开放申请</label>
             <div class="layui-input-inline">
-                <input type="checkbox" name="canApply" lay-skin="switch" lay-text="ON|OFF" checked>
+                <input type="checkbox" name="canApply" id="canApply"lay-skin="switch" lay-text="ON|OFF" checked>
             </div>
         </div>
 
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <button class="layui-btn" lay-submit lay-filter="formDemo">提交</button>
+                <button type="submit" class="layui-btn" >提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
         </div>
@@ -241,6 +259,64 @@
 
 </div>
 
+
+<div id="form2" style="padding: 20px; display: none;">
+    <form class="layui-form" id="modifyform" lay-filter="modify">
+        <div class="layui-form-item">
+            <label class="layui-form-label">考试批次</label>
+            <div class="layui-input-inline">
+                <input type="text" name="number" id="examNo2" required lay-verify="required" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">正式考试时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="examTime" id="examTime2" required lay-verify="required" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">选拔考试时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="selectExamTime" id="selectExamTime2" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">选拔考试申请开始时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="appliStartsOn" id="appliStartsOn2" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">选拔考试申请截止时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="appliDeadline" id="appliDeadline2" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否开放申请</label>
+            <div class="layui-input-inline">
+                <input type="checkbox" name="canApply"  id="canApply2" lay-skin="switch" lay-text="ON|OFF">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" >提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+        <input type="hidden" name="eid" id="eid2">
+
+    </form>
+
+</div>
+modify_ccf_event
 <script>
     //Demo
     function useLayDateMultiple(cls) {
@@ -259,26 +335,52 @@
     useLayDateMultiple('selectExamTime');
     useLayDateMultiple('appliStartsOn');
     useLayDateMultiple('appliDeadline');
-    // layui.use('form', function () {
-    //     var form = layui.form;
-    //
-    //     //监听提交
-    //     form.on('submit(formDemo)', function (data) {
-    //
-    //         return false;
-    //     });
-    // });
-    $.post("/api/json/create_ccf_event", $("#addform").serialize(),
-        function (response){
-            if(response.code==200){
-                layer.close(layer.index);
-                layer.msg("添加成功");
-            }else{
 
-                layer.msg(response.message);
+    useLayDateMultiple('examTime2');
+    useLayDateMultiple('selectExamTime2');
+    useLayDateMultiple('appliStartsOn2');
+    useLayDateMultiple('appliDeadline2');
+
+
+        $('#addform').submit(function () {
+                $.post("/api/json/create_ccf_event", $("#addform").serialize(),
+                    function (response) {
+                        if (response.code == 200) {
+                            layer.close(layer.index);
+                            layer.msg("添加成功");
+                            layui.table.reload('testReload');
+                        } else {
+
+                            layer.msg(response.message);
+                        }
+                    }
+
+                );
+                return false;
             }
-    }
+
+        );
+    $('#modifyform').submit(function () {
+            $.post("/api/json/modify_ccf_event", $("#modifyform").serialize(),
+                function (response) {
+                    if (response.code == 200) {
+                        layer.close(layer.index);
+                        layer.msg("修改成功");
+                        layui.table.reload('testReload');
+                    } else {
+
+                        layer.msg(response.message);
+                    }
+                }
+
+            );
+            return false;
+        }
+
     );
+
+
+
 </script>
 
 

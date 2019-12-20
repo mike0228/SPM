@@ -71,11 +71,11 @@ public class AccountService {
         if(targetUser.getType().equals("student")){//学生类型，将信息存入student_info
             StudentExample studentExample = new StudentExample();
             studentExample.createCriteria().andUidEqualTo(targetUser.getUid());
-            request.setAttribute("student_info", studentMapper.selectByExample(studentExample));
+            request.setAttribute("student_info", studentMapper.selectByExample(studentExample).get(0));
         }else if(targetUser.getType().equals("teacher")){
             TeacherExample teacherExample = new TeacherExample();
             teacherExample.createCriteria().andUidEqualTo(targetUser.getUid());
-            request.setAttribute("teacher_info", teacherMapper.selectByExample(teacherExample));
+            request.setAttribute("teacher_info", teacherMapper.selectByExample(teacherExample).get(0));
         }
         return true;
     }

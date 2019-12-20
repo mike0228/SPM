@@ -16,7 +16,7 @@ public class IndexController {
             String type = sessionUser.getType();//根据用户类型返回不同的主页面
             if(type.equals("student")) return "redirect:/student/main";
             if(type.equals("associate")) return "redirect:/associate/main";
-            if(type.equals("teacher")) return "redirect:/teacher/main";
+            if(type.equals("teacher")) return "redirect:/teacher/admin";
         }
         return "login";
     }

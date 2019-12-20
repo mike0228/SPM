@@ -36,8 +36,17 @@ final public class AccountManagementService {
             }
         }
         if(token != null){
-            requestSession.getSession().setAttribute("logged_in_as", accountService.getUidByToken(token));
-
+            User targetUser = accountService.getUidByToken(token);
+            requestSession.getSession().setAttribute("logged_in_as", targetUser);
+            if(targetUser.getType().equals("student")){//学生类型，将信息存入student_info
+                StudentExample studentExample = new StudentExample();
+                studentExample.createCriteria().andUidEqualTo(targetUser.getUid());
+                requestSession.getSession().setAttribute("student_info", studentMapper.selectByExample(studentExample).get(0));
+            }else if(targetUser.getType().equals("teacher")){
+                TeacherExample teacherExample = new TeacherExample();
+                teacherExample.createCriteria().andUidEqualTo(targetUser.getUid());
+                requestSession.getSession().setAttribute("teacher_info", teacherMapper.selectByExample(teacherExample).get(0));
+            }
         }
     }
 

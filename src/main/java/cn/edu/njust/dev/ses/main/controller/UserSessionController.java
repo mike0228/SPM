@@ -61,7 +61,7 @@ public class UserSessionController {
                     loginResponseDTO.setNext("/student/main");
                     break;
                 case "teacher":
-                    loginResponseDTO.setNext("/teacher/main");
+                    loginResponseDTO.setNext("/teacher/admin");
                     break;
                 case "associate":
                     loginResponseDTO.setNext("/associate/main");

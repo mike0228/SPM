@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.SQLNonTransientException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -50,7 +53,8 @@ public class AdminQueryController {
                                     @RequestParam String examTime,
                                     @RequestParam String selectExamTime,
                                     @RequestParam String appliDeadline,
-                                    @RequestParam String appliStartsOn) throws ParseException {
+                                    @RequestParam String appliStartsOn,
+                                    @RequestParam(required = false) String canApply) throws ParseException {
 
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
@@ -64,17 +68,21 @@ public class AdminQueryController {
         Date exam_time = formatter.parse(examTime);
         Date select_exam_time = formatter.parse(selectExamTime);
         Date appli_deadline = formatter.parse(appliDeadline);
-        Byte can_apply = 1;
         Date appli_starts_on = formatter.parse(appliStartsOn);
 
         ccfEvent.setExamNo(number);
         ccfEvent.setExamTime(exam_time);
         ccfEvent.setSelectExamTime(select_exam_time);
         ccfEvent.setAppliDeadline(appli_deadline);
-        ccfEvent.setCanApply(can_apply);
+        ccfEvent.setCanApply((byte) (canApply.equals("on")? 1: 0));
         ccfEvent.setAppliStartsOn(appli_starts_on);
 
-        ccfEventMapper.insertSelective(ccfEvent);
+        try {
+            ccfEventMapper.insertSelective(ccfEvent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultDTO.errorOf(0, "创建失败。请检查考试批次是否重复。");
+        }
         return ResultDTO.okOf();
     }
 
