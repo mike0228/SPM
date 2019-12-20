@@ -45,7 +45,6 @@
         <div class="layui-form-item">
             <button type="button" class="layui-btn" onclick="dataUpload()">确认上传</button>
         </div>
-
     </form>
 
 
@@ -69,7 +68,12 @@
         function dataUpload() {
             $.post("/api/json/confirm_grades_import", $("#dataUpload").serialize(),
                 function (res) {
-                    console.log(res);
+                if(res.code==200){
+                    layer.msg("上传成功");
+                }else
+                {
+                    layer.msg(res.message);
+                }
             });
         }
 

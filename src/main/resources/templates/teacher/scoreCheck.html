@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/css/admin.css" media="all">
     <script src="/layui.js"></script>
     <script src="/lay/modules/echarts.min.js"></script>
+    <script src="/jquery-3.4.1.js"></script>
 </head>
 
 <style>
@@ -19,47 +20,33 @@
         width: 100%;
         height: 100%;
     }
+
+    .layui-form-label {
+        float: left;
+        display: block;
+        padding: 9px 15px;
+        width: 90px;
+        font-weight: 400;
+        line-height: 20px;
+        text-align: left;
+    }
 </style>
 
 <body>
 <div class="page">
     <div class="little-header">
-        <blockquote class="layui-elem-quote">成绩审核</blockquote>
+        <blockquote class="layui-elem-quote">Student Event</blockquote>
     </div>
-
 
     <table class="layui-table" id="demo" lay-filter="test"></table>
 
 
+
     <script type="text/html" id="barDemo">
-        <div class="layui-btn-container">
-            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="add">添加</button>
-            <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</button>
-            <button class="layui-btn layui-btn-sm " lay-event="edit">编辑</button>
-        </div>
+        <a class="layui-btn layui-btn-xs" lay-event="approve">通过</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disapprove">拒绝</a>
     </script>
 
-    <script>
-        layui.use('upload', function () {
-            var upload = layui.upload;
-
-            //执行实例
-            var uploadInst = upload.render({
-                elem: '#test1' //绑定元素
-                ,
-                url: '/upload/' //上传接口
-                ,
-                accept: 'file',
-                exts: 'xls|xlsx',
-                done: function (res) {
-                    //上传完毕回调
-                },
-                error: function () {
-                    //请求异常回调
-                }
-            });
-        });
-    </script>
 
 
     <script>
@@ -67,7 +54,7 @@
             var table = layui.table;
             var $ = layui.jquery;
             var active = {
-                reload: function(){
+                reload: function () {
                     var demoReload = $('#demoReload');
 
                     table.reload('testReload', {
@@ -77,24 +64,41 @@
                     });
                 }
             };
-            //监听事件
-            table.on('toolbar(test)', function (obj) {
-                var checkStatus = table.checkStatus(obj.config.id);
-                switch (obj.event) {
-                    case 'add':
-                        layer.open({
-                            title: '添加信息',
-                            type: 1,
-                            content: $('#form1')
-                        })
-                        break;
-                    case 'delete':
-                        layer.msg('删除');
-                        break;
-                    case 'update':
-                        layer.msg('编辑');
-                        break;
-                };
+
+            //监听工具条
+            table.on('tool(test)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+                console.log(data);
+                if (layEvent === 'disapprove') { //拒绝
+                    layer.confirm('确认要拒绝吗', function (index) {
+                        $.get("/api/json/disapprove_grades_entry?gid=" + data.gid, {},
+                            function (response) {
+                                if (response.code == 200) {
+                                    layui.table.reload('testReload');
+                                    layer.msg("拒绝成功");
+                                } else {
+                                    layer.msg(response.message);
+                                }
+                            });
+                    });
+                } else if (layEvent === 'approve') { //审核
+                    layer.confirm('确认要通过吗', function (index) {
+                        $.get("/api/json/approve_grades_entry?gid=" + data.gid, {},
+                            function (response) {
+                                if (response.code == 200) {
+                                    layui.table.reload('testReload');
+                                    layer.msg("通过成功");
+                                } else {
+                                    layer.msg(response.message);
+                                }
+                            });
+                    });
+
+                } else if (layEvent === 'LAYTABLE_TIPS') {
+                    layer.alert('Hi，头部工具栏扩展的右侧图标。');
+                }
             });
 
 
@@ -103,8 +107,13 @@
                 toolbar: '#toolbarDemo'
                 //,height: 600
                 ,
-                url: '../json/data.json' //数据接口
-                ,
+                url: '/api/json/obtain_grades?isApproved=off' //数据接口
+                , response: {
+                    statusName: 'code' //规定数据状态的字段名称，默认：code
+                    , statusCode: 200 //规定成功的状态码，默认：0
+                    , msgName: 'message' //规定状态信息的字段名称，默认：msg
+                    , dataName: 'data' //规定数据列表的字段名称，默认：data
+                },
                 page: true //开启分页
                 ,
                 id: 'testReload',
@@ -113,54 +122,64 @@
                         {
                             checkbox: true,
                             fixed: true
-                        },
+                        },{
+                        field: 'eid',
+                        title: '考试批次',
+                        sort: true
+                    },
                         {
-                            field: 'id',
-                            title: 'ID',
-                            width: 80,
-                            sort: true,
-                            fixed: 'left'
+                            field: 'studentId',
+                            title: '学号',
+                            sort: true
                         }, {
-                        field: 'username',
+                        field: 'name',
                         title: '姓名',
-                        width: 80
-                    }, {
-                        field: 'sex',
-                        title: '性别',
-                        width: 80,
+                        sort: true
+                    },{
+                        field: 'idNo',
+                        title: '身份证号',
                         sort: true
                     }, {
-                        field: 'city',
-                        title: '班级',
-                        width: 80
-                    }, {
-                        field: 'sign',
-                        title: '年级',
-                        width: 177
-                    }, {
-                        field: 'experience',
-                        title: '成绩',
-                        width: 80,
+                        field: 'grades',
+                        title: '总分',
                         sort: true
                     }, {
-                        field: 'score',
-                        title: '成绩2',
-                        width: 80,
+                        field: 'gradesProblem1',
+                        title: '第一题',
                         sort: true
                     }, {
-                        field: 'classify',
-                        title: '成绩3',
-                        width: 80
-                    }, {
-                        field: 'wealth',
-                        title: '手机号',
-                        width: 135,
+                        field: 'gradesProblem2',
+                        title: '第二题',
                         sort: true
                     }, {
-                        field: 'right',
-                        title: '操作',
-                        width: 177,
-                        toolbar: "#barDemo"
+                        field: 'gradesProblem3',
+                        title: '第三题',
+                        sort: true
+                    }, {
+                        field: 'gradesProblem4',
+                        title: '第四题',
+                        sort: true
+                    }, {
+                        field: 'gradesProblem5',
+                        title: '第五题',
+                        sort: true
+                    }, {
+                        field: 'isApproved',
+                        title: '审核状态',
+                        sort: true,
+                        templet: function(d){
+                            return d.isApproved ? "通过":"待审核";
+                        }
+                    }, {
+                        title: '凭证',
+                        templet: function(d){
+                            return  '<a class="layui-btn layui-btn-xs" onclick="getproof(' + d.gid +  ')">查看凭证</a>';
+                        }
+                    },  {
+                        fixed: 'right',
+                        width: 150,
+                        align: 'center',
+                        toolbar: '#barDemo'
                     }
                     ]
                 ]
@@ -171,109 +190,206 @@
                 active[type] ? active[type].call(this) : '';
             });
 
-            //监听工具条
-            table.on('tool(test)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
-                var data = obj.data; //获得当前行数据
-                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
-                var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
-
-                if (layEvent === 'add') { //添加
-                    //do somehing
-                    layer.open({
-                        type: 1,
-                        content: $("#form1")
-                    })
-                } else if (layEvent === 'del') { //删除
-                    layer.confirm('真的删除行么', function (index) {
-                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
-                        layer.close(index);
-                        //向服务端发送删除指令
-                    });
-                } else if (layEvent === 'edit') { //编辑
-                    //do something
-                    layer.open({
-                        title:'编辑',
-                        type: 1,
-                        content: $("#form1")
-                    })
-
-                } else if (layEvent === 'LAYTABLE_TIPS') {
-                    layer.alert('Hi，头部工具栏扩展的右侧图标。');
-                }
-            });
-
 
         });
+
+        function getproof(gid) {
+            $.get("/api/grades_proof/"+gid);
+        }
     </script>
 </div>
-
 
 
 </body>
 
 
+<div id="form1" style="padding: 20px; display: none;">
+    <form class="layui-form" id="addform" lay-filter="create">
+        <div class="layui-form-item">
+            <label class="layui-form-label">考试批次</label>
+            <div class="layui-input-inline">
+                <input type="text" name="eid" id="eid" required lay-verify="required" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">学号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="studentId" id="studentId" required lay-verify="required" class="layui-input">
+            </div>
+        </div>
+        <!--        <div class="layui-form-item">-->
+        <!--            <label class="layui-form-label">姓名</label>-->
+        <!--            <div class="layui-input-inline">-->
+        <!--                <input type="text" name="name" id="name" required lay-verify="required" class="layui-input">-->
+        <!--            </div>-->
+        <!--        </div>-->
+        <div class="layui-form-item">
+            <label class="layui-form-label">总分</label>
+            <div class="layui-input-inline">
+                <input type="text" name="grades" id="grade" required lay-verify="required" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">第一题</label>
+            <div class="layui-input-inline">
+                <input type="text" name="gradesProblem1" id="gradesProblem1" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">第二题</label>
+            <div class="layui-input-inline">
+                <input type="text" name="gradesProblem2" id="gradesProblem2" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">第三题</label>
+            <div class="layui-input-inline">
+                <input type="text" name="gradesProblem3" id="gradesProblem3" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
 
 
+        <div class="layui-form-item">
+            <label class="layui-form-label">第四题</label>
+            <div class="layui-input-inline">
+                <input type="text" name="gradesProblem4" id="gradesProblem4" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">第五题</label>
+            <div class="layui-input-inline">
+                <input type="text" name="gradesProblem5" id="gradesProblem5" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">审核状态</label>
+            <div class="layui-input-inline">
+                <input type="text" name="isApprove" id="isApprove" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn">提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<div id="form2" style="padding: 20px; display: none;">
+    <form class="layui-form" id="modifyform" lay-filter="modify">
+        <div class="layui-form-item">
+            <label class="layui-form-label">考试批次</label>
+            <div class="layui-input-inline">
+                <input type="text" name="eid" id="eid2" required lay-verify="required" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">学号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="studentId" id="studentId2" required lay-verify="required" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">总分</label>
+            <div class="layui-input-inline">
+                <input type="text" name="grades" id="grades2" required lay-verify="required" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">第一题</label>
+            <div class="layui-input-inline">
+                <input type="text" name="gradesProblem1" id="gradesProblem12" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">第二题</label>
+            <div class="layui-input-inline">
+                <input type="text" name="gradesProblem2" id="gradesProblem22" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">第三题</label>
+            <div class="layui-input-inline">
+                <input type="text" name="gradesProblem3" id="gradesProblem32" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">第四题</label>
+            <div class="layui-input-inline">
+                <input type="text" name="gradesProblem4" id="gradesProblem42" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">第五题</label>
+            <div class="layui-input-inline">
+                <input type="text" name="gradesProblem5" id="gradesProblem52" required lay-verify="required"
+                       class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn">提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+        <input type="hidden" name="gid" id="gid">
+    </form>
+
+</div>
 <script>
     //Demo
-    layui.use('form', function () {
-        var form = layui.form;
+    $('#addform').submit(function () {
+            $.post("/api/json/add_grades_entry", $("#addform").serialize(),
+                function (response) {
+                    if (response.code == 200) {
+                        layer.close(layer.index);
+                        layer.msg("添加成功");
+                        layui.table.reload('testReload');
+                    } else {
 
-        //监听提交
-        form.on('submit(formDemo)', function (data) {
-            layer.msg(JSON.stringify(data.field));
+                        layer.msg(response.message);
+                    }
+                }
+            );
             return false;
-        });
-    });
+        }
+    );
+    $('#modifyform').submit(function () {
+            $.post("/api/json/modify_grades_entry", $("#modifyform").serialize(),
+                function (response) {
+                    if (response.code == 200) {
+                        layer.close(layer.index);
+                        layer.msg("修改成功");
+                        layui.table.reload('testReload');
+                    } else {
+                        layer.msg(response.message);
+                    }
+                }
+            );
+            return false;
+        }
+    );
 </script>
 
 
 </html>
-
-
-
-<form id="form1" class="layui-form" action="" style="display: none;">
-    <div class="layui-form-item">
-        <label class="layui-form-label">输入框</label>
-        <div class="layui-input-block">
-            <input type="text" name="title" required lay-verify="required" placeholder="请输入标题" autocomplete="off"
-                   class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">密码框</label>
-        <div class="layui-input-inline">
-            <input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off"
-                   class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">选择框</label>
-        <div class="layui-input-block">
-            <select name="city" lay-verify="required">
-                <option value=""></option>
-                <option value="0">北京</option>
-                <option value="1">上海</option>
-                <option value="2">广州</option>
-                <option value="3">深圳</option>
-                <option value="4">杭州</option>
-            </select>
-        </div>
-    </div>
-
-
-    <div class="layui-form-item">
-        <label class="layui-form-label">单选框</label>
-        <div class="layui-input-block">
-            <input type="radio" name="sex" value="男" title="男">
-            <input type="radio" name="sex" value="女" title="女" checked>
-        </div>
-    </div>
-
-    <div class="layui-form-item">
-        <div class="layui-input-block">
-            <button class="layui-btn" lay-submit lay-filter="formDemo">提交</button>
-            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-        </div>
-    </div>
-</form>
