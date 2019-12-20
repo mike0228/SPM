@@ -17,6 +17,6 @@ public class SelectRankEntryDTO  extends GenericDTO {
     @ExcelField("身份证号码")
     private String idNo;
     @ExcelField("选拔赛rank")
-    private Integer rank;
+    private Integer rankNo;
     private Integer eid;//导入的时候填写
 }
