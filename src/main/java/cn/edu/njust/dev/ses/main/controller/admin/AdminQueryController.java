@@ -204,7 +204,7 @@ public class AdminQueryController {
                                     @RequestParam Integer gradesProblem3,
                                     @RequestParam Integer gradesProblem4,
                                     @RequestParam Integer gradesProblem5,
-                                    @RequestParam String studentID){
+                                    @RequestParam String studentId){
 
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
@@ -216,7 +216,7 @@ public class AdminQueryController {
         gradesEntry.setIsApproved(true);
         gradesEntry.setEid(eid);
         gradesEntry.setGrades(grades);
-        gradesEntry.setStudentId(studentID);
+        gradesEntry.setStudentId(studentId);
         gradesEntry.setGradesProblem1(gradesProblem1);
         gradesEntry.setGradesProblem2(gradesProblem2);
         gradesEntry.setGradesProblem3(gradesProblem3);
@@ -230,29 +230,45 @@ public class AdminQueryController {
     @ResponseBody
     @RequestMapping("/api/json/modify_grades_entry")
     public ResultDTO modifyGradesEntry(HttpSession session,
-//                                  @RequestParam Integer eid,
-                                    @RequestParam Integer gid,
-                                    @RequestParam(required = false) Integer grades,
-                                    @RequestParam(required = false) Integer gradesProblem1,
-                                    @RequestParam(required = false) Integer gradesProblem2,
-                                    @RequestParam(required = false) Integer gradesProblem3,
-                                    @RequestParam(required = false) Integer gradesProblem4,
-                                    @RequestParam(required = false) Integer gradesProblem5){
+                                       @RequestParam(required = false) Integer eid,
+                                        @RequestParam Integer gid,
+                                        @RequestParam(required = false) Integer grades,
+                                        @RequestParam(required = false) Integer gradesProblem1,
+                                        @RequestParam(required = false) Integer gradesProblem2,
+                                        @RequestParam(required = false) Integer gradesProblem3,
+                                        @RequestParam(required = false) Integer gradesProblem4,
+                                        @RequestParam(required = false) Integer gradesProblem5){
         //TODO 修改成绩项
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
         if(sessionUser == null|| teacherInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
-        GradesEntry gradesEntry=gradesEntryMapper.selectByPrimaryKey(gid);
+        GradesEntry gradesEntry = new GradesEntry();
         gradesEntry.setGrades(grades);
+        gradesEntry.setEid(eid);
+        gradesEntry.setGid(gid);
         gradesEntry.setGradesProblem1(gradesProblem1);
         gradesEntry.setGradesProblem2(gradesProblem2);
         gradesEntry.setGradesProblem3(gradesProblem3);
         gradesEntry.setGradesProblem4(gradesProblem4);
         gradesEntry.setGradesProblem5(gradesProblem5);
-        int items=gradesEntryMapper.insertSelective(gradesEntry);
-        return ResultDTO.okOf();
+        int items = gradesEntryMapper.updateByPrimaryKeySelective(gradesEntry);
+        return items > 0 ?  ResultDTO.okOf():ResultDTO.errorOf(0, "找不到要修改的记录");
+    }
+
+    @ResponseBody
+    @RequestMapping("/api/json/delete_grades_entry")
+    public ResultDTO deleteGradesEntry(HttpSession session, @RequestParam List<Integer> gid){
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
+        if(sessionUser == null|| teacherInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        GradesEntryExample gradesEntryExample = new GradesEntryExample();
+        gradesEntryExample.createCriteria().andGidIn(gid);
+
+        return gradesEntryMapper.deleteByExample(gradesEntryExample) > 0? ResultDTO.okOf(): ResultDTO.errorOf(0, "找不到要删除的记录");
     }
 
     @ResponseBody
