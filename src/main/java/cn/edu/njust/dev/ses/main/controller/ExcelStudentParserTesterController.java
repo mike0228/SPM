@@ -43,7 +43,9 @@ public class ExcelStudentParserTesterController {
     @ResponseBody
     @GetMapping("/test/test-mapper")
     public List<DistributionShowcaseDTO> test3(){
-        return gradesEntryAdvancedMapper.getGradesDistributionByExample(new DetailedGradesEntryExample());
+        DetailedGradesEntryExample example = new DetailedGradesEntryExample();
+        example.createCriteria().andIdNoEqualTo("452624199805120035");
+        return gradesEntryAdvancedMapper.getGradesDistributionByExample(example);
     }
     @ResponseBody
     @GetMapping("/test/test-mapper2")
