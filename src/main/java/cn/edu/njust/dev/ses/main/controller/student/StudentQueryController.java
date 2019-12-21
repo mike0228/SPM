@@ -44,6 +44,22 @@ public class StudentQueryController {
     FileService fileService;
 
     @ResponseBody
+    @RequestMapping("/api/json/all_info")
+    public ResultDTO getStudentAllInfo(HttpSession session){//获取学生所有个人信息
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Student studentInfo = (Student) session.getAttribute("student_info");
+        if(sessionUser == null|| studentInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        StudentExample studentExample=new StudentExample();
+        studentExample.createCriteria().andUidEqualTo(sessionUser.getUid());
+        List<Student> result=studentMapper.selectByExample(studentExample);
+
+        return ResultDTO.okOf(result);
+    }
+
+
+    @ResponseBody
     @RequestMapping("/api/json/all_apps")
     public ResultDTO getAllApplication(HttpSession session){
         User sessionUser = (User) session.getAttribute("logged_in_as");
