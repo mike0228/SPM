@@ -99,7 +99,7 @@ public class AdminDataAnalysisApiController {
         }
         DetailedGradesEntryExample detailedGradesEntryExample = new DetailedGradesEntryExample();
         DetailedGradesEntryExample.Criteria criteria = detailedGradesEntryExample.createCriteria();
-        if(!eids.isEmpty()) criteria.andEidIn(eids);
+        if(eids != null && !eids.isEmpty()) criteria.andEidIn(eids);
         if(StringUtils.isNotBlank(earlierThan)){
             Date date;
             try {
@@ -119,7 +119,7 @@ public class AdminDataAnalysisApiController {
             criteria.andExamTimeLessThanOrEqualTo(date);
         }
         if(inInstitutes != null && !inInstitutes.isEmpty()) criteria.andInstituteIn(inInstitutes);
-        if(inInstitutes != null && !inProfessions.isEmpty()) criteria.andProfessionIn(inProfessions);
+        if(inProfessions != null && !inProfessions.isEmpty()) criteria.andProfessionIn(inProfessions);
 
         List<DistributionShowcaseDTO> distributionShowcaseDTOS = gradesEntryAdvancedMapper.getGradesDistributionByExample(detailedGradesEntryExample);
         return ResultDTO.okOf(distributionShowcaseDTOS);

@@ -60,6 +60,7 @@ public class AdminMainController {
     public String associateChangeFilter(HttpSession session){ return "association_change_filter"; }
     @RequestMapping("/associate/association_import_scores")
     public String associateImportScores(HttpSession session){ return "association_import_scores"; }
-
+    @RequestMapping("/associate/association_change_password")
+    public String associateChangePassword(HttpSession session){ return "association_change_password"; }
 
 }
