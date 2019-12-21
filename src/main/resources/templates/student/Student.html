@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>学生页面</title>
+    <link rel="stylesheet" href="/css/layui.css">
+    <script src="/layui.js"></script>
+    <script src="/jquery-3.4.1.js"></script>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">CCF公费报名系统</div>
+
+        <ul class="layui-nav layui-layout-right" lay-filter="user">
+            <li class="layui-nav-item">
+                <a href="javascript:">
+                    <img src="images/student/njust.jpg" class="layui-nav-img">
+                    学生
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a id="changePassword" >修改密码</a></dd>
+
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="/api/logout">注销</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a>成绩查询</a>
+                    <dl class="layui-nav-child">
+                        <dd><a id="CCFscore" >CCF认证成绩</a></dd>
+                        <dd><a id="SelectionScore" >公费选拔成绩</a></dd>
+
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a>公费申请</a>
+                    <dl class="layui-nav-child">
+                        <dd><a id="SubApplication" >提交申请</a></dd>
+                        <dd><a id="SeeApplication" >查看记录</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a>个人信息</a>
+                    <dl class="layui-nav-child">
+                        <dd><a id="ChangeImformation" >修改个人信息</a></dd>
+                        <dd><a id="SubScore" >提交CCF成绩</a></dd>
+                    </dl>
+
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <iframe id="childPage" style="width: 100%;height:99%;" frameboder="0" scrollong="no"
+                src="ChangeImformation"></iframe>
+
+
+        <div class="layui-footer">
+            软件项目管理第7组
+        </div>
+    </div>
+</div>
+    <script src="/layui.js"></script>
+    <script>
+        // JavaScript代码区域
+        layui.use('element', function () {
+            var $ = layui.jquery
+                , element = layui.element;
+            element.on('nav(test)', function (elem) {
+                console.log(elem);
+                if(elem.attr("id")!=null){
+                    var url = elem.attr("id");
+                    $("#childPage").attr("src", url);
+                }
+            });
+        });
+
+        layui.use('element', function () {
+            var $ = layui.jquery
+                , element = layui.element;
+            element.on('nav(user)', function (elem) {
+                console.log(elem);
+                if(elem.attr("id")!=null){
+                    var url = elem.attr("id");
+                    $("#childPage").attr("src", url);
+                }
+            });
+        });
+
+
+    </script>
+</body>
+</html>
