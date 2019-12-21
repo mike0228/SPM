@@ -38,7 +38,7 @@ public class AdminDataAnalysisApiController {
     @ResponseBody
     @RequestMapping("/api/json/stats/overall_stats")
     public ResultDTO obtainOverallStats(HttpSession session,
-                                        @RequestParam(required = false) List<Integer> eids,
+                                        @RequestParam(required = false) List<Integer> eid,
                                         @RequestParam(required = false) String laterThan,
                                         @RequestParam(required = false) String earlierThan,
                                         @RequestParam(required = false) Integer maxGrades,
@@ -53,7 +53,7 @@ public class AdminDataAnalysisApiController {
         }
         DetailedGradesEntryExample detailedGradesEntryExample = new DetailedGradesEntryExample();
         DetailedGradesEntryExample.Criteria criteria = detailedGradesEntryExample.createCriteria();
-        if(!eids.isEmpty()) criteria.andEidIn(eids);
+        if(eid != null && !eid.isEmpty()) criteria.andEidIn(eid);
         if(StringUtils.isNotBlank(earlierThan)){
             Date date;
             try {
@@ -76,8 +76,8 @@ public class AdminDataAnalysisApiController {
         }
         if(maxGrades != null) criteria.andGradesLessThan(maxGrades);
         if(minGrades != null) criteria.andGradesGreaterThan(minGrades);
-        if(!inInstitutes.isEmpty()) criteria.andInstituteIn(inInstitutes);
-        if(!inProfessions.isEmpty()) criteria.andProfessionIn(inProfessions);
+        if(inInstitutes != null && !inInstitutes.isEmpty()) criteria.andInstituteIn(inInstitutes);
+        if(inProfessions != null && !inProfessions.isEmpty()) criteria.andProfessionIn(inProfessions);
 
         List<StatsDTO> statsDTOS = gradesEntryAdvancedMapper.countByDetailedExampleWithGroupByCCFEvent(detailedGradesEntryExample);
         return ResultDTO.okOf(statsDTOS);
@@ -118,8 +118,8 @@ public class AdminDataAnalysisApiController {
             }
             criteria.andExamTimeLessThanOrEqualTo(date);
         }
-        if(!inInstitutes.isEmpty()) criteria.andInstituteIn(inInstitutes);
-        if(!inProfessions.isEmpty()) criteria.andProfessionIn(inProfessions);
+        if(inInstitutes != null && !inInstitutes.isEmpty()) criteria.andInstituteIn(inInstitutes);
+        if(inInstitutes != null && !inProfessions.isEmpty()) criteria.andProfessionIn(inProfessions);
 
         List<DistributionShowcaseDTO> distributionShowcaseDTOS = gradesEntryAdvancedMapper.getGradesDistributionByExample(detailedGradesEntryExample);
         return ResultDTO.okOf(distributionShowcaseDTOS);
