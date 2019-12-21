@@ -169,7 +169,7 @@ public class ExcelUniversalParser<E extends GenericDTO> {
                                     }
                                 } else if(cell.getCellTypeEnum() == CellType.STRING || cell.getCellTypeEnum() == CellType.BLANK) {
                                     if(cell.getCellTypeEnum() == CellType.BLANK|| StringUtils.isEmpty(cell.getStringCellValue())){
-                                        originalString = "0.0";
+                                        originalString = "0";
                                     }
                                     try {
                                         if(propertyType.isAssignableFrom(Long.class)) {

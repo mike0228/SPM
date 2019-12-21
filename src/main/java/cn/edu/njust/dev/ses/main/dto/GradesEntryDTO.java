@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 @Data
 public class GradesEntryDTO extends GenericDTO {
     private Integer gid;
-    @ExcelField("认证总分")
+    @ExcelField("认证成绩")
     private Integer grades;
     private Integer eid;
     private String studentId;
