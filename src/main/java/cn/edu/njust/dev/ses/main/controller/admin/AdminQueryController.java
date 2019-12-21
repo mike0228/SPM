@@ -3,6 +3,7 @@ package cn.edu.njust.dev.ses.main.controller.admin;
 import cn.edu.njust.dev.ses.main.dto.ResultDTO;
 import cn.edu.njust.dev.ses.main.mapper.*;
 import cn.edu.njust.dev.ses.main.model.*;
+import cn.edu.njust.dev.ses.main.service.AccountManagementService;
 import cn.edu.njust.dev.ses.main.service.FileService;
 import com.aliyun.oss.OSSException;
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +52,8 @@ public class AdminQueryController {
     FileService fileService;
     @Autowired
     SelectRankEntryMapper selectRankEntryMapper;
+    @Autowired
+    AccountManagementService accountManagementService;
 
     @ResponseBody
     @RequestMapping(value = "/api/json/create_ccf_event")
@@ -80,7 +83,7 @@ public class AdminQueryController {
         ccfEvent.setExamTime(exam_time);
         ccfEvent.setSelectExamTime(select_exam_time);
         ccfEvent.setAppliDeadline(appli_deadline);
-        ccfEvent.setCanApply((byte) (canApply.equals("on")? 1: 0));
+        ccfEvent.setCanApply((byte) (canApply != null && canApply.equals("on")? 1: 0));
         ccfEvent.setAppliStartsOn(appli_starts_on);
 
         try {
@@ -400,6 +403,7 @@ public class AdminQueryController {
                 Integer tmpuid = item1.getUid();
                 if (tmpuid != null){
                     userMapper.deleteByPrimaryKey(tmpuid);
+                    accountManagementService.logoutUserFromAllSessions(tmpuid);
                 }
             }
         }

@@ -23,6 +23,7 @@
         <javaModelGenerator targetPackage="cn.edu.njust.dev.ses.main.model" targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
+            <property name="constructorBased" value="true"/>
         </javaModelGenerator>
 
         <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
