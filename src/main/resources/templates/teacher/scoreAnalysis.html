@@ -51,8 +51,7 @@
             <div id="container" style="height: 100%"></div>
         </div>
         <script>
-            var dom = document.getElementById("container");
-            var myChart = echarts.init(dom);
+
             var app = {};
             option = null;
             /*option = {
@@ -86,6 +85,8 @@
             };*/
 
             $.get('/api/json/stats/grades_value_distribution').done(function (data) {
+                var dom = document.getElementById("container");
+                var myChart = echarts.init(dom);
                 myChart.setOption({
                     title: {
                         text: '成绩分布图',
@@ -116,9 +117,7 @@
                     }]
                 });
             });
-            if (option && typeof option === "object") {
-                myChart.setOption(option, true);
-            }
+
         </script>
         </div>
     </div>
