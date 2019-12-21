@@ -88,7 +88,7 @@
                         toolbar: '#toolbarDemo'
                         //,height: 600
                         ,
-                        data: res.data //数据接口
+                        data: res.data.data //数据接口
                         , response: {
                             statusName: 'code' //规定数据状态的字段名称，默认：code
                             , statusCode: 200 //规定成功的状态码，默认：0
@@ -142,7 +142,6 @@
     $("#confirmButton").click(function() {
             var confirmId=$("#confirmId").val();
             var eid=$("#eid").val();
-            alert(confirmId)
         $.ajax({
             url:"/api/json/confirm_rank_import",
             type:"post",
@@ -153,7 +152,7 @@
                 alert("上传成功");
             },
             error: function () {
-                alert("上传失败"+confirmId+eid);
+                alert("上传失败");
             }
         })
     });

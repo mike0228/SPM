@@ -41,11 +41,15 @@ public class AdminMainController {
         return "teacher/ccfEvent";
     }
     @RequestMapping("/teacher/studentEvent")
-    public String studentEvent(HttpSession session){
-        return "teacher/studentEvent";
-    }
+    public String studentEvent(HttpSession session){ return "teacher/studentEvent"; }
     @RequestMapping("/teacher/gradeEvent")
     public String gradeEvent(HttpSession session){ return "teacher/gradeEvent"; }
+    @RequestMapping("/teacher/scoreAnalysis")
+    public String scoreAnalysis(HttpSession session){ return "teacher/scoreAnalysis"; }
+    @RequestMapping("/teacher/chart")
+    public String chart(HttpSession session){ return "teacher/chart"; }
+    @RequestMapping("/teacher/pan")
+    public String pan(HttpSession session){ return "teacher/pan"; }
 
 
 
