@@ -33,6 +33,8 @@ public class StudentQueryController {
     @Autowired
     ApplicationMapper applicationMapper;
     @Autowired
+    DetailedApplicationMapper detailedApplicationMapper;
+    @Autowired
     GradesEntryMapper gradesEntryMapper;
     @Autowired
     SelectRankEntryMapper selectRankEntryMapper;
@@ -67,9 +69,9 @@ public class StudentQueryController {
         if(sessionUser == null|| studentInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
-        ApplicationExample applicationExample = new ApplicationExample();
-        applicationExample.createCriteria().andUidEqualTo(sessionUser.getUid());
-        List<Application> result = applicationMapper.selectByExample(applicationExample);
+        DetailedApplicationExample detailedApplicationExample = new DetailedApplicationExample();
+        detailedApplicationExample.createCriteria().andUidEqualTo(sessionUser.getUid());
+        List<DetailedApplication> result = detailedApplicationMapper.selectByExample(detailedApplicationExample);
 
         return ResultDTO.okOf(result);
     }

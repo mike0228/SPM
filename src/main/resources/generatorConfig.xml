@@ -67,6 +67,10 @@
                enableInsert="false" enableSelectByPrimaryKey="false" enableUpdateByPrimaryKey="false"
                enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
                enableUpdateByExample="false"/>
+        <table tableName="detailed_application" domainObjectName="DetailedApplication"
+               enableInsert="false" enableSelectByPrimaryKey="false" enableUpdateByPrimaryKey="false"
+               enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
+               enableUpdateByExample="false"/>
 
     </context>
 </generatorConfiguration>
