@@ -138,7 +138,7 @@ public class AdminDataAnalysisApiController {
 
     @ResponseBody
     @RequestMapping("/api/json/all_institutes")
-    public ResultDTO obtrainAllAvailableInstitutes(HttpSession session){
+    public ResultDTO obtainAllAvailableInstitutes(HttpSession session){
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
         if(sessionUser == null|| teacherInfo == null){
