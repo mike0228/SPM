@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DistributionShowcaseDTO {
-    private String item;
-    private Integer count;
+    private String name;
+    private Integer value;
 }
