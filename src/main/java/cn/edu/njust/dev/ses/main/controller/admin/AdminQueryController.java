@@ -51,6 +51,8 @@ public class AdminQueryController {
     FileService fileService;
     @Autowired
     SelectRankEntryMapper selectRankEntryMapper;
+    @Autowired
+    GlobalParameterMapper globalParameterMapper;
 
     @ResponseBody
     @RequestMapping(value = "/api/json/create_ccf_event")
@@ -531,5 +533,20 @@ public class AdminQueryController {
             e.printStackTrace();
             return ResponseEntity.status(404).body(e.getLocalizedMessage());
         }
+    }
+    @RequestMapping("/api/json/change_global_settings")
+    public ResultDTO changeMidgradesForAutoapprove(HttpSession session,
+                                     @RequestParam String value,
+                                     @RequestParam String param){
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
+        if(sessionUser == null|| teacherInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        GlobalParameter globalParameter = new GlobalParameter();
+        globalParameter.setParam(param);
+        globalParameter.setValue(value);
+        globalParameterMapper.updateByPrimaryKey(globalParameter);
+        return ResultDTO.okOf();
     }
 }
