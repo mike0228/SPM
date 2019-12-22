@@ -53,6 +53,8 @@ public class AdminQueryController {
     @Autowired
     SelectRankEntryMapper selectRankEntryMapper;
     @Autowired
+    GlobalParameterMapper globalParameterMapper;
+    @Autowired
     AccountManagementService accountManagementService;
 
     @ResponseBody
@@ -73,19 +75,33 @@ public class AdminQueryController {
 
         CCFEvent ccfEvent = new CCFEvent();
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Date exam_time = formatter.parse(examTime);
-        Date select_exam_time = formatter.parse(selectExamTime);
-        Date appli_deadline = formatter.parse(appliDeadline);
-        Date appli_starts_on = formatter.parse(appliStartsOn);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); //TODO correspond with front-end
+        Date examTimeD = null;
+        Date selectExamTimeD = null;
+        Date appliDeadlineD = null;
+        Date appliStartsOnD = null;
+        try {
+            examTimeD = formatter.parse(examTime);
+            selectExamTimeD = formatter.parse(selectExamTime);
+            appliDeadlineD = formatter.parse(appliDeadline);
+            appliStartsOnD = formatter.parse(appliStartsOn);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return ResultDTO.errorOf(0, "日期格式不正确。");
+        }
+        if(examTimeD.before(selectExamTimeD))
+            return ResultDTO.errorOf(0, "正式考试早于选拔考试时间。");
+        if(selectExamTimeD.before(appliDeadlineD))
+            return ResultDTO.errorOf(0, "选拔考试时间早于申请截止时间。");
+        if(appliDeadlineD.before(appliStartsOnD))
+            return ResultDTO.errorOf(0, "申请截止时间早于开放申请时间。");
 
         ccfEvent.setExamNo(number);
-        ccfEvent.setExamTime(exam_time);
-        ccfEvent.setSelectExamTime(select_exam_time);
-        ccfEvent.setAppliDeadline(appli_deadline);
-        ccfEvent.setCanApply((byte) (canApply != null && canApply.equals("on")? 1: 0));
-        ccfEvent.setAppliStartsOn(appli_starts_on);
-
+        ccfEvent.setExamTime(examTimeD);
+        ccfEvent.setSelectExamTime(selectExamTimeD);
+        ccfEvent.setAppliDeadline(appliDeadlineD);
+        ccfEvent.setCanApply((byte) (StringUtils.isBlank(canApply)? 0: 1));
+        ccfEvent.setAppliStartsOn(appliStartsOnD);
         try {
             ccfEventMapper.insertSelective(ccfEvent);
         } catch (Exception e) {
@@ -534,6 +550,27 @@ public class AdminQueryController {
         } catch (IOException | OSSException e) {
             e.printStackTrace();
             return ResponseEntity.status(404).body(e.getLocalizedMessage());
+        }
+    }
+    @ResponseBody
+    @RequestMapping("/api/json/change_global_settings")
+    public ResultDTO changeMidgradesForAutoapprove(HttpSession session,
+                                     @RequestParam String value,
+                                     @RequestParam String param){
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        if(sessionUser == null|| !sessionUser.getType().equals("associate")){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+
+        GlobalParameter globalParameter = new GlobalParameter();
+        globalParameter.setParam(param);
+        globalParameter.setValue(value);
+        try{
+            globalParameterMapper.updateByPrimaryKey(globalParameter);
+            return ResultDTO.okOf();
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultDTO.errorOf(0,"修改失败");
         }
     }
 }

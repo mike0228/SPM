@@ -106,6 +106,7 @@ public class StudentQueryController {
         }
         SelectRankEntryExample selectRankEntryExample=new SelectRankEntryExample();
         selectRankEntryExample.createCriteria().andUidEqualTo(studentInfo.getUid());
+        selectRankEntryExample.or().andIdNoEqualTo(studentInfo.getIdNo());
         List<SelectRankEntry> result=selectRankEntryMapper.selectByExample(selectRankEntryExample);
         return ResultDTO.okOf(result);
     }

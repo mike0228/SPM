@@ -114,6 +114,7 @@
          MAX(`grades_entry`.`grades`) AS `max_grades`
          FROM `grades_entry` NATURAL JOIN `application` NATURAL JOIN `student` NATURAL JOIN `ccf_event`
          WHERE `application`.`app_status` = 'approved' OR `application`.`app_status` = 'auto-approved' OR `application`.`app_status` = 'manually-approved'
+
          GROUP BY eid;
     </select>
 
