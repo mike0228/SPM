@@ -116,7 +116,7 @@ public class AdminDataAnalysisApiController {
             } catch (ParseException e) {
                 return ResultDTO.errorOf(0, "laterThan 参数格式错误。");
             }
-            criteria.andExamTimeLessThanOrEqualTo(date);
+            criteria.andExamTimeGreaterThanOrEqualTo(date);
         }
         if(inInstitutes != null && !inInstitutes.isEmpty()) criteria.andInstituteIn(inInstitutes);
         if(inProfessions != null && !inProfessions.isEmpty()) criteria.andProfessionIn(inProfessions);
