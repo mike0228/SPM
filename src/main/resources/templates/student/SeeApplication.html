@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="/css/layui.css" media="all">
-    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+    <script src="/jquery-3.4.1.js"></script>
 </head>
 <body>
 
@@ -15,7 +15,7 @@
 
 
 <script type="text/html" id="barDemo">
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">取消</a>
 </script>
 
 <script src="/layui.js" charset="utf-8"></script>
@@ -25,7 +25,17 @@
     layui.use('table', function(){
         var table = layui.table;
         var $ = layui.jquery;
+        var active = {
+            reload: function () {
+                var demoReload = $('#demoReload');
 
+                table.reload('testReload', {
+                    where: {
+                        keyword: demoReload.val()
+                    }
+                });
+            }
+        };
         //监听工具条
         table.on('tool(test)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
             var data = obj.data; //获得当前行数据
@@ -33,14 +43,14 @@
             var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
             console.log(data);
             if (layEvent === 'del') { //删除
-                layer.confirm('确认要删除吗', function (index) {
-                    $.get("/api/json/delete_app?eid=" + data.eid, {},
+                layer.confirm('确认要取消吗', function (index) {
+                    $.post("/api/json/delete_app?aid=" + data.aid, {},
                         function (response) {
                             if (response.code === 200) {
                                 obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
 
                                 layer.close(index);
-                                layer.msg("删除成功");
+                                layer.msg("取消成功");
                             } else {
                                 layer.close(index);
                                 layer.msg(response.message);
@@ -72,7 +82,7 @@
                         fixed: true
                     },
                     {
-                        field: 'eid',
+                        field: 'aid',
                         title: '批次',
                         sort: true
                     },
@@ -82,12 +92,17 @@
                     sort: true
                 },
                     {
-                    field: 'app_status',
+                    field: 'appStatus',
                     title: '状态',
                 },
                     {fixed: 'right', width: 150, align: 'center', toolbar: '#barDemo'}
                 ]
             ]
+        });
+
+        $('.demoTable .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
         });
     });
 </script>

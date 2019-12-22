@@ -317,6 +317,7 @@
 
 </div>
 
+
 <script>
     //Demo
     function useLayDateMultiple(cls) {
@@ -342,24 +343,24 @@
     useLayDateMultiple('appliDeadline2');
 
 
-        $('#addform').submit(function () {
-                $.post("/api/json/create_ccf_event", $("#addform").serialize(),
-                    function (response) {
-                        if (response.code == 200) {
-                            layer.close(layer.index);
-                            layer.msg("添加成功");
-                            layui.table.reload('testReload');
-                        } else {
+    $('#addform').submit(function () {
+            $.post("/api/json/create_ccf_event", $("#addform").serialize(),
+                function (response) {
+                    if (response.code == 200) {
+                        layer.close(layer.index);
+                        layer.msg("添加成功");
+                        layui.table.reload('testReload');
+                    } else {
 
-                            layer.msg(response.message);
-                        }
+                        layer.msg(response.message);
                     }
+                }
 
-                );
-                return false;
-            }
+            );
+            return false;
+        }
 
-        );
+    );
     $('#modifyform').submit(function () {
             $.post("/api/json/modify_ccf_event", $("#modifyform").serialize(),
                 function (response) {
@@ -382,6 +383,5 @@
 
 
 </script>
-
 
 </html>

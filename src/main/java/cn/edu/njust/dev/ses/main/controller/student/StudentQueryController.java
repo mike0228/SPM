@@ -128,7 +128,7 @@ public class StudentQueryController {
     }
 
     @ResponseBody
-    @PostMapping("/api/json/submit_app")
+    @RequestMapping("/api/json/submit_app")
     public ResultDTO submitApplication(HttpSession session, @RequestParam Integer eid){
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Student studentInfo = (Student) session.getAttribute("student_info");
@@ -169,7 +169,7 @@ public class StudentQueryController {
         return ResultDTO.okOf();
     }
     @ResponseBody
-    @PostMapping("/api/json/delete_app")
+    @RequestMapping("/api/json/delete_app")
     public ResultDTO deleteApplication(HttpSession session, @RequestParam Integer aid/*CCF ID*/){
         //TODO 删除申请
         //注：为了保留各种记录，只能删除状态为 pending 的记录。
@@ -184,7 +184,7 @@ public class StudentQueryController {
         return items>0?ResultDTO.okOf():ResultDTO.errorOf(0,"找不到该记录或者不能删除");
     }
     @ResponseBody
-    @PostMapping("/api/json/add_grades_for_review")
+    @RequestMapping("/api/json/add_grades_for_review")
     public ResultDTO addUnapprovedGradesEntry(HttpSession session,
                                               @RequestParam Integer eid,
                                               @RequestParam Integer grades,
@@ -226,7 +226,7 @@ public class StudentQueryController {
         return ResultDTO.okOf();
     }
     @ResponseBody
-    @PostMapping("/api/json/all_ranks_result")
+    @RequestMapping("/api/json/all_ranks_result")
     public ResultDTO obtainAllRankingResult(HttpSession session){
         //TODO 列出该考生的所有选拔考试 rank
         User sessionUser = (User) session.getAttribute("logged_in_as");
@@ -241,7 +241,7 @@ public class StudentQueryController {
     }
 
     @ResponseBody
-    @PostMapping("/api/json/show_all_ranks")
+    @RequestMapping("/api/json/show_all_ranks")
     public ResultDTO showRankingResult(HttpSession session, @RequestParam Integer eid){
         //注：在之前的考试中 rank 信息是公开的，所以在网站上可以查询考试的 rank 状况
         User sessionUser = (User) session.getAttribute("logged_in_as");
