@@ -45,7 +45,7 @@
             <div style="border: solid 1px black;color: #00F7DE" >
                 <form class="layui-form" id="dataUpload">
                     <div class="layui-form-item">
-                        <label class="layui-form-label" style="width: auto">请输入考试批次</label>
+                        <label class="layui-form-label" style="width: auto">考试批次</label>
                         <div class="layui-input-inline" style="width: 360px">
                             <select  id="eidlist" name="eid" lay-filter="eid" lay-verify="required">
                             </select>
@@ -67,7 +67,7 @@
                     type: 'get',
                     success: function (res) {
                         $.each(res.data, function (index, item) {
-                            var text="场次:"+item.examNo +"  开始时间:"+ item.examTime;
+                            var text="场次:"+item.examNo +"  开始时间:"+ item.examTime.slice(0,10)+" "+item.examTime.slice(11,19);
                             $('#eidlist').append(new Option(text, item.eid));// 下拉菜单里添加元素
                         });
                         layui.form.render("select");
@@ -111,14 +111,14 @@
                             });
                         }else
                         {
-                            layer.msg(res.message);
+                            layer.msg(data.message);
                         }
                     });
             }
 
         </script>
         <div class="layui-col-xs8">
-            <div style="height: 320px">
+            <div style="height: 320px;width: 500px;padding:0 250px">
             <div id="container" style="height: 100%"></div>
         </div>
         <script>
@@ -246,7 +246,7 @@
                 var maxscore = [];
                 var len = data.data.length;
                 for (var i = 0;i < len; i++){
-                    time.push(data.data[i].examTime);
+                    time.push(data.data[i].examTime.slice(0,10)+" "+ data.data[i].examTime.slice(11,19));
                     aver.push(data.data[i].avgGrades);
                     num.push(data.data[i].count);
                     maxscore.push(data.data[i].maxGrades);
@@ -261,7 +261,7 @@
                             }
                         },
                         legend: {
-                            data: ['平均分', '最高分', '符合条件的人数']
+                            data: ['平均分', '最高分', '大于300人数']
                         },
                         toolbox: {
                             show: true,

@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="/css/layui.css" media="all">
     <link rel="stylesheet" href="/css/admin.css" media="all">
     <script src="/layui.js"></script>
-    <script src="/lay/modules/echarts.min.js"></script>
     <script src="/jquery-3.4.1.js"></script>
 </head>
 
@@ -35,79 +34,48 @@
 <body>
 <div class="page">
     <div class="little-header">
-        <blockquote class="layui-elem-quote">Student Event</blockquote>
+        <blockquote class="layui-elem-quote">申请列表</blockquote>
     </div>
 
-    <table class="layui-table" id="demo" lay-filter="test"></table>
+    <form class="layui-form" id="studentCheck">
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: auto">考试批次</label>
+            <div class="layui-input-inline" style="width: 360px">
+                <select  id="eidlist" name="eid" lay-filter="eid" lay-verify="required">
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item" style="padding-left: 15px">
+            <button type="button" class="layui-btn" onclick="studentCheck()">确认</button>
+        </div>
+    </form>
 
+<script>
+    layui.use(['form','layer'], function () {
+        var form = layui.form;
+        var $ =layui.jquery;
+        $.ajax({
+            url: '/api/json/available_events',
+            dataType: 'json',
+            type: 'get',
+            success: function (res) {
+                $.each(res.data, function (index, item) {
+                    var text="场次:"+item.examNo +"  开始时间:"+ item.examTime.slice(0,10)+" "+item.examTime.slice(11,19);
+                    $('#eidlist').append(new Option(text, item.eid));// 下拉菜单里添加元素
+                });
+                layui.form.render("select");
+            }
+        });
+    })
+    function studentCheck() {
+            var eid=$("#eidlist").val();
 
-
-    <script type="text/html" id="barDemo">
-        <a class="layui-btn layui-btn-xs" lay-event="approve">通过</a>
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disapprove">拒绝</a>
-    </script>
-
-
-
-    <script>
-        layui.use('table', function () {
-            var table = layui.table;
-            var $ = layui.jquery;
-            var active = {
-                reload: function () {
-                    var demoReload = $('#demoReload');
-
-                    table.reload('testReload', {
-                        where: {
-                            keyword: demoReload.val()
-                        }
-                    });
-                }
-            };
-
-            //监听工具条
-            table.on('tool(test)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
-                var data = obj.data; //获得当前行数据
-                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
-                var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
-                console.log(data);
-                if (layEvent === 'disapprove') { //拒绝
-                    layer.confirm('确认要拒绝吗', function (index) {
-                        $.get("/api/json/disapprove_grades_entry?gid=" + data.gid, {},
-                            function (response) {
-                                if (response.code == 200) {
-                                    layui.table.reload('testReload');
-                                    layer.msg("拒绝成功");
-                                } else {
-                                    layer.msg(response.message);
-                                }
-                            });
-                    });
-                } else if (layEvent === 'approve') { //审核
-                    layer.confirm('确认要通过吗', function (index) {
-                        $.get("/api/json/approve_grades_entry?gid=" + data.gid, {},
-                            function (response) {
-                                if (response.code == 200) {
-                                    layui.table.reload('testReload');
-                                    layer.msg("通过成功");
-                                } else {
-                                    layer.msg(response.message);
-                                }
-                            });
-                    });
-
-                } else if (layEvent === 'LAYTABLE_TIPS') {
-                    layer.alert('Hi，头部工具栏扩展的右侧图标。');
-                }
-            });
-
-
-            table.render({
+        $.post("/api/json/obtain_application",$("#studentCheck").serialize(),function (res) {
+            layui.table.render({
                 elem: '#demo',
                 toolbar: '#toolbarDemo'
-                //,height: 600
                 ,
-                url: '/api/json/obtain_grades?isApproved=off' //数据接口
+                data: res.data
                 , response: {
                     statusName: 'code' //规定数据状态的字段名称，默认：code
                     , statusCode: 200 //规定成功的状态码，默认：0
@@ -140,42 +108,164 @@
                         title: '身份证号',
                         sort: true
                     }, {
-                        field: 'grades',
-                        title: '总分',
+                        field: 'appTime',
+                        title: '申请时间',
                         sort: true
                     }, {
-                        field: 'gradesProblem1',
-                        title: '第一题',
+                        field: 'appStatus',
+                        title: '申请状态',
                         sort: true
                     }, {
-                        field: 'gradesProblem2',
-                        title: '第二题',
+                        field: 'examTime',
+                        title: '考试时间',
                         sort: true
                     }, {
-                        field: 'gradesProblem3',
-                        title: '第三题',
+                        field: 'appliStartsOn',
+                        title: '申请开始时间',
                         sort: true
                     }, {
-                        field: 'gradesProblem4',
-                        title: '第四题',
+                        field: 'appliDeadline',
+                        title: '申请截止时间',
                         sort: true
-                    }, {
-                        field: 'gradesProblem5',
-                        title: '第五题',
-                        sort: true
-                    }, {
-                        field: 'isApproved',
-                        title: '审核状态',
-                        sort: true,
-                        templet: function(d){
-                            return d.isApproved ? "通过":"待审核";
+                    },
+
+                        {
+                            fixed: 'right',
+                            width: 150,
+                            align: 'center',
+                            toolbar: '#barDemo'
                         }
-                    }, {
-                        title: '凭证',
-                        templet: function(d){
-                            return  '<a class="layui-btn layui-btn-xs" onclick="getproof(' + d.gid +  ')">查看凭证</a>';
+                    ]
+                ]
+            });
+        })
+
+    }
+</script>
+
+
+    <table class="layui-table" id="demo" lay-filter="test"></table>
+
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="approve">通过</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disapprove">拒绝</a>
+    </script>
+
+
+
+    <script>
+        layui.use('table', function () {
+            var table = layui.table;
+            var $ = layui.jquery;
+            var active = {
+                reload: function () {
+                    var demoReload = $('#demoReload');
+
+                    table.reload('testReload', {
+                        where: {
+                            keyword: demoReload.val()
                         }
-                    },  {
+                    });
+                }
+            };
+
+            //监听工具条
+            table.on('tool(test)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+                console.log(data);
+                if (layEvent === 'disapprove') { //拒绝
+                    layer.confirm('确认要拒绝吗', function (index) {
+                        $.get("/api/json/change_application_status?status=failed&aid=" + data.aid, {},
+                            function (response) {
+                                if (response.code == 200) {
+                                    layui.table.reload('testReload');
+                                    layer.msg("拒绝成功");
+                                } else {
+                                    layer.msg(response.message);
+                                }
+                            });
+                    });
+                } else if (layEvent === 'approve') { //审核
+                    layer.confirm('确认要通过吗', function (index) {
+                        $.get("/api/json/change_application_status?status=approved&aid=" + data.aid, {},
+                            function (response) {
+                                if (response.code == 200) {
+                                    layui.table.reload('testReload');
+                                    layer.msg("通过成功");
+                                } else {
+                                    layer.msg(response.message);
+                                }
+                            });
+                    });
+
+                } else if (layEvent === 'LAYTABLE_TIPS') {
+                    layer.alert('Hi，头部工具栏扩展的右侧图标。');
+                }
+            });
+
+
+         /*   table.render({
+                elem: '#demo',
+                toolbar: '#toolbarDemo'
+                //,height: 600
+                //,
+                //url: '/api/json/obtain_application?eid=3' //数据接口
+                , response: {
+                    statusName: 'code' //规定数据状态的字段名称，默认：code
+                    , statusCode: 200 //规定成功的状态码，默认：0
+                    , msgName: 'message' //规定状态信息的字段名称，默认：msg
+                    , dataName: 'data' //规定数据列表的字段名称，默认：data
+                },
+                page: true //开启分页
+                ,
+                id: 'testReload',
+                cols: [
+                    [ //表头
+                        {
+                            checkbox: true,
+                            fixed: true
+                        },{
+                        field: 'examNo',
+                        title: '考试批次',
+                        sort: true
+                    },
+                        {
+                            field: 'studentId',
+                            title: '学号',
+                            sort: true
+                        }, {
+                        field: 'name',
+                        title: '姓名',
+                        sort: true
+                    },{
+                        field: 'idNo',
+                        title: '身份证号',
+                        sort: true
+                    }, {
+                        field: 'appTime',
+                        title: '申请时间',
+                        sort: true
+                    }, {
+                        field: 'appStatus',
+                        title: '申请状态',
+                        sort: true
+                    }, {
+                        field: 'examTime',
+                        title: '考试时间',
+                        sort: true
+                    }, {
+                        field: 'appliStartsOn',
+                        title: '申请开始时间',
+                        sort: true
+                    }, {
+                        field: 'appliDeadline',
+                        title: '申请截止时间',
+                        sort: true
+                    },
+
+                        {
                         fixed: 'right',
                         width: 150,
                         align: 'center',
@@ -183,7 +273,7 @@
                     }
                     ]
                 ]
-            });
+            });*/
 
             $('.demoTable .layui-btn').on('click', function () {
                 var type = $(this).data('type');
@@ -193,14 +283,12 @@
 
         });
 
-        function getproof(gid) {
-            window.open("/api/grades_proof/"+gid);
-        }
     </script>
 </div>
 
 
 </body>
+
 
 
 </html>

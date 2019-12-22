@@ -50,6 +50,10 @@ public class AdminMainController {
     public String chart(HttpSession session){ return "teacher/chart"; }
     @RequestMapping("/teacher/pan")
     public String pan(HttpSession session){ return "teacher/pan"; }
+    @RequestMapping("/teacher/information")
+    public String information(HttpSession session){ return "teacher/information"; }
+    @RequestMapping("/teacher/studentCheck")
+    public String studentCheck(HttpSession session){ return "teacher/studentCheck"; }
 
 
 

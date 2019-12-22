@@ -9,7 +9,7 @@
 
         <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin"/>
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/spm_assignment?serverTimezone=CST"
+                        connectionURL="jdbc:mysql://localhost:3306/spm_assignment?serverTimezone=GMT"
                         userId="root"
                         password="root">
             <property name="nullCatalogMeansCurrent" value="true"/>

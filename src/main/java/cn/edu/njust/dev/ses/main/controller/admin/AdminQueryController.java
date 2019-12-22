@@ -1,5 +1,6 @@
 package cn.edu.njust.dev.ses.main.controller.admin;
 
+import cn.edu.njust.dev.ses.main.dto.ApplicationDTO;
 import cn.edu.njust.dev.ses.main.dto.ResultDTO;
 import cn.edu.njust.dev.ses.main.mapper.*;
 import cn.edu.njust.dev.ses.main.model.*;
@@ -8,6 +9,7 @@ import cn.edu.njust.dev.ses.main.service.FileService;
 import com.aliyun.oss.OSSException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -27,6 +29,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.SQLNonTransientException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -55,6 +58,7 @@ public class AdminQueryController {
     @Autowired
     AccountManagementService accountManagementService;
 
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //TODO correspond with front-end
     @ResponseBody
     @RequestMapping(value = "/api/json/create_ccf_event")
     public ResultDTO createCCFEvent(HttpSession session,
@@ -73,16 +77,16 @@ public class AdminQueryController {
 
         CCFEvent ccfEvent = new CCFEvent();
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); //TODO correspond with front-end
+
         Date examTimeD = null;
         Date selectExamTimeD = null;
         Date appliDeadlineD = null;
         Date appliStartsOnD = null;
         try {
-            examTimeD = formatter.parse(examTime);
-            selectExamTimeD = formatter.parse(selectExamTime);
-            appliDeadlineD = formatter.parse(appliDeadline);
-            appliStartsOnD = formatter.parse(appliStartsOn);
+            examTimeD = new Date(formatter.parse(examTime).getTime() + 8 * 60 * 60 * 1000);
+            selectExamTimeD = new Date(formatter.parse(selectExamTime).getTime() + 8 * 60 * 60 * 1000);
+            appliDeadlineD = new Date(formatter.parse(appliDeadline).getTime() + 8 * 60 * 60 * 1000);
+            appliStartsOnD = new Date(formatter.parse(appliStartsOn).getTime() + 8 * 60 * 60 * 1000);
         } catch (ParseException e) {
             e.printStackTrace();
             return ResultDTO.errorOf(0, "日期格式不正确。");
@@ -144,16 +148,15 @@ public class AdminQueryController {
         }
         CCFEvent ccfEvent = new CCFEvent();
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); //TODO correspond with front-end
         Date examTimeD = null;
         Date selectExamTimeD = null;
         Date appliDeadlineD = null;
         Date appliStartsOnD = null;
         try {
-            examTimeD = formatter.parse(examTime);
-            selectExamTimeD = formatter.parse(selectExamTime);
-            appliDeadlineD = formatter.parse(appliDeadline);
-            appliStartsOnD = formatter.parse(appliStartsOn);
+            examTimeD = new Date(formatter.parse(examTime).getTime() + 8 * 60 * 60 * 1000);
+            selectExamTimeD = new Date(formatter.parse(selectExamTime).getTime() + 8 * 60 * 60 * 1000);
+            appliDeadlineD = new Date(formatter.parse(appliDeadline).getTime() + 8 * 60 * 60 * 1000);
+            appliStartsOnD = new Date(formatter.parse(appliStartsOn).getTime() + 8 * 60 * 60 * 1000);
         } catch (ParseException e) {
             e.printStackTrace();
             return ResultDTO.errorOf(0, "日期格式不正确。");
@@ -494,17 +497,30 @@ public class AdminQueryController {
         }
         RowBounds rowBounds = page != null && limit != null ? new RowBounds(limit * (page - 1), limit) : new RowBounds();
         List<Application> applications = applicationMapper.selectByExampleWithRowbounds(applicationExample, rowBounds);
-        return ResultDTO.okOf(applications, applicationMapper.countByExample(applicationExample));
+        List<ApplicationDTO> applicationDTOS = new ArrayList<>();
+        for(Application application: applications){
+            ApplicationDTO applicationDTO = new ApplicationDTO();
+            StudentExample studentExample = new StudentExample();
+            studentExample.createCriteria().andUidEqualTo(application.getUid());
+            Student student = studentMapper.selectByExample(studentExample).get(0);
+            CCFEvent ccfEvent = ccfEventMapper.selectByPrimaryKey(application.getEid());
+            BeanUtils.copyProperties(ccfEvent, applicationDTO);
+            BeanUtils.copyProperties(student, applicationDTO);
+            BeanUtils.copyProperties(application, applicationDTO);
+            applicationDTOS.add(applicationDTO);
+        }
+        return ResultDTO.okOf(applicationDTOS, applicationMapper.countByExample(applicationExample));
     }
 
+    @ResponseBody
     @RequestMapping("/api/json/change_application_status")
-    public ResultDTO changeAppStatus(HttpSession session, @RequestParam Integer eid, @RequestParam String status){
+    public ResultDTO changeAppStatus(HttpSession session, @RequestParam Integer aid, @RequestParam String status){
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
         if(sessionUser == null|| teacherInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
-        Application application = applicationMapper.selectByPrimaryKey(eid);
+        Application application = applicationMapper.selectByPrimaryKey(aid);
         if(application == null)
             return ResultDTO.errorOf(0, "找不到该申请。");
         if(!availableStatus.contains(status))

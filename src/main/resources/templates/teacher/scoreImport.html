@@ -58,7 +58,7 @@
                 type: 'get',
                 success: function (res) {
                     $.each(res.data, function (index, item) {
-                        var text="场次:"+item.examNo +"  开始时间:"+ item.examTime;
+                        var text="场次:"+item.examNo +"  开始时间:"+ item.examTime.slice(0,10)+" "+ item.examTime.slice(11,19);
                         $('#eidlist').append(new Option(text, item.eid));// 下拉菜单里添加元素
                     });
                     layui.form.render("select");

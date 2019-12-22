@@ -86,7 +86,7 @@ public class AdminDataAnalysisApiController {
     @ResponseBody
     @RequestMapping("/api/json/stats/grades_value_distribution")
     public ResultDTO obtainDistribution(HttpSession session,
-                                        @RequestParam(required = false) List<Integer> eids,
+                                        @RequestParam(required = false) List<Integer> eid,
                                         @RequestParam(required = false) String laterThan,
                                         @RequestParam(required = false) String earlierThan,
                                         @RequestParam(required = false) List<String> inInstitutes,
@@ -99,7 +99,7 @@ public class AdminDataAnalysisApiController {
         }
         DetailedGradesEntryExample detailedGradesEntryExample = new DetailedGradesEntryExample();
         DetailedGradesEntryExample.Criteria criteria = detailedGradesEntryExample.createCriteria();
-        if(eids != null && !eids.isEmpty()) criteria.andEidIn(eids);
+        if(eid != null && !eid.isEmpty()) criteria.andEidIn(eid);
         if(StringUtils.isNotBlank(earlierThan)){
             Date date;
             try {
