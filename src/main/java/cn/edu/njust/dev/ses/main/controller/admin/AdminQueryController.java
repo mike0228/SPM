@@ -552,19 +552,25 @@ public class AdminQueryController {
             return ResponseEntity.status(404).body(e.getLocalizedMessage());
         }
     }
+    @ResponseBody
     @RequestMapping("/api/json/change_global_settings")
     public ResultDTO changeMidgradesForAutoapprove(HttpSession session,
                                      @RequestParam String value,
                                      @RequestParam String param){
         User sessionUser = (User) session.getAttribute("logged_in_as");
-        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
-        if(sessionUser == null|| teacherInfo == null){
+        if(sessionUser == null|| !sessionUser.getType().equals("associate")){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
+
         GlobalParameter globalParameter = new GlobalParameter();
         globalParameter.setParam(param);
         globalParameter.setValue(value);
-        globalParameterMapper.updateByPrimaryKey(globalParameter);
-        return ResultDTO.okOf();
+        try{
+            globalParameterMapper.updateByPrimaryKey(globalParameter);
+            return ResultDTO.okOf();
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultDTO.errorOf(0,"修改失败");
+        }
     }
 }
