@@ -156,23 +156,6 @@
             }
         });
     });
-    $("#confirmButton").click(function() {
-            var confirmId=$("#confirmId").val();
-            var eid=$("#eid").val();
-        $.ajax({
-            url:"/api/json/confirm_rank_import",
-            type:"post",
-            //注意序列化的值一定要放在最前面,并且不需要头部变量,不然获取的值得格式会有问题
-            data:"&confirmId="+confirmId+"&eid="+eid,
-            dataType:"json",
-            success: function () {
-                alert("上传成功");
-            },
-            error: function () {
-                alert("上传失败");
-            }
-        })
-    });
 </script>
 </body>
 </html>

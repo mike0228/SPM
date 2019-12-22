@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>layout 后台大布局 - Layui</title>
     <link rel="stylesheet" href="/css/layui.css">
-
+    <script src="/jquery-3.4.1.js"></script>
 </head>
 <body class="layui-layout-body">
 
 <div style="padding: 20px; background-color: #F2F2F2;">
-    <form class="layui-form layui-form-pane" action="" name="ChangeImformation">
+    <form class="layui-form layui-form-pane" id="Demo">
     <div class="layui-row layui-col-space15" >
         <div class="layui-col-md6 layui-col-md-offset3" >
             <div class="layui-card">
@@ -19,7 +19,7 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">手机号码</label>
                         <div class="layui-input-block" style="width: 120px">
-                            <input type="text" name="phone_no"id="phone_no" placeholder="请输入" autocomplete="off"
+                            <input type="text" name="phoneNo"id="phoneNo" placeholder="请输入" autocomplete="off"
                                    class="layui-input"lay-verify="phone">
                         </div>
                     </div>
@@ -38,14 +38,14 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">班级</label>
                         <div class="layui-input-block" style="width: 120px">
-                            <input type="text" name="class_no" id="class_no" placeholder="请输入" autocomplete="off"
+                            <input type="text" name="classNo" id="classNo" placeholder="请输入" autocomplete="off"
                                    class="layui-input"lay-verify="required">
                         </div>
                     </div>
 
                     <div class="layui-form-item" style="margin: 0px 0px 0px 100px;">
                         <div class="layui-input-block">
-                            <button class="layui-btn" lay-submit lay-filter="*">提交</button>
+                            <button class="layui-btn" lay-submit lay-filter="reg">提交</button>
                             <button type="reset" class="layui-btn layui-btn-primary">重置</button>
                         </div>
                     </div>
@@ -80,24 +80,17 @@
         });
 
         form.on('submit(reg)', function (data) {
-            $.ajax({
-                cache : true,
-                type : "post",
-                url : "/test/student/upload",
-                async : true,
-                dataType: 'json',
-                data: data.field,
-                error : function(request) {
-                    layer.msg('提交失败', {icon: 1, time: 1000});
-                },
-                success : function(ret) {
-                    if (ret.success) {
-                        layer.msg('提交成功', {icon: 1, time: 1000});
-                    } else {
-                        layer.msg('提交失败', {icon: 1, time: 1000});
-                    }
+            var phoneNo =$('#phoneNo').val();
+            var profession =$('#profession').val();
+            var classNo =$('#classNo').val();
+            $.post("/api/json/change_userinfo", $("#Demo").serialize(),function (data) {
+                if (data.code===200) {
+                    layer.msg('提交成功', {icon: 1, time: 1000});
+                } else {
+                    layer.msg(data.message, {icon: 5, time: 1000});
                 }
-            })
+            });
+            return false;
         });
 
 return false;

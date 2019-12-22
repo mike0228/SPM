@@ -56,6 +56,8 @@ public class AdminQueryController {
     @Autowired
     SelectRankEntryMapper selectRankEntryMapper;
     @Autowired
+    GlobalParameterMapper globalParameterMapper;
+    @Autowired
     AccountManagementService accountManagementService;
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //TODO correspond with front-end
@@ -564,6 +566,27 @@ public class AdminQueryController {
         } catch (IOException | OSSException e) {
             e.printStackTrace();
             return ResponseEntity.status(404).body(e.getLocalizedMessage());
+        }
+    }
+    @ResponseBody
+    @RequestMapping("/api/json/change_global_settings")
+    public ResultDTO changeMidgradesForAutoapprove(HttpSession session,
+                                     @RequestParam String value,
+                                     @RequestParam String param){
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        if(sessionUser == null|| !sessionUser.getType().equals("associate")){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+
+        GlobalParameter globalParameter = new GlobalParameter();
+        globalParameter.setParam(param);
+        globalParameter.setValue(value);
+        try{
+            globalParameterMapper.updateByPrimaryKey(globalParameter);
+            return ResultDTO.okOf();
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultDTO.errorOf(0,"修改失败");
         }
     }
 }

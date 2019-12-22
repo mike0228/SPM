@@ -15,35 +15,56 @@
         <div style="padding: 15px;">
             <b id="passModifyMess" style="color: red;"></b>
 
-            <form class="layui-form" action="">
+            <form class="layui-form" id="form1">
                 <div class="layui-form-item">
                     <label class="layui-form-label">分数</label>
                     <div class="layui-input-inline">
-                        <input type="input" name="old_password" required lay-verify="required" autocomplete="off" class="layui-input">
+                        <input type="input" required lay-verify="required" autocomplete="off" class="layui-input" name="value">
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <div class="layui-input-block">
-                        <button class="layui-btn" lay-submit lay-filter="formDemo">提交</button>
-                    </div>
-                </div>
-            </form>
-
-            <form class="layui-form" action="">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">前百分比</label>
-                    <div class="layui-input-inline">
-                        <input type="input" name="old_password" required lay-verify="required" autocomplete="off" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <div class="layui-input-block">
-                        <button class="layui-btn" lay-submit lay-filter="formDemo">提交</button>
-                    </div>
+                <input type="hidden" name="param" value="midgrades_for_autoapprove">
+                <div class="layui-form-item" style="padding-left: 110px">
+                    <button type="button" class="layui-btn" onclick="confirm_1()">确认</button>
                 </div>
             </form>
+            <script>
+                function confirm_1() {
+                    $.post("/api/json/change_global_settings", $("#form1").serialize(),
+                        function (res) {
+                            if(res.code==200){
+                                layer.msg("修改成功");
+                            }else
+                            {
+                                layer.msg(res.message);
+                            }
+                        });
+                }
+            </script>
 
-
+<!--            <form class="layui-form" id="form2">-->
+<!--                <div class="layui-form-item">-->
+<!--                    <label class="layui-form-label">前百分比</label>-->
+<!--                    <div class="layui-input-inline">-->
+<!--                        <input type="input" name="old_password" required lay-verify="required" autocomplete="off" class="layui-input">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="layui-form-item" style="padding-left: 110px">-->
+<!--                    <button type="button" class="layui-btn" onclick="confirm_2()">确认</button>-->
+<!--                </div>-->
+<!--            </form>-->
+<!--            <script>-->
+<!--                function confirm_2() {-->
+<!--                    $.post("/api/json/confirm_rank_import", $("#form2").serialize(),-->
+<!--                        function (res) {-->
+<!--                            if(res.code==200){-->
+<!--                                layer.msg("修改成功");-->
+<!--                            }else-->
+<!--                            {-->
+<!--                                layer.msg(res.message);-->
+<!--                            }-->
+<!--                        });-->
+<!--                }-->
+<!--            </script>-->
         </div>
     </div>
 

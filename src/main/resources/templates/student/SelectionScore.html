@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="/css/layui.css" media="all">
-    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+    <script src="/jquery-3.4.1.js"></script>
 </head>
 <body>
 
@@ -30,7 +30,7 @@
             console.log(data);
             if (layEvent === 'del') { //删除
                 layer.confirm('确认要删除吗', function (index) {
-                    $.get("/api/json/delete_app?eid=" + data.eid, {},
+                    $.post("/api/json/delete_app?eid=" + data.eid, {},
                         function (response) {
                             if (response.code === 200) {
                                 obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
