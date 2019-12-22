@@ -17,9 +17,9 @@ public class AdminMainController {
         return "teacher/scoreCheck";
     }
     @RequestMapping("/teacher/nameListImport")
-    public String nameListImport(HttpSession session){
-        return "teacher/nameListImport";
-    }
+    public String nameListImport(HttpSession session){ return "teacher/nameListImport"; }
+    @RequestMapping("/teacher/studentImport")
+    public String studentImport(HttpSession session){ return "teacher/studentImport"; }
     @RequestMapping("/teacher/Association")
     public String Association(HttpSession session){
         return "teacher/Association";

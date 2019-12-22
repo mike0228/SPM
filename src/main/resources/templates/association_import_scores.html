@@ -19,43 +19,49 @@
             <a href="/download/format.xls" download="format.xls" class="layui-btn">下载模版</a>
         </div>
     </div>
-    <form class="layui-form" id="addform" lay-filter="create">
-        <div class="layui-form-item" style="width:20%">
-            <label class="layui-form-label">选拔赛批次</label>
-            <div class="layui-input-block">
-                <select id="eid" lay-filter="eid">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">5</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                    <option value="13">15</option>
-                    <option value="14">14</option>
-                    <option value="15">15</option>
-                    <option value="16">16</option>
-                    <option value="17">17</option>
-                    <option value="18">18</option>
-                    <option value="19">19</option>
-                    <option value="20">20</option>
-
+    <form class="layui-form" id="dataUpload">
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: auto">请输入选拔赛批次</label>
+            <div class="layui-input-inline" style="width: 360px">
+                <select  id="eidlist" name="eid" lay-filter="eid" lay-verify="required">
                 </select>
             </div>
         </div>
-        <input type="hidden" id="confirmId">
-        <div style="padding-left: 15px">
-            <button type="button" class="layui-btn" id="confirmButton">提交表格</button>
-        </div>
-
+        <input type="hidden" name="confirmId" id="confirmId">
+        <div class="layui-form-item" style="padding-left: 15px">
+            <button type="button" class="layui-btn" onclick="dataUpload()">确认提交</button>
         </div>
     </form>
+    <script>
+        layui.use(['form','layer'], function () {
+            var form = layui.form;
+            var $ =layui.jquery;
+            $.ajax({
+                url: '/api/json/available_events',
+                dataType: 'json',
+                type: 'get',
+                success: function (res) {
+                    $.each(res.data, function (index, item) {
+                        var text="场次:"+item.examNo +"  开始时间:"+ item.selectExamTime;
+                        $('#eidlist').append(new Option(text, item.eid));// 下拉菜单里添加元素
+                    });
+                    layui.form.render("select");
+                }
+            });
+        })
+        function dataUpload() {
+            $.post("/api/json/confirm_rank_import", $("#dataUpload").serialize(),
+                function (res) {
+                    if(res.code==200){
+                        layer.msg("上传成功");
+                    }else
+                    {
+                        layer.msg(res.message);
+                    }
+                });
+        }
 
+    </script>
     <table class="layui-table" id="demo" lay-filter="test"></table>
 
     <script>

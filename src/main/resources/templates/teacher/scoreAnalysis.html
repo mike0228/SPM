@@ -43,58 +43,122 @@
     <div class="layui-col-xs12">
         <div class="layui-col-xs4">
             <div style="border: solid 1px black;color: #00F7DE" >
-                <div style="height: 320px">写条件</div>
+                <form class="layui-form" id="dataUpload">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="width: auto">请输入考试批次</label>
+                        <div class="layui-input-inline" style="width: 360px">
+                            <select  id="eidlist" name="eid" lay-filter="eid" lay-verify="required">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style="padding-left: 15px">
+                        <button type="button" class="layui-btn" onclick="dataUpload()">确认</button>
+                    </div>
+                </form>
             </div>
         </div>
+        <script>
+            layui.use(['form','layer'], function () {
+                var form = layui.form;
+                var $ =layui.jquery;
+                $.ajax({
+                    url: '/api/json/available_events',
+                    dataType: 'json',
+                    type: 'get',
+                    success: function (res) {
+                        $.each(res.data, function (index, item) {
+                            var text="场次:"+item.examNo +"  开始时间:"+ item.examTime;
+                            $('#eidlist').append(new Option(text, item.eid));// 下拉菜单里添加元素
+                        });
+                        layui.form.render("select");
+                    }
+                });
+            })
+            function dataUpload() {
+                $.post("/api/json/stats/grades_value_distribution", $("#dataUpload").serialize(),
+                    function (data) {
+                        if(data.code==200){
+                            var dom = document.getElementById("container");
+                            var myChart = echarts.init(dom);
+                            myChart.setOption({
+                                title: {
+                                    text: '成绩分布图',
+                                    x: 'center'
+                                },
+                                tooltip: {
+                                    trigger: 'item',
+                                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                },
+                                legend: {
+                                    orient: 'vertical',
+                                    left: 'left',
+                                    data: ['[0,50)','[50,100)','[100,150)','[150,200)','[200,250)','[250,300)','[300,350)','[350,400)','[400,450)','[450,500]']
+                                },
+                                series: [{
+                                    name: '成绩分布',
+                                    type: 'pie',
+                                    radius: '55%',
+                                    center: ['50%', '60%'],
+                                    data: data.data,
+                                    itemStyle: {
+                                        emphasis: {
+                                            shadowBlur: 10,
+                                            shadowOffsetX: 0,
+                                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                        }
+                                    }
+                                }]
+                            });
+                        }else
+                        {
+                            layer.msg(res.message);
+                        }
+                    });
+            }
+
+        </script>
         <div class="layui-col-xs8">
             <div style="height: 320px">
             <div id="container" style="height: 100%"></div>
         </div>
         <script>
-            var dom = document.getElementById("container");
-            var myChart = echarts.init(dom);
+
             var app = {};
             option = null;
-            option = {
-                title: {
-                    text: '成绩分布图',
-                    x: 'center'
-                },
-                tooltip: {
-                    trigger: 'item',
-                    formatter: "{a} <br/>{b} : {c} ({d}%)"
-                },
-                legend: {
-                    orient: 'vertical',
-                    left: 'left',
-                    data: ['50分以下', '50分到100分', '200分到250分', '250分到300分', '300分以上']
-                },
-                series: [{
-                    name: '成绩分布',
-                    type: 'pie',
-                    radius: '55%',
-                    center: ['50%', '60%'],
-                    data: [],
-                    itemStyle: {
-                        emphasis: {
-                            shadowBlur: 10,
-                            shadowOffsetX: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)'
-                        }
-                    }
-                }]
-            };
-            if (option && typeof option === "object") {
-                myChart.setOption(option, true);
-            }
             $.get('/api/json/stats/grades_value_distribution').done(function (data) {
+                /*var dom = document.getElementById("container");
+                var myChart = echarts.init(dom);
                 myChart.setOption({
-                    series:[{
-                        field:'',
-                        name:'100分以下'
+                    title: {
+                        text: '成绩分布图',
+                        x: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'left',
+                        data: ['[0,50)','[50,100)','[100,150)','[150,200)','[200,250)','[250,300)','[300,350)','[350,400)','[400,450)','[450,500]']
+                    },
+                    series: [{
+                        name: '成绩分布',
+                        type: 'pie',
+                        radius: '55%',
+                        center: ['50%', '60%'],
+                        data: data.data,
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
                     }]
-                });
+                });*/
             });
+
         </script>
         </div>
     </div>
@@ -104,6 +168,162 @@
     </div>
 
         <script type="text/javascript">
+            var app = {};
+            option = null;
+            app.configParameters = {
+                rotate: {
+                    min: -90,
+                    max: 90
+                },
+                align: {
+                    options: {
+                        left: 'left',
+                        center: 'center',
+                        right: 'right'
+                    }
+                },
+                verticalAlign: {
+                    options: {
+                        top: 'top',
+                        middle: 'middle',
+                        bottom: 'bottom'
+                    }
+                },
+                distance: {
+                    min: 0,
+                    max: 100
+                }
+            }
+
+            app.config = {
+                rotate: 0,
+                align: 'middle',
+                verticalAlign: 'middle',
+                position: 'top',
+                distance: 15,
+                onChange: function () {
+                    var labelOption = {
+                        normal: {
+                            rotate: app.config.rotate,
+                            align: app.config.align,
+                            verticalAlign: app.config.verticalAlign,
+                            position: app.config.position,
+                            distance: app.config.distance
+                        }
+                    };
+                    myChart.setOption({
+                        series: [{
+                            label: labelOption
+                        }, {
+                            label: labelOption
+                        }, {
+                            label: labelOption
+                        }, {
+                            label: labelOption
+                        }]
+                    });
+                }
+            }
+
+            var labelOption = {
+                normal: {
+                    show: true,
+                    position: app.config.position,
+                    distance: app.config.distance,
+                    align: app.config.align,
+                    verticalAlign: app.config.verticalAlign,
+                    rotate: app.config.rotate,
+                    fontSize: 16
+                }
+            }
+
+            $.get('/api/json/stats/overall_stats').done(function (data) {
+                var dom = document.getElementById("container2");
+                var myChart = echarts.init(dom);
+                var aver = [];
+                var time = [];
+                var num = [];
+                var maxscore = [];
+                var len = data.data.length;
+                for (var i = 0;i < len; i++){
+                    time.push(data.data[i].examTime);
+                    aver.push(data.data[i].avgGrades);
+                    num.push(data.data[i].count);
+                    maxscore.push(data.data[i].maxGrades);
+                }
+                myChart.setOption(
+                    option = {
+                        color: ['#006699', '#4cabce', '#e5323e'],
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        },
+                        legend: {
+                            data: ['平均分', '最高分', '符合条件的人数']
+                        },
+                        toolbox: {
+                            show: true,
+                            orient: 'vertical',
+                            left: 'right',
+                            top: 'center',
+                            feature: {
+                                mark: {
+                                    show: true
+                                },
+                                dataView: {
+                                    show: true,
+                                    readOnly: false
+                                },
+                                magicType: {
+                                    show: true,
+                                    type: ['line', 'bar', 'stack', 'tiled']
+                                },
+                                restore: {
+                                    show: true
+                                },
+                                saveAsImage: {
+                                    show: true
+                                }
+                            }
+                        },
+                        calculable: true,
+                        xAxis: [{
+                            type: 'category',
+                            axisTick: {
+                                show: false
+                            },
+                            data:time
+                        }],
+                        yAxis: [{
+                            type: 'value'
+                        }],
+                        series: [{
+                            name: '平均分',
+                            type: 'bar',
+                            barGap: 0,
+                            label: labelOption,
+                            data:aver
+                        },
+
+                            {
+                                name: '最高分',
+                                type: 'bar',
+                                label: labelOption,
+                                data:maxscore
+                            },
+                            {
+                                name: '大于300人数',
+                                type: 'bar',
+                                label: labelOption,
+                                data:num
+                            },
+                        ]
+                    }
+                );
+            });
+            /*
             var dom = document.getElementById("container2");
             var myChart = echarts.init(dom);
             var app = {};
@@ -249,7 +469,7 @@
             };;
             if (option && typeof option === "object") {
                 myChart.setOption(option, true);
-            }
+            }*/
         </script>
     </div>
     </div>

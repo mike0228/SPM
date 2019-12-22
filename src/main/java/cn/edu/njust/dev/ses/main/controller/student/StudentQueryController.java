@@ -33,6 +33,8 @@ public class StudentQueryController {
     @Autowired
     ApplicationMapper applicationMapper;
     @Autowired
+    DetailedApplicationMapper detailedApplicationMapper;
+    @Autowired
     GradesEntryMapper gradesEntryMapper;
     @Autowired
     SelectRankEntryMapper selectRankEntryMapper;
@@ -44,6 +46,22 @@ public class StudentQueryController {
     FileService fileService;
 
     @ResponseBody
+    @RequestMapping("/api/json/all_info")
+    public ResultDTO getStudentAllInfo(HttpSession session){//获取学生所有个人信息
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Student studentInfo = (Student) session.getAttribute("student_info");
+        if(sessionUser == null|| studentInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        StudentExample studentExample=new StudentExample();
+        studentExample.createCriteria().andUidEqualTo(studentInfo.getUid());
+        List<Student> result=studentMapper.selectByExample(studentExample);
+
+        return ResultDTO.okOf(result);
+    }
+
+
+    @ResponseBody
     @RequestMapping("/api/json/all_apps")
     public ResultDTO getAllApplication(HttpSession session){
         User sessionUser = (User) session.getAttribute("logged_in_as");
@@ -51,9 +69,9 @@ public class StudentQueryController {
         if(sessionUser == null|| studentInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
-        ApplicationExample applicationExample = new ApplicationExample();
-        applicationExample.createCriteria().andUidEqualTo(sessionUser.getUid());
-        List<Application> result = applicationMapper.selectByExample(applicationExample);
+        DetailedApplicationExample detailedApplicationExample = new DetailedApplicationExample();
+        detailedApplicationExample.createCriteria().andUidEqualTo(sessionUser.getUid());
+        List<DetailedApplication> result = detailedApplicationMapper.selectByExample(detailedApplicationExample);
 
         return ResultDTO.okOf(result);
     }
@@ -62,7 +80,7 @@ public class StudentQueryController {
     @RequestMapping("/api/json/all_grades")
     public ResultDTO getAllGradesEntries(HttpSession session, @RequestParam Boolean isOnHold){
         //isOnHold决定是否要获取待审核的成绩
-        //TODO 获取学生所有成绩
+        //TODO 获取学生所有CCF成绩
         //注：应用studentInfo内的学号获取。
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Student studentInfo = (Student) session.getAttribute("student_info");
@@ -74,6 +92,25 @@ public class StudentQueryController {
         List<GradesEntry> result=gradesEntryMapper.selectByExample(gradesEntryExample);
         return ResultDTO.okOf(result);
     }
+
+
+    @ResponseBody
+    @RequestMapping("/api/json/all_select_rank")
+    public ResultDTO getAllSelectRankEntries(HttpSession session){
+        //TODO 获取学生所有rank排名
+        //注：应用studentInfo内的学号获取。
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Student studentInfo = (Student) session.getAttribute("student_info");
+        if(sessionUser == null|| studentInfo == null){
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        SelectRankEntryExample selectRankEntryExample=new SelectRankEntryExample();
+        selectRankEntryExample.createCriteria().andUidEqualTo(studentInfo.getUid());
+        selectRankEntryExample.or().andIdNoEqualTo(studentInfo.getIdNo());
+        List<SelectRankEntry> result=selectRankEntryMapper.selectByExample(selectRankEntryExample);
+        return ResultDTO.okOf(result);
+    }
+
 
     @ResponseBody
     @RequestMapping("/api/json/delete_onhold_grades")

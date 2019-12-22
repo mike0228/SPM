@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/admin.css" media="all">
+    <script src="/layui.js"></script>
+    <script src="/jquery-3.4.1.js"></script>
+</head>
+
+<style>
+    html {
+        width: 100%;
+        height: 100%;
+    }
+
+    body {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<body>
+<div class="page">
+    <div class="little-header">
+        <blockquote class="layui-elem-quote">学生导入</blockquote>
+    </div>
+    <div>
+        <button type="button" class="layui-btn" id="test1">
+            <i class="layui-icon">&#xe67c;</i>上传名单
+        </button>
+    </div>
+    <div>
+        <form id="dataUpload">
+            <input type="hidden" name="confirmId" id="confirmId">
+            <button type="button" class="layui-btn" onclick="dataUpload()">确认上传</button>
+        </form>
+    </div>
+
+    <script>
+        function dataUpload() {
+            $.post("/api/json/confirm_student_import", $("#dataUpload").serialize(),
+                function (res) {
+                    if(res.code==200){
+                        layer.msg("上传成功");
+                    }else
+                    {
+                        layer.msg(res.message);
+                    }
+                });
+        }
+    </script>
+
+    <table class="layui-table" id="demo" lay-filter="test" style="display: none;"></table>
+    <script>
+        layui.use(['upload', 'table'], function () {
+            var upload = layui.upload;
+            var $ = layui.jquery;
+            //执行实例
+            var uploadInst = upload.render({
+                elem: '#test1' //绑定元素
+                ,
+                url: '/api/json/import_student_via_excel' //上传接口
+                ,
+                accept: 'file',
+                exts: 'xls|xlsx',
+                done: function (res) {
+                    if (res.code == 200) {
+                        layer.msg("解析成功", {icon: 6});
+                        $("#confirmId").val(res.data.id);
+                        layui.table.render({
+                            elem: '#demo',
+                            data: res.data.data,
+                            page: true, //开启分页
+                            id: 'testReload',
+                            cols: [
+                                [ //表头
+                                    {
+                                        field: 'name',
+                                        title: '姓名',
+                                        sort: true
+                                    }, {
+                                    field: 'studentId',
+                                    title: '学号',
+                                    sort: true
+                                }, {
+                                    field: 'gender',
+                                    title: '性别',
+                                    sort: true
+                                }, {
+                                    field: 'idNo',
+                                    title: '身份证号',
+                                    sort: true
+                                }, {
+                                    field: 'ethnicGroup',
+                                    title: '民族',
+                                    sort: true
+                                }, {
+                                    field: 'admissionYear',
+                                    title: '入学年份',
+                                    sort: true
+                                }, {
+                                    field: 'institute',
+                                    title: '学院',
+                                    sort: true
+                                }, {
+                                    field: 'profession',
+                                    title: '专业',
+                                    sort: true
+                                }, {
+                                    field: 'classNo',
+                                    title: '班级',
+                                    sort: true
+                                }, {
+                                    field: 'phoneNo',
+                                    title: '联系方式',
+                                    sort: true
+                                }
+                                ]
+                            ]
+                        });
+
+
+                    }
+                },
+                error: function () {
+                    //请求异常回调
+                }
+            });
+        });
+    </script>
+</div>
+
+</body>
+</html>

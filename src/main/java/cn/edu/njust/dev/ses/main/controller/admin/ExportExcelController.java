@@ -86,12 +86,12 @@ public class ExportExcelController {
         List<SelectRankEntry> selectRankEntries = selectRankEntryMapper.selectByExample(selectRankEntryExample);
         ApplicationExample applicationExample2 = new ApplicationExample();
         applicationExample2.createCriteria().andEidEqualTo(eid).andAppStatusIn(Arrays.asList("auto-approved", "approved", "manually-approved"));
-        long count = applicationMapper.countByExample(applicationExample2);git
+        long count = applicationMapper.countByExample(applicationExample2);
         for(SelectRankEntry selectRankEntry:selectRankEntries){
             if(count >= globalSettingsService.getMaxSponsoredParticipants())
                 break;
             ApplicationExample applicationExample = new ApplicationExample();
-            applicationExample.createCriteria().andUidEqualTo(selectRankEntry.getUid());
+            applicationExample.createCriteria().andUidEqualTo(selectRankEntry.getUid()).andEidEqualTo(eid);
             List <Application> applications = applicationMapper.selectByExample(applicationExample);
             if(applications.size() > 0){
                 for(Application application:applications){

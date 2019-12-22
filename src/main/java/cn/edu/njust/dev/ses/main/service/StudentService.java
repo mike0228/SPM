@@ -17,10 +17,12 @@ public class StudentService {
     @Autowired
     GradesEntryMapper gradesEntryMapper;
 
+
     public void insertStudentRecordAndUpdateGradesEntry(Student student){
         studentMapper.insertSelective(student);
         GradesEntryExample gradesEntryExample = new GradesEntryExample();
         gradesEntryExample.createCriteria().andIdNoEqualTo(student.getIdNo());
+        gradesEntryExample.or().andStudentIdEqualTo(student.getStudentId());
         GradesEntry gradesEntry = new GradesEntry();
         gradesEntry.setStudentId(student.getStudentId());
         gradesEntryMapper.updateByExampleSelective(gradesEntry, gradesEntryExample);

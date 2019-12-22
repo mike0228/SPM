@@ -100,113 +100,118 @@ public class ExcelUniversalParser<E extends GenericDTO> {
                 Row row = sheet.getRow(cRow);
                 if(row == null) continue;
                 int pdsLength = propertyDescriptors.length;
-                itemToColumnMap.forEach((key, value) -> {
-                    if(value == null) return;
-                    Cell cell = row.getCell(value);
-                    String originalString = "";
-                    if(cell == null) originalString = "";
-                    else if(cell.getCellTypeEnum() == CellType.NUMERIC)
-                        originalString = String.valueOf(cell.getNumericCellValue());
-                    else if(cell.getCellTypeEnum() == CellType.BOOLEAN)
-                        originalString = String.valueOf(cell.getBooleanCellValue());
-                    else if(cell.getCellTypeEnum() == CellType.FORMULA) {
-                        switch (cell.getCachedFormulaResultTypeEnum()) {
-                            case NUMERIC:
-                                originalString = String.valueOf(cell.getNumericCellValue());
-                                break;
-                            case STRING:
-                                originalString = cell.getStringCellValue();
-                                break;
-                            case BOOLEAN:
-                                originalString = String.valueOf(cell.getBooleanCellValue());
-                                break;
-                        }
-                    } else if(cell.getCellTypeEnum() == CellType.STRING)
-                        originalString = cell.getStringCellValue();
-                    else originalString = "";
-
-                    PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(classObject, key.field.getName());
-                    if(pd != null) {
-                        Method writeMethod = pd.getWriteMethod();
-                        if(writeMethod != null) {
-                            if(!Modifier.isPublic(writeMethod.getDeclaringClass().getModifiers())) {
-                                writeMethod.setAccessible(true);
+                try {
+                    itemToColumnMap.forEach((key, value) -> {
+                        if(value == null) return;
+                        Cell cell = row.getCell(value);
+                        String originalString = "";
+                        if(cell == null) originalString = "";
+                        else if(cell.getCellTypeEnum() == CellType.NUMERIC)
+                            originalString = String.valueOf(cell.getNumericCellValue());
+                        else if(cell.getCellTypeEnum() == CellType.BOOLEAN)
+                            originalString = String.valueOf(cell.getBooleanCellValue());
+                        else if(cell.getCellTypeEnum() == CellType.FORMULA) {
+                            switch (cell.getCachedFormulaResultTypeEnum()) {
+                                case NUMERIC:
+                                    originalString = String.valueOf(cell.getNumericCellValue());
+                                    break;
+                                case STRING:
+                                    originalString = cell.getStringCellValue();
+                                    break;
+                                case BOOLEAN:
+                                    originalString = String.valueOf(cell.getBooleanCellValue());
+                                    break;
                             }
-                            Object object = originalString;
-                            Class<?> propertyType = pd.getPropertyType();
-                            if(!propertyType.isAssignableFrom(String.class)) {
-                                if(cell == null || (cell.getCellTypeEnum() != CellType.STRING && cell.getCellTypeEnum() != CellType.NUMERIC && cell.getCellTypeEnum() != CellType.BOOLEAN && (cell.getCellTypeEnum() == CellType.FORMULA && cell.getCachedFormulaResultTypeEnum() != CellType.NUMERIC))) {
-                                    UnfitPropertyTypeException unfitPropertyTypeException = new UnfitPropertyTypeException(String.format("Unsupported cell type at %d, %d for field %s of type %s from %s. The cell type was %s.", row.getRowNum(), value, pd.getName(), pd.getPropertyType(), classObject, cell == null ? "NULL" : cell.getCellTypeEnum().toString()));
-                                    unfitPropertyTypeException.setColumn(value);
-                                    unfitPropertyTypeException.setRow(row.getRowNum());
-                                    throw unfitPropertyTypeException;
+                        } else if(cell.getCellTypeEnum() == CellType.STRING)
+                            originalString = cell.getStringCellValue();
+                        else originalString = "";
+
+                        PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(classObject, key.field.getName());
+                        if(pd != null) {
+                            Method writeMethod = pd.getWriteMethod();
+                            if(writeMethod != null) {
+                                if(!Modifier.isPublic(writeMethod.getDeclaringClass().getModifiers())) {
+                                    writeMethod.setAccessible(true);
                                 }
+                                Object object = originalString;
+                                Class<?> propertyType = pd.getPropertyType();
+                                if(!propertyType.isAssignableFrom(String.class)) {
+                                    if(cell == null || (cell.getCellTypeEnum() != CellType.STRING && cell.getCellTypeEnum() != CellType.NUMERIC && cell.getCellTypeEnum() != CellType.BOOLEAN && (cell.getCellTypeEnum() == CellType.FORMULA && cell.getCachedFormulaResultTypeEnum() != CellType.NUMERIC))) {
+                                        UnfitPropertyTypeException unfitPropertyTypeException = new UnfitPropertyTypeException(String.format("Unsupported cell type at %d, %d for field %s of type %s from %s. The cell type was %s.", row.getRowNum(), value, pd.getName(), pd.getPropertyType(), classObject, cell == null ? "NULL" : cell.getCellTypeEnum().toString()));
+                                        unfitPropertyTypeException.setColumn(value);
+                                        unfitPropertyTypeException.setRow(row.getRowNum());
+                                        throw unfitPropertyTypeException;
+                                    }
 
 
-                                if(cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.BOOLEAN) {
-                                    try {
-                                        object = cell.getNumericCellValue();
-                                        if(propertyType.isAssignableFrom(Long.class)) {
-                                            object = (long) cell.getNumericCellValue();
-                                        } else if(propertyType.isAssignableFrom(Integer.class)) {
-                                            object = (int) cell.getNumericCellValue();
-                                        } else if(propertyType.isAssignableFrom(Byte.class)) {
-                                            object = (byte) cell.getNumericCellValue();
-                                        } else if(propertyType.isAssignableFrom(Short.class)) {
-                                            object = (short) cell.getNumericCellValue();
-                                        } else if(propertyType.isAssignableFrom(Double.class)) {
+                                    if(cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.BOOLEAN) {
+                                        try {
                                             object = cell.getNumericCellValue();
-                                        } else if(propertyType.isAssignableFrom(Float.class)) {
-                                            object = (float) cell.getNumericCellValue();
-                                        } else if(propertyType.isAssignableFrom(Boolean.class)) {
-                                            object = cell.getBooleanCellValue();
+                                            if(propertyType.isAssignableFrom(Long.class)) {
+                                                object = (long) cell.getNumericCellValue();
+                                            } else if(propertyType.isAssignableFrom(Integer.class)) {
+                                                object = (int) cell.getNumericCellValue();
+                                            } else if(propertyType.isAssignableFrom(Byte.class)) {
+                                                object = (byte) cell.getNumericCellValue();
+                                            } else if(propertyType.isAssignableFrom(Short.class)) {
+                                                object = (short) cell.getNumericCellValue();
+                                            } else if(propertyType.isAssignableFrom(Double.class)) {
+                                                object = cell.getNumericCellValue();
+                                            } else if(propertyType.isAssignableFrom(Float.class)) {
+                                                object = (float) cell.getNumericCellValue();
+                                            } else if(propertyType.isAssignableFrom(Boolean.class)) {
+                                                object = cell.getBooleanCellValue();
+                                            }
+                                        } catch (Exception e) {
+                                            UnfitPropertyTypeException unfitPropertyTypeException = new UnfitPropertyTypeException(String.format("String at (%d, %d) (%s) can't convert to type %s for bean type %s", row.getRowNum(), value, originalString, pd.getPropertyType(), classObject), e);
+                                            unfitPropertyTypeException.setRow(row.getRowNum());
+                                            unfitPropertyTypeException.setColumn(value);
+                                            throw unfitPropertyTypeException;
                                         }
-                                    } catch (Exception e) {
-                                        UnfitPropertyTypeException unfitPropertyTypeException = new UnfitPropertyTypeException(String.format("String at (%d, %d) (%s) can't convert to type %s for bean type %s", row.getRowNum(), value, originalString, pd.getPropertyType(), classObject), e);
-                                        unfitPropertyTypeException.setRow(row.getRowNum());
-                                        unfitPropertyTypeException.setColumn(value);
-                                        throw unfitPropertyTypeException;
-                                    }
-                                } else if(cell.getCellTypeEnum() == CellType.STRING || cell.getCellTypeEnum() == CellType.BLANK) {
-                                    if(cell.getCellTypeEnum() == CellType.BLANK|| StringUtils.isEmpty(cell.getStringCellValue())){
-                                        originalString = "0";
-                                    }
-                                    try {
-                                        if(propertyType.isAssignableFrom(Long.class)) {
-                                            object = Long.parseLong(originalString);
-                                        } else if(propertyType.isAssignableFrom(Integer.class)) {
-                                            object = Integer.parseInt(originalString);
-                                        } else if(propertyType.isAssignableFrom(Byte.class)) {
-                                            object = Byte.parseByte(originalString);
-                                        } else if(propertyType.isAssignableFrom(Short.class)) {
-                                            object = Short.parseShort(originalString);
-                                        } else if(propertyType.isAssignableFrom(Double.class)) {
-                                            object = Double.parseDouble(originalString);
-                                        } else if(propertyType.isAssignableFrom(Float.class)) {
-                                            object = Float.parseFloat(originalString);
-                                        } else if(propertyType.isAssignableFrom(Boolean.class)) {
-                                            object = Boolean.parseBoolean(originalString);
+                                    } else if(cell.getCellTypeEnum() == CellType.STRING || cell.getCellTypeEnum() == CellType.BLANK) {
+                                        if(cell.getCellTypeEnum() == CellType.BLANK|| StringUtils.isEmpty(cell.getStringCellValue())){
+                                            originalString = "0";
                                         }
-                                    } catch (NumberFormatException e) {
-                                        UnfitPropertyTypeException unfitPropertyTypeException = new UnfitPropertyTypeException(String.format("String at (%d, %d) (%s) can't convert to type %s for bean type %s", row.getRowNum(), value, originalString, pd.getPropertyType(), classObject));
-                                        unfitPropertyTypeException.setRow(row.getRowNum());
-                                        unfitPropertyTypeException.setColumn(value);
-                                        throw unfitPropertyTypeException;
+                                        try {
+                                            if(propertyType.isAssignableFrom(Long.class)) {
+                                                object = Long.parseLong(originalString);
+                                            } else if(propertyType.isAssignableFrom(Integer.class)) {
+                                                object = Integer.parseInt(originalString);
+                                            } else if(propertyType.isAssignableFrom(Byte.class)) {
+                                                object = Byte.parseByte(originalString);
+                                            } else if(propertyType.isAssignableFrom(Short.class)) {
+                                                object = Short.parseShort(originalString);
+                                            } else if(propertyType.isAssignableFrom(Double.class)) {
+                                                object = Double.parseDouble(originalString);
+                                            } else if(propertyType.isAssignableFrom(Float.class)) {
+                                                object = Float.parseFloat(originalString);
+                                            } else if(propertyType.isAssignableFrom(Boolean.class)) {
+                                                object = Boolean.parseBoolean(originalString);
+                                            }
+                                        } catch (NumberFormatException e) {
+                                            UnfitPropertyTypeException unfitPropertyTypeException = new UnfitPropertyTypeException(String.format("String at (%d, %d) (%s) can't convert to type %s for bean type %s", row.getRowNum(), value, originalString, pd.getPropertyType(), classObject));
+                                            unfitPropertyTypeException.setRow(row.getRowNum());
+                                            unfitPropertyTypeException.setColumn(value);
+                                            throw unfitPropertyTypeException;
 
+                                        }
                                     }
+
                                 }
 
-                            }
 
-
-                            try {
-                                writeMethod.invoke(item, object);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                throw new UnsupportedOperationException(String.format("Cannot invoke write method for %s from %s.", pd.getName(), classObject), e);
+                                try {
+                                    writeMethod.invoke(item, object);
+                                } catch (IllegalAccessException | InvocationTargetException e) {
+                                    throw new UnsupportedOperationException(String.format("Cannot invoke write method for %s from %s.", pd.getName(), classObject), e);
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
+                }
                 result.add(item);
             }
         }

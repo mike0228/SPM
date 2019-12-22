@@ -11,8 +11,8 @@
         <result column="max_grades" jdbcType="INTEGER" property="maxGrades"/>
     </resultMap>
     <resultMap id="DistributionResult" type="cn.edu.njust.dev.ses.main.dto.DistributionShowcaseDTO">
-        <result column="count" jdbcType="INTEGER" property="count"/>
-        <result column="item" jdbcType="VARCHAR" property="item" />
+        <result column="value" jdbcType="INTEGER" property="value"/>
+        <result column="name" jdbcType="VARCHAR" property="name" />
     </resultMap>
 
     <sql id="Example_Where_Clause">
@@ -90,7 +90,7 @@
                     when `detailed_grades_entry`.`grades` &gt;= 350 AND `detailed_grades_entry`.`grades` &lt; 400 then '[350,400)'
                     when `detailed_grades_entry`.`grades` &gt;= 400 AND `detailed_grades_entry`.`grades` &lt; 450 then '[400,450)'
                     when `detailed_grades_entry`.`grades` &gt;= 450 AND `detailed_grades_entry`.`grades` &lt;= 500 then '[450,500]'
-                    ELSE 'unknown' END 'item', COUNT(*) as `count` FROM `detailed_grades_entry`
+                    ELSE 'unknown' END 'name', COUNT(*) as `value` FROM `detailed_grades_entry`
         <if test="_parameter != null">
             <include refid="Example_Where_Clause" />
         </if>
@@ -114,6 +114,7 @@
          MAX(`grades_entry`.`grades`) AS `max_grades`
          FROM `grades_entry` NATURAL JOIN `application` NATURAL JOIN `student` NATURAL JOIN `ccf_event`
          WHERE `application`.`app_status` = 'approved' OR `application`.`app_status` = 'auto-approved' OR `application`.`app_status` = 'manually-approved'
+
          GROUP BY eid;
     </select>
 

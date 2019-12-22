@@ -116,7 +116,7 @@ public class AdminDataAnalysisApiController {
             } catch (ParseException e) {
                 return ResultDTO.errorOf(0, "laterThan 参数格式错误。");
             }
-            criteria.andExamTimeLessThanOrEqualTo(date);
+            criteria.andExamTimeGreaterThanOrEqualTo(date);
         }
         if(inInstitutes != null && !inInstitutes.isEmpty()) criteria.andInstituteIn(inInstitutes);
         if(inProfessions != null && !inProfessions.isEmpty()) criteria.andProfessionIn(inProfessions);
@@ -138,7 +138,7 @@ public class AdminDataAnalysisApiController {
 
     @ResponseBody
     @RequestMapping("/api/json/all_institutes")
-    public ResultDTO obtrainAllAvailableInstitutes(HttpSession session){
+    public ResultDTO obtainAllAvailableInstitutes(HttpSession session){
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
         if(sessionUser == null|| teacherInfo == null){

@@ -23,6 +23,7 @@
         <javaModelGenerator targetPackage="cn.edu.njust.dev.ses.main.model" targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
+            <property name="constructorBased" value="true"/>
         </javaModelGenerator>
 
         <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
@@ -63,6 +64,10 @@
                enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
                enableUpdateByExample="false"/>
         <table tableName="detailed_select_rank" domainObjectName="DetailedSelectRankEntry"
+               enableInsert="false" enableSelectByPrimaryKey="false" enableUpdateByPrimaryKey="false"
+               enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
+               enableUpdateByExample="false"/>
+        <table tableName="detailed_application" domainObjectName="DetailedApplication"
                enableInsert="false" enableSelectByPrimaryKey="false" enableUpdateByPrimaryKey="false"
                enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
                enableUpdateByExample="false"/>
