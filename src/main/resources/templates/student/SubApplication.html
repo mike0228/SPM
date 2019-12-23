@@ -3,31 +3,36 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>layout 后台大布局 - Layui</title>
+    <title>提交申请</title>
     <link rel="stylesheet" href="/css/layui.css">
     <script src="/jquery-3.4.1.js"></script>
 </head>
 <body class="layui-layout-body">
-
+<div class="page">
+    <div class="little-header">
+        <blockquote class="layui-elem-quote">提交申请</blockquote>
+    </div>
+</div>
 <div style="padding: 20px; background-color: #F2F2F2;">
     <form class="layui-form layui-form-pane"  id="eidForm">
         <div class="layui-row layui-col-space15">
             <div class="layui-col-md6 layui-col-md-offset3" >
                 <div class="layui-card" >
                     <div class="layui-card-body">
-<!--                        <div class="layui-form-item" >-->
-<!--                            <label class="layui-form-label">申请批次</label>-->
-<!--                            <div class="layui-input-block" style="width: 120px;">-->
-<!--                                <input type="text" name="eid" id="eid" placeholder="请输入" autocomplete="off"-->
-<!--                                       class="layui-input"lay-verify="required">-->
-<!--                            </div>-->
-<!--                        </div>-->
                         <div class="layui-form-item" >
-                        <label class="layui-form-label">申请批次</label>
-                        <select id="eid" name="eid" lay-verify="required"  lay-filter="*" class="select">
-                            <option value="" ></option>
-                        </select>
+                            <label class="layui-form-label">申请批次</label>
+                            <div class="layui-input-inline" style="width: 120px;">
+                                <input type="text" name="eid" id="eid" placeholder="请输入" autocomplete="off"
+                                       class="layui-input"lay-verify="required">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">请输入申请批次，例如：10</div>
                         </div>
+<!--                        <div class="layui-form-item" >-->
+<!--                        <label class="layui-form-label">申请批次</label>-->
+<!--                        <select id="eid" name="eid" lay-verify="required"  lay-filter="*" class="select">-->
+<!--                            <option value="" ></option>-->
+<!--                        </select>-->
+<!--                        </div>-->
 <!--                        <div class="layui-form-item">-->
 <!--                            <label class="layui-form-label"申请批次</label>-->
 <!--                            <div class="layui-input-block"style="width: 120px;">-->
@@ -61,18 +66,18 @@
             ,layedit = layui.layedit
             ,laydate = layui.laydate;
         var $ = layui.jquery;
-        $.ajax({
-            url: '/api/json/available_events',
-            dataType: 'json',
-            type: 'get',
-            success: function (res) {
-                $.each(res.data, function (index, item) {
-                    var text="场次:"+item.eid ;
-                    $('#eidForm').append(new Option(text, item.eid));// 下拉菜单里添加元素
-                });
-                layui.form.render("select");
-            }
-        });
+        // $.ajax({
+        //     url: '/api/json/available_events',
+        //     dataType: 'json',
+        //     type: 'get',
+        //     success: function (res) {
+        //         $.each(res.data, function (index, item) {
+        //             var text="场次:"+item.eid ;
+        //             $('#eidForm').append(new Option(text, item.eid));// 下拉菜单里添加元素
+        //         });
+        //         layui.form.render("select");
+        //     }
+        // });
 
         //自定义验证规则
         form.verify({
