@@ -10,22 +10,12 @@
     <script src="/jquery-3.4.1.js"></script>
 </head>
 <body>
+<div class="page">
+    <div class="little-header">
+        <blockquote class="layui-elem-quote">CCF认证成绩</blockquote>
+    </div>
+</div>
 
-<!--<table class="layui-table" lay-data="{width: 892, height:330, url:'/api/json/all_grades', page:true, id:'idTest'}" lay-filter="demo">-->
-<!--    <thead>-->
-<!--    <tr>-->
-<!--        <th lay-data="{type:'checkbox', fixed: 'left'}"></th>-->
-<!--        <th lay-data="{field:'eid', sort: true}">届数</th>-->
-<!--        <th lay-data="{field:'grades', sort: true}">总分</th>-->
-<!--        <th lay-data="{field:'gradesProblem1', sort: true}">题目1</th>-->
-<!--        <th lay-data="{field:'gradesProblem2', sort: true}">题目2</th>-->
-<!--        <th lay-data="{field:'gradesProblem3', sort: true}">题目3</th>-->
-<!--        <th lay-data="{field:'gradesProblem4', sort: true}">题目4</th>-->
-<!--        <th lay-data="{field:'gradesProblem5', sort: true}">题目5</th>-->
-<!--        <th lay-data="{fixed: 'right', align:'center', toolbar: '#barDemo'}"></th>-->
-<!--    </tr>-->
-<!--    </thead>-->
-<!--</table>-->
 <table class="layui-table" id="demo" lay-filter="test"></table>
 
 <script type="text/html" id="barDemo">
@@ -33,7 +23,7 @@
 </script>
 
 <script src="/layui.js" charset="utf-8"></script>
-<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+
 
 <script>
     layui.use('table', function(){
