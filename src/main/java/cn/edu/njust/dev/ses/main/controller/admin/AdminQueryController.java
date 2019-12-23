@@ -115,7 +115,16 @@ public class AdminQueryController {
         return ResultDTO.okOf();
     }
 
-
+    @ResponseBody
+    @RequestMapping("/api/json/get_my_teacher_info")
+    public ResultDTO getMyInfo(HttpSession session) {
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
+        if (sessionUser == null || teacherInfo == null) {
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        return ResultDTO.okOf(teacherInfo);
+    }
     @ResponseBody
     @RequestMapping("/api/json/delete_ccf_event")
     public ResultDTO deleteCCFEvent(HttpSession session, @RequestParam List<Integer> eid){

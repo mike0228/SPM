@@ -31,7 +31,7 @@ public class AdminAccountManagementController {
     public ResultDTO createAdminAccount(HttpSession session, @RequestParam String name, @RequestParam String password, @RequestParam String type, @RequestParam(required = false) String teacherName, @RequestParam(required = false) String teacherWorkId){
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
-        if(sessionUser == null|| teacherInfo == null|| !sessionUser.getType().equals("associate")){
+        if(sessionUser == null|| (teacherInfo == null&&!sessionUser.getType().equals("associate"))){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
         User user = new User(null, name, password, type);
@@ -58,7 +58,7 @@ public class AdminAccountManagementController {
                                      @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer limit){
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
-        if(sessionUser == null|| teacherInfo == null|| !sessionUser.getType().equals("associate")){
+        if(sessionUser == null|| (teacherInfo == null&&!sessionUser.getType().equals("associate"))){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
         if(type != null && !StringUtils.equalsAny(type, "teacher", "student", "associate")){
@@ -82,7 +82,7 @@ public class AdminAccountManagementController {
     public ResultDTO deleteAccount(HttpSession session, @RequestParam List<Integer> uid){
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
-        if(sessionUser == null|| teacherInfo == null|| !sessionUser.getType().equals("associate")){
+        if(sessionUser == null|| (teacherInfo == null&&!sessionUser.getType().equals("associate"))){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
         UserExample userExample = new UserExample();

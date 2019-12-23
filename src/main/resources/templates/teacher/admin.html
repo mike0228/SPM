@@ -61,16 +61,11 @@
             <dl class="layui-nav-child">
               <dd><a id="studentCheck">申请列表</a></dd>
               <dd><a id="scoreCheck">外校成绩</a></dd>
-              <dd><a onclick="download()">红名单下载</a></dd>
+              <dd><a id="redList">红名单</a></dd>
             </dl>
           </li>
           <script>
-              function download() {
-                /*
-                /api/json/generate_red_list
-                /api/export_qualified_persons_list
-                */
-              }
+
 
 
 
@@ -82,7 +77,9 @@
               <dd><a id="studentImport">学生导入</a></dd>
             </dl>
           </li>
+          <li class="layui-nav-item"><a id="userManager">用户管理</a></li>
           <li class="layui-nav-item"><a id="information">个人信息</a></li>
+
         </ul>
       </div>
     </div>
