@@ -73,7 +73,7 @@
                             toolbar: '#toolbarDemo'
                             //,height: 600
                             ,
-                            data: res.data.data //数据接口
+                            data: res.data //数据接口
                             , response: {
                                 statusName: 'code' //规定数据状态的字段名称，默认：code
                                 , statusCode: 200 //规定成功的状态码，默认：0
@@ -96,7 +96,8 @@
                                 }, {
                                     title: '金额（元）',
                                     value:0,
-                                    sort: true
+                                    sort: true,
+                                    templet:function(d){return "0";}
                                 }
                                 ]
                             ]
