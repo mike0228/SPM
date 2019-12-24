@@ -147,7 +147,7 @@ public class StudentQueryController {
             return ResultDTO.errorOf(0, "不存在该考试 ID。");
         if(ccfEvent.getCanApply() == 0)
             return ResultDTO.errorOf(0, "该次考试的申请已经关闭。");
-        Date currentTime = new Date();
+        Date currentTime = new Date(new Date().getTime() + 8 * 3600 * 1000);
 
         if(currentTime.after(ccfEvent.getAppliDeadline()))
             return ResultDTO.errorOf(0, "该次考试的公费申请截止时间已过。");
