@@ -78,7 +78,7 @@ public class StudentQueryController {
 
     @ResponseBody
     @RequestMapping("/api/json/all_grades")
-    public ResultDTO getAllGradesEntries(HttpSession session, @RequestParam Boolean isOnHold){
+    public ResultDTO getAllGradesEntries(HttpSession session){
         //isOnHold决定是否要获取待审核的成绩
         //TODO 获取学生所有CCF成绩
         //注：应用studentInfo内的学号获取。
@@ -88,7 +88,7 @@ public class StudentQueryController {
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
         GradesEntryExample gradesEntryExample=new GradesEntryExample();
-        gradesEntryExample.createCriteria().andStudentIdEqualTo(studentInfo.getStudentId()).andIsApprovedEqualTo(isOnHold);
+        gradesEntryExample.createCriteria().andStudentIdEqualTo(studentInfo.getStudentId());
         List<GradesEntry> result=gradesEntryMapper.selectByExample(gradesEntryExample);
         return ResultDTO.okOf(result);
     }

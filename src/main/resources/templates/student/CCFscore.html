@@ -38,7 +38,7 @@
             console.log(data);
             if (layEvent === 'del') { //删除
                 layer.confirm('确认要删除吗', function (index) {
-                    $.post("/api/json/delete_app?eid=" + data.eid, {},
+                    $.post("/api/json/delete_onhold_grades?entryID=" + data.eid, {},
                         function (response) {
                             if (response.code === 200) {
                                 obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
@@ -59,7 +59,7 @@
             toolbar: '#toolbarDemo'
             //,height: 600
             ,
-            url: '/api/json/all_apps' //数据接口
+            url: '/api/json/all_grades' //数据接口
             , response: {
                 statusName: 'code' //规定数据状态的字段名称，默认：code
                 , statusCode: 200 //规定成功的状态码，默认：0
@@ -106,6 +106,10 @@
                         field: 'gradesProblem5',
                         title: '题目5',
                         sort: true
+                    },
+                    {
+                        field: 'isOnHold',
+                        title: '状态',
                     },{fixed: 'right', width: 150, align: 'center', toolbar: '#barDemo'}
                 ]
             ]
