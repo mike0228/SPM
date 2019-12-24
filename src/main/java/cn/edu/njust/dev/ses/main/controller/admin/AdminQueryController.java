@@ -57,6 +57,8 @@ public class AdminQueryController {
     @Autowired
     SelectRankEntryMapper selectRankEntryMapper;
     @Autowired
+    DetailedSelectRankEntryMapper detailedSelectRankEntryMapper;
+    @Autowired
     GlobalParameterMapper globalParameterMapper;
     @Autowired
     AccountManagementService accountManagementService;
@@ -482,12 +484,12 @@ public class AdminQueryController {
         if(sessionUser == null|| teacherInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
-        SelectRankEntryExample selectRankEntryExample = new SelectRankEntryExample();
+        DetailedSelectRankEntryExample selectRankEntryExample = new DetailedSelectRankEntryExample();
         selectRankEntryExample.createCriteria().andEidEqualTo(eid);
-        selectRankEntryExample.setOrderByClause("rank ASC");
+        selectRankEntryExample.setOrderByClause("rank_no ASC");
         RowBounds rowBounds = page != null && limit != null ? new RowBounds(limit * (page - 1), limit) : new RowBounds();
-        List<SelectRankEntry> selectRankEntries = selectRankEntryMapper.selectByExampleWithRowbounds(selectRankEntryExample, rowBounds);
-        return ResultDTO.okOf(selectRankEntries, selectRankEntryMapper.countByExample(selectRankEntryExample));
+        List<DetailedSelectRankEntry> selectRankEntries = detailedSelectRankEntryMapper.selectByExampleWithRowbounds(selectRankEntryExample, rowBounds);
+        return ResultDTO.okOf(selectRankEntries, detailedSelectRankEntryMapper.countByExample(selectRankEntryExample));
     }
 
     private final static List<String> availableStatus = Arrays.asList("not confirmed", "pending", "auto-approved", "approved", "manually-approved", "failed");
