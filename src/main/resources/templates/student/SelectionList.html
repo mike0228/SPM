@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html >
+<head>
+    <meta charset="utf-8">
+    <title>所有选拔成绩</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/css/layui.css" media="all">
+    <script src="/jquery-3.4.1.js"></script>
+</head>
+<body>
+<div class="page">
+    <div class="little-header">
+        <blockquote class="layui-elem-quote">选拔考试所有成绩</blockquote>
+    </div>
+</div>
+<table class="layui-table" id="demo" lay-filter="test"></table>
+
+
+<script src="/layui.js" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+        var $ = layui.jquery;
+
+
+        table.render({
+            elem: '#demo',
+            toolbar: '#toolbarDemo'
+            //,height: 600
+            ,
+            url: '/api/json/all_select_rank' //数据接口
+            , response: {
+                statusName: 'code' //规定数据状态的字段名称，默认：code
+                , statusCode: 200 //规定成功的状态码，默认：0
+                , msgName: 'message' //规定状态信息的字段名称，默认：msg
+                , dataName: 'data' //规定数据列表的字段名称，默认：data
+            },
+            page: true //开启分页
+            ,
+            id: 'testReload',
+            cols: [
+                [ //表头
+                    {
+                        checkbox: true,
+                        fixed: true
+                    },
+                    // {
+                    //     field: 'eid',
+                    //     title: '批次',
+                    //     sort: true
+                    // },
+                    {
+                        field: 'name',
+                        title: '姓名',
+                        sort: true
+                    },{
+                    field: 'rankNo',
+                    title: '排名',
+                    sort: true
+                }, {fixed: 'right', width: 150, align: 'center', toolbar: '#barDemo'}
+                ]
+            ]
+        });
+    });
+</script>
+
+</body>
+</html>
