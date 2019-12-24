@@ -9,69 +9,50 @@
     <script src="/jquery-3.4.1.js"></script>
 </head>
 <body>
-
     <div class="little-header layui-layer-padding">
         <blockquote class="layui-elem-quote">更改筛选条件</blockquote>
     </div>
-    <div class="layui-row" >
-        <!-- 内容主体区域 -->
-        <div style="padding: 15px;">
-            <b id="passModifyMess" style="color: red;"></b>
+    <div style="padding:150px 70px 200px 70px">
+        <form class="layui-form layui-form-pane" id="form1">
+            <div class="layui-row layui-col-space15" >
+                <div class="layui-col-md6 layui-col-md-offset3" >
+                    <div class="layui-card">
+                        <div class="layui-card-body">
 
-            <form class="layui-form" id="form1">
-                <div class="layui-form-item">
-                    <label class="layui-form-label">分数</label>
-                    <div class="layui-input-inline">
-                        <input type="input" required lay-verify="required" autocomplete="off" class="layui-input" name="value">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">分数</label>
+                                <div class="layui-input-inline">
+                                    <input type="input" required lay-verify="required" autocomplete="off" class="layui-input" name="value">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">请输入筛选分数</div>
+                            </div>
+
+                            <input type="hidden" name="param" value="midgrades_for_autoapprove">
+
+                            <div class="layui-form-item" style="padding-left: 110px">
+                                <button type="button" class="layui-btn" onclick="confirm_1()">确认</button>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
-                <input type="hidden" name="param" value="midgrades_for_autoapprove">
-                <div class="layui-form-item" style="padding-left: 110px">
-                    <button type="button" class="layui-btn" onclick="confirm_1()">确认</button>
-                </div>
-            </form>
-            <script>
-                function confirm_1() {
-                    $.post("/api/json/change_global_settings", $("#form1").serialize(),
-                        function (res) {
-                            if(res.code==200){
-                                layer.msg("修改成功");
-                            }else
-                            {
-                                layer.msg(res.message);
-                            }
-                        });
-                }
-            </script>
+            </div>
+        </form>
 
-<!--            <form class="layui-form" id="form2">-->
-<!--                <div class="layui-form-item">-->
-<!--                    <label class="layui-form-label">前百分比</label>-->
-<!--                    <div class="layui-input-inline">-->
-<!--                        <input type="input" name="old_password" required lay-verify="required" autocomplete="off" class="layui-input">-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <div class="layui-form-item" style="padding-left: 110px">-->
-<!--                    <button type="button" class="layui-btn" onclick="confirm_2()">确认</button>-->
-<!--                </div>-->
-<!--            </form>-->
-<!--            <script>-->
-<!--                function confirm_2() {-->
-<!--                    $.post("/api/json/confirm_rank_import", $("#form2").serialize(),-->
-<!--                        function (res) {-->
-<!--                            if(res.code==200){-->
-<!--                                layer.msg("修改成功");-->
-<!--                            }else-->
-<!--                            {-->
-<!--                                layer.msg(res.message);-->
-<!--                            }-->
-<!--                        });-->
-<!--                }-->
-<!--            </script>-->
-        </div>
+        <script>
+            function confirm_1() {
+                $.post("/api/json/change_global_settings", $("#form1").serialize(),
+                    function (res) {
+                        if(res.code==200){
+                            layer.msg("修改成功");
+                        }else
+                        {
+                            layer.msg(res.message);
+                        }
+                    });
+            }
+        </script>
     </div>
-
-
 <script>
     //JavaScript代码区域
     layui.use('element', function(){
