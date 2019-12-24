@@ -77,7 +77,7 @@ public class ExportExcelController {
     public ResultDTO generateRedList(HttpSession session, @RequestParam Integer eid){
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
-        if(sessionUser == null|| teacherInfo == null){
+        if(sessionUser == null|| (teacherInfo == null && !sessionUser.getType().equals("associate"))){
             return ResultDTO.errorOf(0,"用户未登录或用户类型不正确。");
         }
         SelectRankEntryExample selectRankEntryExample = new SelectRankEntryExample();

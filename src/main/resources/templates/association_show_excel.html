@@ -24,6 +24,7 @@
         <input type="hidden" name="confirmId" id="confirmId">
         <div class="layui-form-item" style="padding-left: 15px">
             <button type="button" class="layui-btn" onclick="dataUpload()">确认提交</button>
+            <button type="button" class="layui-btn" onclick="generate()">生成</button>
         </div>
     </form>
     <table class="layui-table" id="demo" lay-filter="test"></table>
@@ -62,7 +63,19 @@
                     layui.form.render("select");
                 }
             });
-        })
+        });
+        function generate() {
+            var eid=$("#eidlist").val();
+
+            $.get("/api/json/generate_red_list?eid="+eid,function (res) {
+                if(res.code==200){
+                    layer.msg("生成成功");
+                }
+                else {
+                    layer.msg("操作失败，请联系网站管理员");
+                }
+            });
+        }
         function dataUpload() {
             var eid = $("#eidlist").val();
             $.post("/api/json/obtain_application?status=auto-approved&status=approved&status=manually-approved&eid="+eid,
