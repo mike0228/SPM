@@ -17,10 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 @SuppressWarnings("rawtypes")
@@ -167,6 +164,13 @@ public class StudentQueryController {
         long qualifiedEntries = gradesEntryMapper.countByExample(gradesEntryExample);
         if(qualifiedEntries > autoApprovedChancesUsed){
             application.setAppStatus("auto-approved");
+        }else{
+            ApplicationExample applicationExample3 = new ApplicationExample();
+            applicationExample3.createCriteria().andAppStatusIn(Arrays.asList("approved", "manually-approved")).andUidEqualTo(studentInfo.getUid());
+            long usedChances = applicationMapper.countByExample(applicationExample3);
+            if(usedChances > 0){
+                application.setAppStatus("failed");
+            }
         }
         applicationMapper.insertSelective(application);
         return ResultDTO.okOf();
