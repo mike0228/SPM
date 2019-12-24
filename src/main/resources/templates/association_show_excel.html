@@ -64,8 +64,7 @@
             });
         })
         function dataUpload() {
-            var eid = $("#eidlist").val()
-            alert(eid);
+            var eid = $("#eidlist").val();
             $.post("/api/json/obtain_application?status=auto-approved&status=approved&status=manually-approved&eid="+eid,
                 function (res) {
                     if(res.code==200){
