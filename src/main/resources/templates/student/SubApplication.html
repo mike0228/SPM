@@ -7,6 +7,20 @@
     <link rel="stylesheet" href="/css/layui.css">
     <script src="/jquery-3.4.1.js"></script>
 </head>
+<style>
+    html {
+        width: 100%;
+        height: 100%;
+    }
+
+    body {
+        width: 100%;
+        height: 100%;
+        background-color: #F2F2F2;
+    }
+
+</style>
+
 <body class="layui-layout-body">
 <div class="page">
     <div class="little-header">
@@ -19,28 +33,28 @@
             <div class="layui-col-md6 layui-col-md-offset3" >
                 <div class="layui-card" >
                     <div class="layui-card-body">
-                        <div class="layui-form-item" >
+<!--                       <div class="layui-form-item" >
                             <label class="layui-form-label">申请批次</label>
                             <div class="layui-input-inline" style="width: 200px;">
                                 <input type="text" name="eid" id="eid" placeholder="请输入" autocomplete="off"
                                        class="layui-input"lay-verify="required">
                             </div>
                             <div class="layui-form-mid layui-word-aux">请输入申请批次，例如：10</div>
-                        </div>
+                        </div>-->
 <!--                        <div class="layui-form-item" >-->
 <!--                        <label class="layui-form-label">申请批次</label>-->
 <!--                        <select id="eid" name="eid" lay-verify="required"  lay-filter="*" class="select">-->
 <!--                            <option value="" ></option>-->
 <!--                        </select>-->
 <!--                        </div>-->
-<!--                        <div class="layui-form-item">-->
-<!--                            <label class="layui-form-label"申请批次</label>-->
-<!--                            <div class="layui-input-block"style="width: 120px;">-->
-<!--                                <select id="eid" name="eid" lay-filter="*" class="select">-->
-<!--                                    <option value=""></option>-->
-<!--                                </select>-->
-<!--                            </div>-->
-<!--                        </div>-->
+                        <div class="layui-form-item layui-col-md6 layui-col-md-offset3" >
+                            <label class="layui-form-label">申请批次</label>
+                            <div class="layui-input-block"style="width: 120px;">
+                                <select id="eid" name="eid" lay-filter="*" class="select">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
 
                         <div class="layui-form-item" style="margin: 0px 0px 0px 100px;">
                             <div class="layui-input-block">
@@ -66,26 +80,26 @@
             ,layedit = layui.layedit
             ,laydate = layui.laydate;
         var $ = layui.jquery;
-        // $.ajax({
-        //     url: '/api/json/available_events',
-        //     dataType: 'json',
-        //     type: 'get',
-        //     success: function (res) {
-        //         $.each(res.data, function (index, item) {
-        //             var text="场次:"+item.eid ;
-        //             $('#eidForm').append(new Option(text, item.eid));// 下拉菜单里添加元素
-        //         });
-        //         layui.form.render("select");
-        //     }
-        // });
-
-        //自定义验证规则
-        form.verify({
-            number: function(e) {
-                if (!e || isNaN(e)) return "只能填写数字"
-                if(e>500||e<0||e%10!==0) return "请输入正确的分数"
+        $.ajax({
+            url: '/api/json/available_events',
+            dataType: 'json',
+            type: 'get',
+            success: function (res) {
+                $.each(res.data, function (index, item) {
+                    var text="场次:"+item.eid ;
+                    $('#eid').append(new Option(text, item.eid));// 下拉菜单里添加元素
+                });
+                layui.form.render("select");
             }
         });
+
+        // //自定义验证规则
+        // form.verify({
+        //     number: function(e) {
+        //         if (!e || isNaN(e)) return "只能填写数字"
+        //         if(e>500||e<0||e%10!==0) return "请输入正确的分数"
+        //     }
+        // });
 
         form.on('submit(reg)', function (data) {
             var eid =$('#eid').val();
