@@ -81,6 +81,14 @@
                         </div>
 
                         <div class="layui-form-item" >
+                            <label class="layui-form-label">专业</label>
+                            <div class="layui-input-block" style="width: 350px;margin-bottom: 3px">
+                                <input type="text" readonly  unselectable="on"name="profession" id="profession" placeholder="" autocomplete="off"
+                                       class="layui-input"lay-verify="number1">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item" >
                             <label class="layui-form-label">班级</label>
                             <div class="layui-input-block" style="width: 350px;margin-bottom: 3px">
                                 <input type="text"readonly  unselectable="on" name="classNo" id="classNo" placeholder="" autocomplete="off"
@@ -132,6 +140,7 @@
                     $('#idNo').val(data.data[0].idNo),
                     $('#ethnicGroup').val(data.data[0].ethnicGroup),
                     $('#institute').val(data.data[0].institute),
+                    $('#profession').val(data.data[0].profession),
                     $('#classNo').val(data.data[0].classNo),
                     $('#phoneNo').val(data.data[0].phoneNo),
                     $('#admissionYear').val(data.data[0].admissionYear)
