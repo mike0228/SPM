@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/css/layui.css" media="all">
+    <script src="/jquery-3.4.1.js"></script>
+</head>
+<body>
+<div class="page">
+    <div class="little-header">
+        <blockquote class="layui-elem-quote">查看个人信息</blockquote>
+    </div>
+</div>
+<table class="layui-table" id="demo" lay-filter="test"></table>
+
+<div style="padding: 20px; background-color: #F2F2F2;">
+    <form class="layui-form layui-form-pane" action="" id="formData">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6 layui-col-md-offset3 layui-col-md-offset3" >
+                <div class="layui-card" >
+                    <div class="layui-card-body">
+
+                        <div class="layui-form-item" >
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-block" style="width: 350px;margin-bottom: 3px">
+                                <input type="text" readonly  unselectable="on"name="name" id="name" placeholder="" autocomplete="off"
+                                       class="layui-input"lay-verify="number1">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item" >
+                            <label class="layui-form-label">学号</label>
+                            <div class="layui-input-block" style="width: 350px;margin-bottom: 3px">
+                                <input type="text" readonly  unselectable="on"name="studentID" id="studentID" placeholder="" autocomplete="off"
+                                       class="layui-input"lay-verify="number1">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item" >
+                            <label class="layui-form-label">性别</label>
+                            <div class="layui-input-block" style="width: 350px;margin-bottom: 3px">
+                                <input type="text" readonly  unselectable="on"name="gender" id="gender" placeholder="" autocomplete="off"
+                                       class="layui-input"lay-verify="number1">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item" >
+                            <label class="layui-form-label">民族</label>
+                            <div class="layui-input-block" style="width: 350px;margin-bottom: 3px">
+                                <input type="text" readonly  unselectable="on"name="ethnicGroup" id="ethnicGroup" placeholder="" autocomplete="off"
+                                       class="layui-input"lay-verify="number1">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item" >
+                            <label class="layui-form-label">身份证号</label>
+                            <div class="layui-input-block" style="width: 350px;margin-bottom: 3px">
+                                <input type="text" readonly  unselectable="on"name="idNo" id="idNo" placeholder="" autocomplete="off"
+                                       class="layui-input"lay-verify="number1">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item" >
+                            <label class="layui-form-label">入学年份</label>
+                            <div class="layui-input-block" style="width: 350px;margin-bottom: 3px">
+                                <input type="text" readonly  unselectable="on"name="admissionYear" id="admissionYear" placeholder="" autocomplete="off"
+                                       class="layui-input"lay-verify="number1">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item" >
+                            <label class="layui-form-label">院系</label>
+                            <div class="layui-input-block" style="width: 350px;margin-bottom: 3px">
+                                <input type="text" readonly  unselectable="on"name="institute" id="institute" placeholder="" autocomplete="off"
+                                       class="layui-input"lay-verify="number1">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item" >
+                            <label class="layui-form-label">班级</label>
+                            <div class="layui-input-block" style="width: 350px;margin-bottom: 3px">
+                                <input type="text"readonly  unselectable="on" name="classNo" id="classNo" placeholder="" autocomplete="off"
+                                       class="layui-input"lay-verify="number1">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item" >
+                            <label class="layui-form-label">手机号码</label>
+                            <div class="layui-input-block" style="width: 350px;margin-bottom: 3px">
+                                <input type="text"readonly  unselectable="on" name="phoneNo" id="phoneNo" placeholder="" autocomplete="off"
+                                       class="layui-input"lay-verify="number1">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="/layui.js" charset="utf-8"></script>
+
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+        var $ = layui.jquery;
+        var active = {
+            reload: function () {
+                var demoReload = $('#demoReload');
+
+                table.reload('testReload', {
+                    where: {
+                        keyword: demoReload.val()
+                    }
+                });
+            }
+        };
+
+        $(function() {
+            $.ajax({
+                type : 'get',
+                url : '/api/json/all_info',
+                dataType : 'json',
+                success : function(data) {
+                         $('#name').val(data.data[0].name),
+                    $('#studentId').val(data.data[0].studentId),
+                    $('#gender').val(data.data[0].gender),
+                    $('#idNo').val(data.data[0].idNo),
+                    $('#ethnicGroup').val(data.data[0].ethnicGroup),
+                    $('#institute').val(data.data[0].institute),
+                    $('#classNo').val(data.data[0].classNo),
+                    $('#phoneNo').val(data.data[0].phoneNo),
+                    $('#admissionYear').val(data.data[0].admissionYear)
+                },
+                error : function() {
+                    $.message.alert('提示', '请求失败！', 'error');
+                }
+            });
+        });
+
+
+        $('.demoTable .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>
+
+</body>
+</html>
