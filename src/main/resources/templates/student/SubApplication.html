@@ -50,7 +50,7 @@
                         <div class="layui-form-item layui-col-md6 layui-col-md-offset3" >
                             <label class="layui-form-label">申请批次</label>
                             <div class="layui-input-block"style="width: 120px;">
-                                <select id="examNo" name="examNo" lay-filter="*" class="select">
+                                <select id="eid" name="eid" lay-filter="*" class="select">
                                     <option value=""></option>
                                 </select>
                             </div>
@@ -87,7 +87,7 @@
             success: function (res) {
                 $.each(res.data, function (index, item) {
                     var text="场次:"+item.examNo ;
-                    $('#examNo').append(new Option(text, item.eid));// 下拉菜单里添加元素
+                    $('#eid').append(new Option(text, item.eid));// 下拉菜单里添加元素
                 });
                 layui.form.render("select");
             }
@@ -102,7 +102,7 @@
         // });
 
         form.on('submit(reg)', function (data) {
-            var eid =$('#eid').val();
+            var eid =$('#eid').val();//原本是获取下拉框选中的值传参，现在应该怎么改？
             $.post("/api/json/submit_app", $("#eidForm").serialize(),function (data) {
                 if (data.code===200) {
                     layer.msg('提交成功', {icon: 1, time: 1000});
