@@ -15,7 +15,7 @@ public class StudentDTO extends GenericDTO {
     private String studentId;
     @ExcelField("性别")
     private String gender;
-    @ExcelField({"身份证号", "身份证", "证件号码"})
+    @ExcelField({"身份证号", "身份证", "证件号码", "身份证号码"})
     private String idNo;
     @ExcelField(value = "民族", required = false)
     private String ethnicGroup;

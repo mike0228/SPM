@@ -156,7 +156,7 @@ public class StudentQueryController {
         Application application = new Application();
         application.setUid(studentInfo.getUid());
         application.setEid(eid);
-        application.setAppTime(currentTime);
+        application.setAppTime(new Date(currentTime.getTime() + 8 * 3600 * 1000));
         ApplicationExample applicationExample = new ApplicationExample();
         applicationExample.createCriteria().andAppStatusEqualTo("auto-approved").andUidEqualTo(studentInfo.getUid());
         long autoApprovedChancesUsed = applicationMapper.countByExample(applicationExample);
@@ -194,8 +194,7 @@ public class StudentQueryController {
                                               @RequestParam Integer gradesProblem3,
                                               @RequestParam Integer gradesProblem4,
                                               @RequestParam Integer gradesProblem5,
-                                              @RequestParam MultipartFile file
-                                              ) throws IOException {
+                                              @RequestParam MultipartFile file) throws IOException {
         //TODO 添加待审核成绩
         //注：需将 is_approved 设成 false
         User sessionUser = (User) session.getAttribute("logged_in_as");
@@ -212,6 +211,7 @@ public class StudentQueryController {
         GradesEntry gradesEntry=new GradesEntry();
         gradesEntry.setEid(eid);
         gradesEntry.setStudentId(studentInfo.getStudentId());
+        gradesEntry.setIdNo(studentInfo.getIdNo());
         gradesEntry.setGrades(grades);
         gradesEntry.setIsApproved(false);
         gradesEntry.setGradesProblem1(gradesProblem1);

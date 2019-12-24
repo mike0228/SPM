@@ -101,6 +101,11 @@ public class ExportExcelController {
                 count++;
             }
         }
+        ApplicationExample applicationExample3 = new ApplicationExample();
+        applicationExample3.createCriteria().andAppStatusNotIn(Arrays.asList("auto-approved", "approved", "manually-approved")).andEidEqualTo(eid);
+        Application application = new Application();
+        application.setAppStatus("failed");
+        applicationMapper.updateByExampleSelective(application, applicationExample3);
         return ResultDTO.okOf();
     }
 }

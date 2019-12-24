@@ -58,6 +58,8 @@ public class AdminMainController {
     public String redList(HttpSession session){ return "teacher/redList"; }
     @RequestMapping("/teacher/userManager")
     public String userManager(HttpSession session){ return "teacher/userManager"; }
+    @RequestMapping("/teacher/rankEvent")
+    public String rankEvent(HttpSession session){ return "teacher/rankEvent"; }
 
 
 
@@ -70,5 +72,8 @@ public class AdminMainController {
     public String associateImportScores(HttpSession session){ return "association_import_scores"; }
     @RequestMapping("/associate/association_change_password")
     public String associateChangePassword(HttpSession session){ return "association_change_password"; }
+    @RequestMapping("/associate/association_show_excel")
+    public String associateShowExcel(HttpSession session){ return "association_show_excel"; }
+
 
 }

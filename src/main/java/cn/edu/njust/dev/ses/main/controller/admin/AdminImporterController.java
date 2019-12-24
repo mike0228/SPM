@@ -13,6 +13,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.poi.poifs.filesystem.NotOLE2FileException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -128,7 +129,7 @@ public class AdminImporterController {
             studentExample.createCriteria().andIdNoEqualTo(selectRankEntryDTO.getIdNo());
             List<Student> students = studentMapper.selectByExample(studentExample);
             if(!students.isEmpty())
-                selectRankEntryDTO.setStudentId(students.get(0).getStudentId());
+                selectRankEntryDTO.setUid(students.get(0).getUid());
         }
 
 
@@ -161,7 +162,13 @@ public class AdminImporterController {
             SelectRankEntry selectRankEntry = new SelectRankEntry();
             BeanUtils.copyProperties(selectRankEntryDTO, selectRankEntry);
             selectRankEntry.setEid(eid);
-            count += selectRankEntryMapper.insertSelective(selectRankEntry);
+            if(selectRankEntry.getUid() == null)
+                continue;
+            try {
+                count += selectRankEntryMapper.insertSelective(selectRankEntry);
+            } catch (DuplicateKeyException e) {
+                e.printStackTrace();
+            }
         }
         session.removeAttribute("last_result_select_ranks_import");
         return ResultDTO.okOf(count);
@@ -189,7 +196,11 @@ public class AdminImporterController {
             GradesEntry gradesEntry = new GradesEntry();
             BeanUtils.copyProperties(gradesEntryDTO, gradesEntry);
             gradesEntry.setEid(eid);
-            count += gradesEntryMapper.insertSelective(gradesEntry);
+            try {
+                count += gradesEntryMapper.insertSelective(gradesEntry);
+            } catch (DuplicateKeyException e) {
+                e.printStackTrace();
+            }
         }
         session.removeAttribute("last_result_grades_import");
         return ResultDTO.okOf(count);
@@ -216,7 +227,11 @@ public class AdminImporterController {
         for(StudentDTO studentDTO : tempStorageObject.getData()){
             Student student = new Student();
             BeanUtils.copyProperties(studentDTO, student);
-            studentService.insertStudentRecordAndUpdateGradesEntry(student);
+            try {
+                studentService.insertStudentRecordAndUpdateGradesEntry(student);
+            } catch (DuplicateKeyException e) {
+                e.printStackTrace();
+            }
             count ++;
         }
         session.removeAttribute("last_result_student_import");

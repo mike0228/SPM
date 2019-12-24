@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>修改密码</title>
+    <title>导入选拔赛成绩</title>
     <link rel="stylesheet" href="/css/layui.css" media="all">
     <script src="/layui.js"></script>
     <script src="/jquery-3.4.1.js"></script>
@@ -44,7 +44,7 @@
                 type: 'get',
                 success: function (res) {
                     $.each(res.data, function (index, item) {
-                        var text="场次:"+item.examNo +"  开始时间:"+ item.selectExamTime;
+                        var text="场次:"+item.examNo +"  开始时间:"+ item.selectExamTime.slice(0,10)+" "+item.selectExamTime.slice(11,19);
                         $('#eidlist').append(new Option(text, item.eid));// 下拉菜单里添加元素
                     });
                     layui.form.render("select");
@@ -123,10 +123,6 @@
                         id: 'testReload',
                         cols: [
                             [ //表头
-                                {
-                                    checkbox: true,
-                                    fixed: true
-                                },
                                 {
                                 field: 'name',
                                 title: '姓名',
