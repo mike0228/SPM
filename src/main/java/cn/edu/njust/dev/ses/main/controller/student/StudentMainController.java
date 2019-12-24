@@ -35,9 +35,9 @@ public class StudentMainController {
     public String displaySubScore(HttpSession session){
         return "student/SubScore";
     }
-    @RequestMapping("/student/SelectionScoreList")
-    public String displaySelectionScoreList(HttpSession session){
-        return "student/SelectionScoreList";
+    @RequestMapping("/student/SelectionList")
+    public String displaySelectionList(HttpSession session){
+        return "student/SelectionList";
     }
     @RequestMapping("/student/SeeImformation")
     public String displaySeeImformation(HttpSession session){

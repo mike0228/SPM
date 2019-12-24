@@ -50,7 +50,7 @@
                         <div class="layui-form-item layui-col-md6 layui-col-md-offset3" >
                             <label class="layui-form-label">申请批次</label>
                             <div class="layui-input-block"style="width: 120px;">
-                                <select id="eid" name="eid" lay-filter="*" class="select">
+                                <select id="examNo" name="examNo" lay-filter="*" class="select">
                                     <option value=""></option>
                                 </select>
                             </div>
@@ -87,7 +87,7 @@
             success: function (res) {
                 $.each(res.data, function (index, item) {
                     var text="场次:"+item.eid ;
-                    $('#eid').append(new Option(text, item.eid));// 下拉菜单里添加元素
+                    $('#examNo').append(new Option(text, item.eid));// 下拉菜单里添加元素
                 });
                 layui.form.render("select");
             }

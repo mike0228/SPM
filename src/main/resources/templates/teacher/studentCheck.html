@@ -189,7 +189,7 @@
                     });
                 } else if (layEvent === 'approve') { //审核
                     layer.confirm('确认要通过吗', function (index) {
-                        $.get("/api/json/change_application_status?status=approved&aid=" + data.aid, {},
+                        $.get("/api/json/change_application_status?status=manually-approved&aid=" + data.aid, {},
                             function (response) {
                                 if (response.code == 200) {
                                     layui.table.reload('testReload');
