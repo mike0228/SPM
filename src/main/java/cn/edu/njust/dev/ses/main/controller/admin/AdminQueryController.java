@@ -564,7 +564,12 @@ public class AdminQueryController {
         GlobalParameter globalParameter = new GlobalParameter();
         globalParameter.setParam(param);
         globalParameter.setValue(value);
-        globalParameterMapper.updateByPrimaryKey(globalParameter);
-        return ResultDTO.okOf();
+        try{
+            globalParameterMapper.updateByPrimaryKey(globalParameter);
+            return ResultDTO.okOf();
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultDTO.errorOf(0,"上传失败");
+        }
     }
 }
