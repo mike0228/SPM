@@ -58,7 +58,7 @@ public class AccountService {
         List<User> users = userMapper.selectByExample(userExample);//根据账号搜索用户，不区分大小写
         User targetUser = users.isEmpty() ? null : users.get(0);//要么是查询到的第一个用户，要么置0
         if(targetUser == null){
-            targetUser = accountExtendMapper.findThroughID(userInfo.getAccount());//通过id查询用户
+            targetUser = accountExtendMapper.findThroughID(userInfo.getAccount());//通过account查询用户
             if(targetUser == null){
                 targetUser = tryToCreateAccountThroughID(userInfo.getAccount(), userInfo.getPassword());//查询该账号不存在的话选择创建账号
                 if(targetUser == null) return false;

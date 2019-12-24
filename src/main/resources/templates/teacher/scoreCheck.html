@@ -35,7 +35,7 @@
 <body>
 <div class="page">
     <div class="little-header">
-        <blockquote class="layui-elem-quote">Student Event</blockquote>
+        <blockquote class="layui-elem-quote">外校成绩</blockquote>
     </div>
 
     <table class="layui-table" id="demo" lay-filter="test"></table>
@@ -123,7 +123,7 @@
                             checkbox: true,
                             fixed: true
                         },{
-                        field: 'eid',
+                        field: 'examNo',
                         title: '考试批次',
                         sort: true
                     },
@@ -194,202 +194,13 @@
         });
 
         function getproof(gid) {
-            $.get("/api/grades_proof/"+gid);
+            window.open("/api/grades_proof/"+gid);
         }
     </script>
 </div>
 
 
 </body>
-
-
-<div id="form1" style="padding: 20px; display: none;">
-    <form class="layui-form" id="addform" lay-filter="create">
-        <div class="layui-form-item">
-            <label class="layui-form-label">考试批次</label>
-            <div class="layui-input-inline">
-                <input type="text" name="eid" id="eid" required lay-verify="required" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">学号</label>
-            <div class="layui-input-inline">
-                <input type="text" name="studentId" id="studentId" required lay-verify="required" class="layui-input">
-            </div>
-        </div>
-        <!--        <div class="layui-form-item">-->
-        <!--            <label class="layui-form-label">姓名</label>-->
-        <!--            <div class="layui-input-inline">-->
-        <!--                <input type="text" name="name" id="name" required lay-verify="required" class="layui-input">-->
-        <!--            </div>-->
-        <!--        </div>-->
-        <div class="layui-form-item">
-            <label class="layui-form-label">总分</label>
-            <div class="layui-input-inline">
-                <input type="text" name="grades" id="grade" required lay-verify="required" class="layui-input">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">第一题</label>
-            <div class="layui-input-inline">
-                <input type="text" name="gradesProblem1" id="gradesProblem1" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">第二题</label>
-            <div class="layui-input-inline">
-                <input type="text" name="gradesProblem2" id="gradesProblem2" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">第三题</label>
-            <div class="layui-input-inline">
-                <input type="text" name="gradesProblem3" id="gradesProblem3" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">第四题</label>
-            <div class="layui-input-inline">
-                <input type="text" name="gradesProblem4" id="gradesProblem4" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">第五题</label>
-            <div class="layui-input-inline">
-                <input type="text" name="gradesProblem5" id="gradesProblem5" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">审核状态</label>
-            <div class="layui-input-inline">
-                <input type="text" name="isApprove" id="isApprove" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <div class="layui-input-block">
-                <button type="submit" class="layui-btn">提交</button>
-                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-            </div>
-        </div>
-    </form>
-</div>
-
-
-<div id="form2" style="padding: 20px; display: none;">
-    <form class="layui-form" id="modifyform" lay-filter="modify">
-        <div class="layui-form-item">
-            <label class="layui-form-label">考试批次</label>
-            <div class="layui-input-inline">
-                <input type="text" name="eid" id="eid2" required lay-verify="required" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">学号</label>
-            <div class="layui-input-inline">
-                <input type="text" name="studentId" id="studentId2" required lay-verify="required" class="layui-input">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">总分</label>
-            <div class="layui-input-inline">
-                <input type="text" name="grades" id="grades2" required lay-verify="required" class="layui-input">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">第一题</label>
-            <div class="layui-input-inline">
-                <input type="text" name="gradesProblem1" id="gradesProblem12" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">第二题</label>
-            <div class="layui-input-inline">
-                <input type="text" name="gradesProblem2" id="gradesProblem22" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">第三题</label>
-            <div class="layui-input-inline">
-                <input type="text" name="gradesProblem3" id="gradesProblem32" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">第四题</label>
-            <div class="layui-input-inline">
-                <input type="text" name="gradesProblem4" id="gradesProblem42" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">第五题</label>
-            <div class="layui-input-inline">
-                <input type="text" name="gradesProblem5" id="gradesProblem52" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-
-
-        <div class="layui-form-item">
-            <div class="layui-input-block">
-                <button type="submit" class="layui-btn">提交</button>
-                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-            </div>
-        </div>
-        <input type="hidden" name="gid" id="gid">
-    </form>
-
-</div>
-<script>
-    //Demo
-    $('#addform').submit(function () {
-            $.post("/api/json/add_grades_entry", $("#addform").serialize(),
-                function (response) {
-                    if (response.code == 200) {
-                        layer.close(layer.index);
-                        layer.msg("添加成功");
-                        layui.table.reload('testReload');
-                    } else {
-
-                        layer.msg(response.message);
-                    }
-                }
-            );
-            return false;
-        }
-    );
-    $('#modifyform').submit(function () {
-            $.post("/api/json/modify_grades_entry", $("#modifyform").serialize(),
-                function (response) {
-                    if (response.code == 200) {
-                        layer.close(layer.index);
-                        layer.msg("修改成功");
-                        layui.table.reload('testReload');
-                    } else {
-                        layer.msg(response.message);
-                    }
-                }
-            );
-            return false;
-        }
-    );
-</script>
 
 
 </html>

@@ -2,30 +2,20 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Layui</title>
+    <title>CCFscore</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="/css/layui.css" media="all">
-    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+    <script src="/jquery-3.4.1.js"></script>
 </head>
 <body>
+<div class="page">
+    <div class="little-header">
+        <blockquote class="layui-elem-quote">CCF认证成绩</blockquote>
+    </div>
+</div>
 
-<!--<table class="layui-table" lay-data="{width: 892, height:330, url:'/api/json/all_grades', page:true, id:'idTest'}" lay-filter="demo">-->
-<!--    <thead>-->
-<!--    <tr>-->
-<!--        <th lay-data="{type:'checkbox', fixed: 'left'}"></th>-->
-<!--        <th lay-data="{field:'eid', sort: true}">届数</th>-->
-<!--        <th lay-data="{field:'grades', sort: true}">总分</th>-->
-<!--        <th lay-data="{field:'gradesProblem1', sort: true}">题目1</th>-->
-<!--        <th lay-data="{field:'gradesProblem2', sort: true}">题目2</th>-->
-<!--        <th lay-data="{field:'gradesProblem3', sort: true}">题目3</th>-->
-<!--        <th lay-data="{field:'gradesProblem4', sort: true}">题目4</th>-->
-<!--        <th lay-data="{field:'gradesProblem5', sort: true}">题目5</th>-->
-<!--        <th lay-data="{fixed: 'right', align:'center', toolbar: '#barDemo'}"></th>-->
-<!--    </tr>-->
-<!--    </thead>-->
-<!--</table>-->
 <table class="layui-table" id="demo" lay-filter="test"></table>
 
 <script type="text/html" id="barDemo">
@@ -33,7 +23,7 @@
 </script>
 
 <script src="/layui.js" charset="utf-8"></script>
-<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+
 
 <script>
     layui.use('table', function(){
@@ -48,7 +38,7 @@
             console.log(data);
             if (layEvent === 'del') { //删除
                 layer.confirm('确认要删除吗', function (index) {
-                    $.get("/api/json/delete_app?eid=" + data.eid, {},
+                    $.post("/api/json/delete_onhold_grades?entryID=" + data.eid, {},
                         function (response) {
                             if (response.code === 200) {
                                 obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
@@ -66,10 +56,7 @@
 
         table.render({
             elem: '#demo',
-            toolbar: '#toolbarDemo'
-            //,height: 600
-            ,
-            url: '/api/json/all_apps' //数据接口
+            url: '/api/json/all_grades' //数据接口
             , response: {
                 statusName: 'code' //规定数据状态的字段名称，默认：code
                 , statusCode: 200 //规定成功的状态码，默认：0
@@ -116,6 +103,10 @@
                         field: 'gradesProblem5',
                         title: '题目5',
                         sort: true
+                    },
+                    {
+                        field: 'isApproved',
+                        title: '状态',
                     },{fixed: 'right', width: 150, align: 'center', toolbar: '#barDemo'}
                 ]
             ]

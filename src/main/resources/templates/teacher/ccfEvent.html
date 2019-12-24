@@ -33,9 +33,206 @@
 </style>
 
 <body>
+<div id="form1" style="padding: 20px; display: none;">
+    <form class="layui-form" id="addform" lay-filter="create">
+        <div class="layui-form-item">
+            <label class="layui-form-label">考试批次</label>
+            <div class="layui-input-inline">
+                <input type="text" name="number" id="examNo" required lay-verify="required" class="layui-input ">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">正式考试时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="examTime" id="examTime" required lay-verify="required" class="layui-input laydate">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">选拔考试时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="selectExamTime" id="selectExamTime" required lay-verify="required"
+                       class="layui-input laydate">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">选拔考试申请开始时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="appliStartsOn" id="appliStartsOn" required lay-verify="required"
+                       class="layui-input laydate">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">选拔考试申请截止时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="appliDeadline" id="appliDeadline" required lay-verify="required"
+                       class="layui-input laydate">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否开放申请</label>
+            <div class="layui-input-inline">
+                <input type="checkbox" name="canApply" id="canApply"lay-skin="switch" lay-text="ON|OFF" checked>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" >提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+
+<div id="form2" style="padding: 20px; display: none;">
+    <form class="layui-form" id="modifyform" lay-filter="modify">
+        <div class="layui-form-item">
+            <label class="layui-form-label">考试批次</label>
+            <div class="layui-input-inline">
+                <input type="text" name="number" id="examNo2" required lay-verify="required" class="layui-input ">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">正式考试时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="examTime" id="examTime2" required lay-verify="required" class="layui-input laydate">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">选拔考试时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="selectExamTime" id="selectExamTime2" required lay-verify="required"
+                       class="layui-input laydate">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">选拔考试申请开始时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="appliStartsOn" id="appliStartsOn2" required lay-verify="required"
+                       class="layui-input laydate">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">选拔考试申请截止时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="appliDeadline" id="appliDeadline2" required lay-verify="required"
+                       class="layui-input laydate">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否开放申请</label>
+            <div class="layui-input-inline">
+                <input type="checkbox" name="canApply"  id="canApply2" lay-skin="switch" lay-text="ON|OFF">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" >提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+        <input type="hidden" name="eid" id="eid2">
+
+    </form>
+
+</div>
+
+<script>
+    //Demo
+    function useLayDateMultiple(cls) {
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            lay('#' + cls).each(function () {
+                laydate.render({
+                    elem: this,
+                    trigger: 'click',
+                    type: 'datetime'
+                });
+            });
+        });
+    }
+
+    useLayDateMultiple('examTime');
+    useLayDateMultiple('selectExamTime');
+    useLayDateMultiple('appliStartsOn');
+    useLayDateMultiple('appliDeadline');
+
+
+
+    function useLayDateMultipleWithValue(cls,value) {
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            lay('#' + cls).each(function () {
+                laydate.render({
+                    elem: this,
+                    value: value,
+                    trigger: 'click',
+                    type: 'datetime'
+                });
+            });
+        });
+    }
+
+
+
+
+
+
+
+    $('#addform').submit(function () {
+            $.post("/api/json/create_ccf_event", $("#addform").serialize(),
+                function (response) {
+                    if (response.code == 200) {
+                        layer.close(layer.index);
+                        layer.msg("添加成功");
+                        layui.table.reload('testReload');
+                    } else {
+
+                        layer.msg(response.message);
+                    }
+                }
+
+            );
+            return false;
+        }
+
+    );
+    $('#modifyform').submit(function () {
+            $.post("/api/json/modify_ccf_event", $("#modifyform").serialize(),
+                function (response) {
+                    if (response.code == 200) {
+                        layer.close(layer.index);
+                        layer.msg("修改成功");
+                        layui.table.reload('testReload');
+                    } else {
+
+                        layer.msg(response.message);
+                    }
+                }
+
+            );
+            return false;
+        }
+
+    );
+
+
+
+</script>
+
 <div class="page">
     <div class="little-header">
-        <blockquote class="layui-elem-quote">CCF Event</blockquote>
+        <blockquote class="layui-elem-quote">CCF考试信息</blockquote>
     </div>
 
     <table class="layui-table" id="demo" lay-filter="test"></table>
@@ -104,11 +301,18 @@
                     });
                 } else if (layEvent === 'edit') { //编辑
                     //do something
+                    console.log(data);
+                    useLayDateMultipleWithValue('examTime2',data.examTime.slice(0,10));
+                    console.log(data.examTime);
+                    console.log(data.examTime.slice(0,10));
+                    useLayDateMultipleWithValue('selectExamTime2',data.selectExamTime.slice(0,10));
+                    useLayDateMultipleWithValue('appliStartsOn2',data.appliStartsOn.slice(0,10));
+                    useLayDateMultipleWithValue('appliDeadline2',data.appliDeadline.slice(0,10));
                     $("#examNo2").val(data.examNo);
-                    $("#examTime2").val(data.examTime);
-                    $("#selectExamTime2").val(data.selectExamTime);
-                    $("#appliStartsOn2").val(data.appliStartsOn);
-                    $("#appliDeadline2").val(data.appliDeadline);
+                    // $("#examTime2").val(data.examTime);
+                    // $("#selectExamTime2").val(data.selectExamTime);
+                    // $("#appliStartsOn2").val(data.appliStartsOn);
+                    // $("#appliDeadline2").val(data.appliDeadline);
                     if(data.canApply == 1)
                         $("#canApply2").attr("checked", "");
                     else
@@ -163,19 +367,31 @@
                     }, {
                         field: 'examTime',
                         title: '正式考试时间',
-                        sort: true
+                        sort: true,
+                        templet: function (d) {
+                            return d.examTime.slice(0,10)+" "+ d.examTime.slice(11,19);
+                        }
                     }, {
                         field: 'selectExamTime',
                         title: '选拔考试时间',
-                        sort: true
+                        sort: true,
+                        templet: function (d) {
+                            return d.selectExamTime.slice(0,10)+" "+ d.selectExamTime.slice(11,19);
+                        }
                     }, {
                         field: 'appliStartsOn',
                         title: '选拔考试申请开始时间',
-                        sort: true
+                        sort: true,
+                        templet: function (d) {
+                            return d.appliStartsOn.slice(0,10)+" "+ d.appliStartsOn.slice(11,19);
+                        }
                     }, {
                         field: 'appliDeadline',
                         title: '选拔考试申请截止时间',
-                        sort: true
+                        sort: true,
+                        templet: function (d) {
+                            return d.appliDeadline.slice(0,10)+" "+ d.appliDeadline.slice(11,19);
+                        }
                     }, {
                         field: 'canApply',
                         title: '是否开放申请',
@@ -202,186 +418,6 @@
 
 </body>
 
-
-<div id="form1" style="padding: 20px; display: none;">
-    <form class="layui-form" id="addform" lay-filter="create">
-        <div class="layui-form-item">
-            <label class="layui-form-label">考试批次</label>
-            <div class="layui-input-inline">
-                <input type="text" name="number" id="examNo" required lay-verify="required" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">正式考试时间</label>
-            <div class="layui-input-inline">
-                <input type="text" name="examTime" id="examTime" required lay-verify="required" class="layui-input">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">选拔考试时间</label>
-            <div class="layui-input-inline">
-                <input type="text" name="selectExamTime" id="selectExamTime" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">选拔考试申请开始时间</label>
-            <div class="layui-input-inline">
-                <input type="text" name="appliStartsOn" id="appliStartsOn" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">选拔考试申请截止时间</label>
-            <div class="layui-input-inline">
-                <input type="text" name="appliDeadline" id="appliDeadline" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">是否开放申请</label>
-            <div class="layui-input-inline">
-                <input type="checkbox" name="canApply" id="canApply"lay-skin="switch" lay-text="ON|OFF" checked>
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <div class="layui-input-block">
-                <button type="submit" class="layui-btn" >提交</button>
-                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-            </div>
-        </div>
-
-    </form>
-
-</div>
-
-
-<div id="form2" style="padding: 20px; display: none;">
-    <form class="layui-form" id="modifyform" lay-filter="modify">
-        <div class="layui-form-item">
-            <label class="layui-form-label">考试批次</label>
-            <div class="layui-input-inline">
-                <input type="text" name="number" id="examNo2" required lay-verify="required" class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">正式考试时间</label>
-            <div class="layui-input-inline">
-                <input type="text" name="examTime" id="examTime2" required lay-verify="required" class="layui-input">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">选拔考试时间</label>
-            <div class="layui-input-inline">
-                <input type="text" name="selectExamTime" id="selectExamTime2" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">选拔考试申请开始时间</label>
-            <div class="layui-input-inline">
-                <input type="text" name="appliStartsOn" id="appliStartsOn2" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">选拔考试申请截止时间</label>
-            <div class="layui-input-inline">
-                <input type="text" name="appliDeadline" id="appliDeadline2" required lay-verify="required"
-                       class="layui-input">
-            </div>
-        </div>
-
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">是否开放申请</label>
-            <div class="layui-input-inline">
-                <input type="checkbox" name="canApply"  id="canApply2" lay-skin="switch" lay-text="ON|OFF">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <div class="layui-input-block">
-                <button type="submit" class="layui-btn" >提交</button>
-                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-            </div>
-        </div>
-        <input type="hidden" name="eid" id="eid2">
-
-    </form>
-
-</div>
-
-<script>
-    //Demo
-    function useLayDateMultiple(cls) {
-        layui.use('laydate', function () {
-            var laydate = layui.laydate;
-            lay('#' + cls).each(function () {
-                laydate.render({
-                    elem: this,
-                    trigger: 'click'
-                });
-            });
-        });
-    }
-
-    useLayDateMultiple('examTime');
-    useLayDateMultiple('selectExamTime');
-    useLayDateMultiple('appliStartsOn');
-    useLayDateMultiple('appliDeadline');
-
-    useLayDateMultiple('examTime2');
-    useLayDateMultiple('selectExamTime2');
-    useLayDateMultiple('appliStartsOn2');
-    useLayDateMultiple('appliDeadline2');
-
-
-        $('#addform').submit(function () {
-                $.post("/api/json/create_ccf_event", $("#addform").serialize(),
-                    function (response) {
-                        if (response.code == 200) {
-                            layer.close(layer.index);
-                            layer.msg("添加成功");
-                            layui.table.reload('testReload');
-                        } else {
-
-                            layer.msg(response.message);
-                        }
-                    }
-
-                );
-                return false;
-            }
-
-        );
-    $('#modifyform').submit(function () {
-            $.post("/api/json/modify_ccf_event", $("#modifyform").serialize(),
-                function (response) {
-                    if (response.code == 200) {
-                        layer.close(layer.index);
-                        layer.msg("修改成功");
-                        layui.table.reload('testReload');
-                    } else {
-
-                        layer.msg(response.message);
-                    }
-                }
-
-            );
-            return false;
-        }
-
-    );
-
-
-
-</script>
 
 
 </html>

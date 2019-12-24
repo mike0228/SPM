@@ -3,14 +3,31 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>layout 后台大布局 - Layui</title>
+    <title>SubScore</title>
     <link rel="stylesheet" href="/css/layui.css">
-
+    <script src="/jquery-3.4.1.js"></script>
 </head>
-<body class="layui-layout-body">
+<style>
+    html {
+        width: 100%;
+        height: 100%;
+    }
 
+    body {
+        width: 100%;
+        height: 100%;
+        background-color: #F2F2F2;
+    }
+
+</style>
+<body class="layui-layout-body">
+<div class="page">
+    <div class="little-header">
+        <blockquote class="layui-elem-quote">提交CCF认证成绩</blockquote>
+    </div>
+</div>
 <div style="padding: 20px; background-color: #F2F2F2;">
-    <form class="layui-form layui-form-pane" action="" id="formData">
+    <form class="layui-form layui-form-pane"  id="formData">
         <div class="layui-row layui-col-space15">
             <div class="layui-col-md6 layui-col-md-offset3 layui-col-md-offset3" >
                 <div class="layui-card" >
@@ -18,74 +35,81 @@
 
                         <div class="layui-form-item" >
                             <label class="layui-form-label">认证场次</label>
-                            <div class="layui-input-block" style="width: 120px;">
+                            <div class="layui-input-inline" style="width: 160px;">
                                 <input type="text" name="eid" id="eid" placeholder="请输入" autocomplete="off"
                                        class="layui-input"lay-verify="number1">
                             </div>
+                            <div class="layui-form-mid layui-word-aux">请输入认证届数，例如：10</div>
                         </div>
 
                         <div class="layui-form-item" >
                             <label class="layui-form-label">总得分</label>
-                            <div class="layui-input-block" style="width: 120px;">
+                            <div class="layui-input-inline" style="width: 160px;">
                                 <input type="text" name="grades" id="grades" placeholder="请输入" autocomplete="off"
                                        class="layui-input"lay-verify="number2">
                             </div>
+                            <div class="layui-form-mid layui-word-aux">请输入总得分</div>
                         </div>
 
                         <div class="layui-form-item" >
                             <label class="layui-form-label">题目1</label>
-                            <div class="layui-input-block" style="width: 120px;">
+                            <div class="layui-input-inline" style="width: 160px;">
                                 <input type="text" name="gradesProblem1" id="gradesProblem1" placeholder="请输入" autocomplete="off"
                                        class="layui-input"lay-verify="number2">
                             </div>
+                            <div class="layui-form-mid layui-word-aux">请输入题目1的得分</div>
                         </div>
 
                         <div class="layui-form-item" >
                             <label class="layui-form-label">题目2</label>
-                            <div class="layui-input-block" style="width: 120px;">
+                            <div class="layui-input-inline" style="width: 160px;">
                                 <input type="text" name="gradesProblem2" id="gradesProblem2" placeholder="请输入" autocomplete="off"
                                        class="layui-input"lay-verify="number2">
                             </div>
+                            <div class="layui-form-mid layui-word-aux">请输入题目2的得分</div>
                         </div>
 
                         <div class="layui-form-item" >
                             <label class="layui-form-label">题目3</label>
-                            <div class="layui-input-block" style="width: 120px;">
+                            <div class="layui-input-inline" style="width: 160px;">
                                 <input type="text" name="gradesProblem3" id="gradesProblem3" placeholder="请输入" autocomplete="off"
                                        class="layui-input"lay-verify="number2">
                             </div>
+                            <div class="layui-form-mid layui-word-aux">请输入题目3的得分</div>
                         </div>
 
                         <div class="layui-form-item" >
                             <label class="layui-form-label">题目4</label>
-                            <div class="layui-input-block" style="width: 120px;">
+                            <div class="layui-input-inline" style="width: 160px;">
                                 <input type="text" name="gradesProblem4" id="gradesProblem4" placeholder="请输入" autocomplete="off"
                                        class="layui-input"lay-verify="number2">
                             </div>
+                            <div class="layui-form-mid layui-word-aux">请输入题目4的得分</div>
                         </div>
 
                         <div class="layui-form-item" >
                             <label class="layui-form-label">题目5</label>
-                            <div class="layui-input-block" style="width: 120px;">
+                            <div class="layui-input-inline" style="width: 160px;">
                                 <input type="text" name="gradesProblem5" id="gradesProblem5" placeholder="请输入" autocomplete="off"
                                        class="layui-input"lay-verify="number2">
                             </div>
+                            <div class="layui-form-mid layui-word-aux">请输入题目5的得分</div>
+                        </div>
+
+                        <div class="layui-form-item" >
+                            <label class="layui-form-label">上传凭证</label>
+                            <div class="layui-input-inline" style="width: 200px;">
+                                <input type="file" name="file" id="file" placeholder="请输入" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">请上传PDF凭证</div>
                         </div>
 
 
-                        <button type="button" class="layui-btn" id="test3">
-                            <i class="layui-icon"></i>上传文件
-                        </button>
-                        <input type="hidden" id="url" name="pdf" value=""/>
-
-<!--                        <div class="layui-upload-drag" id="test10">-->
-<!--                            <i class="layui-icon"></i>-->
-<!--                            <p>点击上传，或将文件拖拽到此处</p>-->
-<!--                        </div>-->
 
                         <div class="layui-form-item" style="margin: 0px 0px 0px 100px;">
                             <div class="layui-input-block">
-                                <button class="layui-btn" lay-submit lay-filter="reg">提交</button>
+                                <button class="layui-btn" id="upload"lay-submit lay-filter="reg">提交</button>
                                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
                             </div>
                         </div>
@@ -99,12 +123,46 @@
     </form>
 </div>
 <script src="/layui.js" charset="utf-8"></script>
-<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+
 <script>
     layui.use(['form', 'layedit', 'laydate'], function(){
         var form = layui.form
             ,layer = layui.layer
             , $ = layui.jquery;
+        $(function(){
+            $("#upload").click(function(){
+
+                var formdata = new FormData();
+                formdata.append("eid", $("#eid").val());
+                formdata.append("grades", $("#grades").val());
+                formdata.append("gradesProblem1", $("#gradesProblem1").val());
+                formdata.append("gradesProblem2", $("#gradesProblem2").val());
+                formdata.append("gradesProblem3", $("#gradesProblem3").val());
+                formdata.append("gradesProblem4", $("#gradesProblem4").val());
+                formdata.append("gradesProblem5", $("#gradesProblem5").val());
+                formdata.append("file", $("#file")[0].files[0]);
+                $.ajax({
+                    url:"/api/json/add_grades_for_review",
+                    type:"POST",
+                    data:formdata,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success:function(data){
+                        if (data.code===200) {
+                            layer.msg('提交成功', {icon: 1, time: 1000});
+                                 }
+                        else {
+                                        layer.msg(data.message, {icon: 5, time: 1000});
+                                   }
+                    },
+                    error:function(data){
+                        layer.msg(data.message, {icon: 5, time: 1000});
+                    }
+                });
+                return false;
+            });
+        });
 
         //自定义验证规则
         form.verify({
@@ -117,58 +175,12 @@
                 }
         });
 
-        form.on('submit(reg)', function (data) {
-            $.ajax({
-                cache : true,
-                type : "post",
-                url : "/api/json/add_grades_for_review",
-                async : true,
-                dataType: 'json',
-                data: data.field,
-                error : function(request) {
-                    layer.msg('提交失败', {icon: 1, time: 1000});
-                },
-                success : function(ret) {
-                    if (ret.success) {
-                        layer.msg('提交成功', {icon: 1, time: 1000});
-                    } else {
-                        layer.msg('提交失败', {icon: 1, time: 1000});
-                    }
-                }
-            })
-        });
-
     });
 
     layui.use('upload', function(){
         var $ = layui.jquery
             ,upload = layui.upload;
 
-        upload.render({
-            elem: '#test3'
-            ,title:'PDF凭证'
-            ,url: '/upload/'
-            ,accept: 'file'
-            ,exts:'pdf'
-            ,before: function(obj){
-                //预读本地文件示例，不支持ie8
-                obj.preview(function(index, file, result){
-                    $('#demo1').attr('src', result); //图片链接（base64）
-                });
-            }
-            ,done: function(res){
-                //上传完毕回调
-                layer.open({
-                    content:'上传成功'
-                });
-            }
-            ,error: function(){
-                //请求异常回调
-                layer.open({
-                    content:'上传失败'
-                });
-            }
-        });
 
     });
 </script>

@@ -3,38 +3,62 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>layout 后台大布局 - Layui</title>
+    <title>提交申请</title>
     <link rel="stylesheet" href="/css/layui.css">
-
+    <script src="/jquery-3.4.1.js"></script>
 </head>
-<body class="layui-layout-body">
+<style>
+    html {
+        width: 100%;
+        height: 100%;
+    }
 
-<div style="padding: 20px; background-color: #F2F2F2;">
-    <form class="layui-form layui-form-pane" action="" >
+    body {
+        width: 100%;
+        height: 100%;
+        background-color: #F2F2F2;
+    }
+
+</style>
+
+<body class="layui-layout-body">
+<div class="page">
+    <div class="little-header">
+        <blockquote class="layui-elem-quote">提交申请</blockquote>
+    </div>
+</div>
+<div style="padding:180px  20px; background-color: #F2F2F2;">
+    <form class="layui-form layui-form-pane"  id="eidForm">
         <div class="layui-row layui-col-space15">
             <div class="layui-col-md6 layui-col-md-offset3" >
                 <div class="layui-card" >
                     <div class="layui-card-body">
-                        <div class="layui-form-item" >
+<!--                       <div class="layui-form-item" >
                             <label class="layui-form-label">申请批次</label>
-                            <div class="layui-input-block" style="width: 120px;">
+                            <div class="layui-input-inline" style="width: 200px;">
                                 <input type="text" name="eid" id="eid" placeholder="请输入" autocomplete="off"
                                        class="layui-input"lay-verify="required">
                             </div>
-                        </div>
-
+                            <div class="layui-form-mid layui-word-aux">请输入申请批次，例如：10</div>
+                        </div>-->
 <!--                        <div class="layui-form-item" >-->
-<!--                            <label class="layui-form-label">预期分数</label>-->
-<!--                            <div class="layui-input-block" style="width: 120px;">-->
-<!--                                <input type="text" name="" placeholder="请输入" autocomplete="off"-->
-<!--                                       class="layui-input" lay-verify="number">-->
-<!--                            </div>-->
+<!--                        <label class="layui-form-label">申请批次</label>-->
+<!--                        <select id="eid" name="eid" lay-verify="required"  lay-filter="*" class="select">-->
+<!--                            <option value="" ></option>-->
+<!--                        </select>-->
 <!--                        </div>-->
-
+                        <div class="layui-form-item layui-col-md6 layui-col-md-offset3" >
+                            <label class="layui-form-label">申请批次</label>
+                            <div class="layui-input-block"style="width: 120px;">
+                                <select id="eid" name="eid" lay-filter="*" class="select">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
 
                         <div class="layui-form-item" style="margin: 0px 0px 0px 100px;">
                             <div class="layui-input-block">
-                                <button class="layui-btn" lay-submit lay-filter="reg">提交</button>
+                                <button class="layui-btn" type="submit"lay-submit lay-filter="reg">提交</button>
                                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
                             </div>
                         </div>
@@ -55,47 +79,38 @@
             ,layer = layui.layer
             ,layedit = layui.layedit
             ,laydate = layui.laydate;
-
-        //日期
-        laydate.render({
-            elem: '#date'
-        });
-        laydate.render({
-            elem: '#date1'
-        });
-
-        laydate.render({
-            elem: '#test2'
-            ,type: 'year'
-        });
-
-        //自定义验证规则
-        form.verify({
-            number: function(e) {
-                if (!e || isNaN(e)) return "只能填写数字"
-                if(e>500||e<0||e%10!==0) return "请输入正确的分数"
+        var $ = layui.jquery;
+        $.ajax({
+            url: '/api/json/available_events',
+            dataType: 'json',
+            type: 'get',
+            success: function (res) {
+                $.each(res.data, function (index, item) {
+                    var text="场次:"+item.examNo ;
+                    $('#eid').append(new Option(text, item.eid));// 下拉菜单里添加元素
+                });
+                layui.form.render("select");
             }
         });
 
+        // //自定义验证规则
+        // form.verify({
+        //     number: function(e) {
+        //         if (!e || isNaN(e)) return "只能填写数字"
+        //         if(e>500||e<0||e%10!==0) return "请输入正确的分数"
+        //     }
+        // });
+
         form.on('submit(reg)', function (data) {
-            $.ajax({
-                cache : true,
-                type : "post",
-                url : "/api/json/submit_app",
-                async : true,
-                dataType: 'json',
-                data: data.field,
-                error : function(request) {
-                    layer.msg('提交失败', {icon: 1, time: 1000});
-                },
-                success : function(ret) {
-                    if (ret.success) {
-                        layer.msg('提交成功', {icon: 1, time: 1000});
-                    } else {
-                        layer.msg('提交失败', {icon: 1, time: 1000});
-                    }
+            var eid =$('#eid').val();//原本是获取下拉框选中的值传参，现在应该怎么改？
+            $.post("/api/json/submit_app", $("#eidForm").serialize(),function (data) {
+                if (data.code===200) {
+                    layer.msg('提交成功', {icon: 1, time: 1000});
+                } else {
+                    layer.msg(data.message, {icon: 5, time: 1000});
                 }
-            })
+            });
+            return false;
         });
 
         return false;
@@ -103,6 +118,5 @@
     });
 
 </script>
-
 </body>
 </html>

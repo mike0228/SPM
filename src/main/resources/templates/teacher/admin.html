@@ -31,9 +31,8 @@
       </ul> -->
       <ul class="layui-nav layui-layout-right" lay-filter="user">
         <li class="layui-nav-item">
-          <a href="javascript:;">
-            <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
-            7组
+          <a name="name">
+            <img src="/images/student/njust.jpg" class="layui-nav-img">
           </a>
           <dl class="layui-nav-child">
             <dd><a id="changePassword">更改密码</a></dd>
@@ -48,38 +47,46 @@
         <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
         <ul class="layui-nav layui-nav-tree" lay-filter="test">
           <li class="layui-nav-item ">
-            <a>信息录入</a>
+            <a>信息系统</a>
             <dl class="layui-nav-child">
-              <dd><a id="ccfEvent">考试录入</a></dd>
-              <dd><a id="studentEvent">学生录入</a></dd>
-              <dd><a id="gradeEvent">成绩录入</a></dd>
-              <dd><a id="studentImport">学生导入</a></dd>
-            </dl>
-          </li>
-          <li class="layui-nav-item ">
-            <a>成绩审核</a>
-            <dl class="layui-nav-child">
-              <dd><a id="scoreCheck">学生个人成绩</a></dd>
-              <dd><a id="selectEvent">选拔赛成绩</a></dd>
-            </dl>
-          </li>
-          <li class="layui-nav-item ">
-            <a>CCF成绩</a>
-            <dl class="layui-nav-child">
-              <dd><a id="scoreImport">成绩导入</a></dd>
-              <dd><a id="scoreList">成绩列表</a></dd>
+              <dd><a id="ccfEvent">考试信息</a></dd>
+              <dd><a id="studentEvent">学生信息</a></dd>
+              <dd><a id="gradeEvent">成绩信息</a></dd>
+              <dd><a id="rankEvent">选拔赛成绩</a></dd>
               <dd><a id="scoreAnalysis">成绩分析</a></dd>
             </dl>
           </li>
-         
+          <li class="layui-nav-item ">
+            <a>审核系统</a>
+            <dl class="layui-nav-child">
+              <dd><a id="studentCheck">申请列表</a></dd>
+              <dd><a id="scoreCheck">外校成绩</a></dd>
+              <dd><a id="redList">公费名单</a></dd>
+            </dl>
+          </li>
+          <script>
+
+
+
+
+          </script>
+          <li class="layui-nav-item ">
+            <a>信息导入</a>
+            <dl class="layui-nav-child">
+              <dd><a id="scoreImport">成绩导入</a></dd>
+              <dd><a id="studentImport">学生导入</a></dd>
+            </dl>
+          </li>
+          <li class="layui-nav-item"><a id="userManager">用户管理</a></li>
           <li class="layui-nav-item"><a id="information">个人信息</a></li>
+
         </ul>
       </div>
     </div>
 
     <div class="layui-body">
       <!-- 内容主体区域 -->
-      <iframe id="childPage" style="width: 100%;height: 99%;" frameborder="0" scrolling="no" src="information"></iframe>
+      <iframe id="childPage" style="width: 100%;height: 99%;" frameborder="0" scrolling="yes" src="information"></iframe>
     </div>
 
     <div class="layui-footer" style="text-align: center;">
@@ -106,7 +113,15 @@
           $("#childPage").attr("src", url);
         }
       });
+    });
 
+
+    $.get("/api/json/get_my_teacher_info", function (res) {
+      if (res.code == 200) {
+        $('a[name="name"]').append(res.data.name);
+      } else {
+        layer.msg(res.message);
+      }
 
     });
   </script>

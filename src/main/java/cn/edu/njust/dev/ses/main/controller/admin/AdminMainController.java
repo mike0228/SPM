@@ -50,6 +50,16 @@ public class AdminMainController {
     public String chart(HttpSession session){ return "teacher/chart"; }
     @RequestMapping("/teacher/pan")
     public String pan(HttpSession session){ return "teacher/pan"; }
+    @RequestMapping("/teacher/information")
+    public String information(HttpSession session){ return "teacher/information"; }
+    @RequestMapping("/teacher/studentCheck")
+    public String studentCheck(HttpSession session){ return "teacher/studentCheck"; }
+    @RequestMapping("/teacher/redList")
+    public String redList(HttpSession session){ return "teacher/redList"; }
+    @RequestMapping("/teacher/userManager")
+    public String userManager(HttpSession session){ return "teacher/userManager"; }
+    @RequestMapping("/teacher/rankEvent")
+    public String rankEvent(HttpSession session){ return "teacher/rankEvent"; }
 
 
 
@@ -62,5 +72,8 @@ public class AdminMainController {
     public String associateImportScores(HttpSession session){ return "association_import_scores"; }
     @RequestMapping("/associate/association_change_password")
     public String associateChangePassword(HttpSession session){ return "association_change_password"; }
+    @RequestMapping("/associate/association_show_excel")
+    public String associateShowExcel(HttpSession session){ return "association_show_excel"; }
+
 
 }

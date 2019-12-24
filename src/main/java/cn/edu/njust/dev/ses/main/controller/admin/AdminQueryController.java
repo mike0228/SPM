@@ -1,5 +1,6 @@
 package cn.edu.njust.dev.ses.main.controller.admin;
 
+import cn.edu.njust.dev.ses.main.dto.ApplicationDTO;
 import cn.edu.njust.dev.ses.main.dto.ResultDTO;
 import cn.edu.njust.dev.ses.main.mapper.*;
 import cn.edu.njust.dev.ses.main.model.*;
@@ -8,8 +9,10 @@ import cn.edu.njust.dev.ses.main.service.FileService;
 import com.aliyun.oss.OSSException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +30,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.SQLNonTransientException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -53,10 +57,13 @@ public class AdminQueryController {
     @Autowired
     SelectRankEntryMapper selectRankEntryMapper;
     @Autowired
+    DetailedSelectRankEntryMapper detailedSelectRankEntryMapper;
+    @Autowired
     GlobalParameterMapper globalParameterMapper;
     @Autowired
     AccountManagementService accountManagementService;
 
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //TODO correspond with front-end
     @ResponseBody
     @RequestMapping(value = "/api/json/create_ccf_event")
     public ResultDTO createCCFEvent(HttpSession session,
@@ -75,16 +82,16 @@ public class AdminQueryController {
 
         CCFEvent ccfEvent = new CCFEvent();
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); //TODO correspond with front-end
+
         Date examTimeD = null;
         Date selectExamTimeD = null;
         Date appliDeadlineD = null;
         Date appliStartsOnD = null;
         try {
-            examTimeD = formatter.parse(examTime);
-            selectExamTimeD = formatter.parse(selectExamTime);
-            appliDeadlineD = formatter.parse(appliDeadline);
-            appliStartsOnD = formatter.parse(appliStartsOn);
+            examTimeD = new Date(formatter.parse(examTime).getTime() + 8 * 60 * 60 * 1000);
+            selectExamTimeD = new Date(formatter.parse(selectExamTime).getTime() + 8 * 60 * 60 * 1000);
+            appliDeadlineD = new Date(formatter.parse(appliDeadline).getTime() + 8 * 60 * 60 * 1000);
+            appliStartsOnD = new Date(formatter.parse(appliStartsOn).getTime() + 8 * 60 * 60 * 1000);
         } catch (ParseException e) {
             e.printStackTrace();
             return ResultDTO.errorOf(0, "日期格式不正确。");
@@ -111,7 +118,16 @@ public class AdminQueryController {
         return ResultDTO.okOf();
     }
 
-
+    @ResponseBody
+    @RequestMapping("/api/json/get_my_teacher_info")
+    public ResultDTO getMyInfo(HttpSession session) {
+        User sessionUser = (User) session.getAttribute("logged_in_as");
+        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
+        if (sessionUser == null || teacherInfo == null) {
+            return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
+        }
+        return ResultDTO.okOf(teacherInfo);
+    }
     @ResponseBody
     @RequestMapping("/api/json/delete_ccf_event")
     public ResultDTO deleteCCFEvent(HttpSession session, @RequestParam List<Integer> eid){
@@ -146,16 +162,15 @@ public class AdminQueryController {
         }
         CCFEvent ccfEvent = new CCFEvent();
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); //TODO correspond with front-end
         Date examTimeD = null;
         Date selectExamTimeD = null;
         Date appliDeadlineD = null;
         Date appliStartsOnD = null;
         try {
-            examTimeD = formatter.parse(examTime);
-            selectExamTimeD = formatter.parse(selectExamTime);
-            appliDeadlineD = formatter.parse(appliDeadline);
-            appliStartsOnD = formatter.parse(appliStartsOn);
+            examTimeD = new Date(formatter.parse(examTime).getTime() + 8 * 60 * 60 * 1000);
+            selectExamTimeD = new Date(formatter.parse(selectExamTime).getTime() + 8 * 60 * 60 * 1000);
+            appliDeadlineD = new Date(formatter.parse(appliDeadline).getTime() + 8 * 60 * 60 * 1000);
+            appliStartsOnD = new Date(formatter.parse(appliStartsOn).getTime() + 8 * 60 * 60 * 1000);
         } catch (ParseException e) {
             e.printStackTrace();
             return ResultDTO.errorOf(0, "日期格式不正确。");
@@ -260,7 +275,11 @@ public class AdminQueryController {
         gradesEntry.setGradesProblem4(gradesProblem4);
         gradesEntry.setGradesProblem5(gradesProblem5);
 
-        gradesEntryMapper.insertSelective(gradesEntry);
+        try {
+            gradesEntryMapper.insertSelective(gradesEntry);
+        } catch (DuplicateKeyException e) {
+            return ResultDTO.errorOf(0, String.format("同一批次下已经有该生的成绩，请直接修改或删除后再添加"));
+        }
         return ResultDTO.okOf();
     }
 
@@ -465,15 +484,15 @@ public class AdminQueryController {
         if(sessionUser == null|| teacherInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
-        SelectRankEntryExample selectRankEntryExample = new SelectRankEntryExample();
+        DetailedSelectRankEntryExample selectRankEntryExample = new DetailedSelectRankEntryExample();
         selectRankEntryExample.createCriteria().andEidEqualTo(eid);
-        selectRankEntryExample.setOrderByClause("rank ASC");
+        selectRankEntryExample.setOrderByClause("rank_no ASC");
         RowBounds rowBounds = page != null && limit != null ? new RowBounds(limit * (page - 1), limit) : new RowBounds();
-        List<SelectRankEntry> selectRankEntries = selectRankEntryMapper.selectByExampleWithRowbounds(selectRankEntryExample, rowBounds);
-        return ResultDTO.okOf(selectRankEntries, selectRankEntryMapper.countByExample(selectRankEntryExample));
+        List<DetailedSelectRankEntry> selectRankEntries = detailedSelectRankEntryMapper.selectByExampleWithRowbounds(selectRankEntryExample, rowBounds);
+        return ResultDTO.okOf(selectRankEntries, detailedSelectRankEntryMapper.countByExample(selectRankEntryExample));
     }
 
-    final static List<String> availableStatus = Arrays.asList("not confirmed", "pending", "auto-approved", "approved", "manually-approved", "failed");
+    private final static List<String> availableStatus = Arrays.asList("not confirmed", "pending", "auto-approved", "approved", "manually-approved", "failed");
 
     @ResponseBody
     @RequestMapping("/api/json/obtain_application")
@@ -481,7 +500,7 @@ public class AdminQueryController {
                                        @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer limit){
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
-        if(sessionUser == null|| teacherInfo == null){
+        if(sessionUser == null|| (teacherInfo == null && !sessionUser.getType().equals("associate"))){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
         ApplicationExample applicationExample = new ApplicationExample();
@@ -496,17 +515,30 @@ public class AdminQueryController {
         }
         RowBounds rowBounds = page != null && limit != null ? new RowBounds(limit * (page - 1), limit) : new RowBounds();
         List<Application> applications = applicationMapper.selectByExampleWithRowbounds(applicationExample, rowBounds);
-        return ResultDTO.okOf(applications, applicationMapper.countByExample(applicationExample));
+        List<ApplicationDTO> applicationDTOS = new ArrayList<>();
+        for(Application application: applications){
+            ApplicationDTO applicationDTO = new ApplicationDTO();
+            StudentExample studentExample = new StudentExample();
+            studentExample.createCriteria().andUidEqualTo(application.getUid());
+            Student student = studentMapper.selectByExample(studentExample).get(0);
+            CCFEvent ccfEvent = ccfEventMapper.selectByPrimaryKey(application.getEid());
+            BeanUtils.copyProperties(ccfEvent, applicationDTO);
+            BeanUtils.copyProperties(student, applicationDTO);
+            BeanUtils.copyProperties(application, applicationDTO);
+            applicationDTOS.add(applicationDTO);
+        }
+        return ResultDTO.okOf(applicationDTOS, applicationMapper.countByExample(applicationExample));
     }
 
+    @ResponseBody
     @RequestMapping("/api/json/change_application_status")
-    public ResultDTO changeAppStatus(HttpSession session, @RequestParam Integer eid, @RequestParam String status){
+    public ResultDTO changeAppStatus(HttpSession session, @RequestParam Integer aid, @RequestParam String status){
         User sessionUser = (User) session.getAttribute("logged_in_as");
         Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
         if(sessionUser == null|| teacherInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
-        Application application = applicationMapper.selectByPrimaryKey(eid);
+        Application application = applicationMapper.selectByPrimaryKey(aid);
         if(application == null)
             return ResultDTO.errorOf(0, "找不到该申请。");
         if(!availableStatus.contains(status))
@@ -552,15 +584,16 @@ public class AdminQueryController {
             return ResponseEntity.status(404).body(e.getLocalizedMessage());
         }
     }
+    @ResponseBody
     @RequestMapping("/api/json/change_global_settings")
     public ResultDTO changeMidgradesForAutoapprove(HttpSession session,
                                      @RequestParam String value,
                                      @RequestParam String param){
         User sessionUser = (User) session.getAttribute("logged_in_as");
-        Teacher teacherInfo = (Teacher) session.getAttribute("teacher_info");
-        if(sessionUser == null|| teacherInfo == null){
+        if(sessionUser == null|| !sessionUser.getType().equals("associate")){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
+
         GlobalParameter globalParameter = new GlobalParameter();
         globalParameter.setParam(param);
         globalParameter.setValue(value);
@@ -569,7 +602,7 @@ public class AdminQueryController {
             return ResultDTO.okOf();
         }catch (Exception e){
             e.printStackTrace();
-            return ResultDTO.errorOf(0,"上传失败");
+            return ResultDTO.errorOf(0,"修改失败");
         }
     }
 }

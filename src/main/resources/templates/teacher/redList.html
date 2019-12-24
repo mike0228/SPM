@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/admin.css" media="all">
+    <script src="/layui.js"></script>
+    <script src="/jquery-3.4.1.js"></script>
+</head>
+
+<style>
+    html {
+        width: 100%;
+        height: 100%;
+    }
+
+    body {
+        width: 100%;
+        height: 100%;
+    }
+
+    .layui-form-label {
+        float: left;
+        display: block;
+        padding: 9px 15px;
+        width: 90px;
+        font-weight: 400;
+        line-height: 20px;
+        text-align: left;
+    }
+</style>
+
+<body>
+<div class="page">
+    <div class="little-header">
+        <blockquote class="layui-elem-quote">红名单（先生成再导出）</blockquote>
+    </div>
+
+    <form class="layui-form" id="studentCheck">
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: auto">考试批次</label>
+            <div class="layui-input-inline" style="width: 360px">
+                <select  id="eidlist" name="eid" lay-filter="eid" lay-verify="required">
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item" style="padding-left: 15px">
+            <button type="button" class="layui-btn" onclick="generate()">生成</button>
+            <button type="button" class="layui-btn" onclick="exportList()">导出</button>
+        </div>
+    </form>
+
+    <script>
+        layui.use(['form','layer'], function () {
+            var form = layui.form;
+            var $ =layui.jquery;
+            $.ajax({
+                url: '/api/json/available_events',
+                dataType: 'json',
+                type: 'get',
+                success: function (res) {
+                    $.each(res.data, function (index, item) {
+                        var text="场次:"+item.examNo +"  开始时间:"+ item.examTime.slice(0,10)+" "+item.examTime.slice(11,19);
+                        $('#eidlist').append(new Option(text, item.eid));// 下拉菜单里添加元素
+                    });
+                    layui.form.render("select");
+                }
+            });
+        })
+        function generate() {
+            var eid=$("#eidlist").val();
+
+            $.get("/api/json/generate_red_list?eid="+eid,function (res) {
+                    if(res.code==200){
+                        layer.msg("生成成功");
+                    }
+                    else {
+                        layer.msg("操作失败，请联系网站管理员");
+                    }
+                });
+        }
+        function exportList() {
+            var eid=$("#eidlist").val();
+            window.open("/api/export_qualified_persons_list?eid="+eid, "_blank");
+            // $.get("/api/export_qualified_persons_list?eid="+eid,function (res) {
+            //         if(res.code==200){
+            //             layer.msg("生成成功");
+            //         }
+            //         else {
+            //             layer.msg("操作失败，请联系网站管理员");
+            //         }
+            //     });
+        }
+    </script>
+</div>
+
+</body>
+</html>

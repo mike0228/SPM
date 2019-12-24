@@ -30,6 +30,7 @@
         <button type="button" class="layui-btn" id="test1">
             <i class="layui-icon">&#xe67c;</i>上传名单
         </button>
+        <a href="/download/scoreImport.xlsx" download="成绩导入模板.xlsx" class="layui-btn">下载模版</a>
     </div>
 
 
@@ -58,7 +59,7 @@
                 type: 'get',
                 success: function (res) {
                     $.each(res.data, function (index, item) {
-                        var text="场次:"+item.examNo +"  开始时间:"+ item.examTime;
+                        var text="场次:"+item.examNo +"  开始时间:"+ item.examTime.slice(0,10)+" "+ item.examTime.slice(11,19);
                         $('#eidlist').append(new Option(text, item.eid));// 下拉菜单里添加元素
                     });
                     layui.form.render("select");

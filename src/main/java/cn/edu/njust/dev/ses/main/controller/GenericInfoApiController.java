@@ -1,16 +1,19 @@
 package cn.edu.njust.dev.ses.main.controller;
 
+import cn.edu.njust.dev.ses.main.dto.CCFEventExtendedDTO;
 import cn.edu.njust.dev.ses.main.dto.ResultDTO;
 import cn.edu.njust.dev.ses.main.mapper.*;
 import cn.edu.njust.dev.ses.main.model.CCFEvent;
 import cn.edu.njust.dev.ses.main.model.CCFEventExample;
 import org.apache.ibatis.session.RowBounds;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -34,6 +37,12 @@ public class GenericInfoApiController {
         RowBounds rowBounds = page != null && limit != null ? new RowBounds(limit * (page - 1), limit) : new RowBounds();
         CCFEventExample example = new CCFEventExample();
         List<CCFEvent> ccfEvents = ccfEventMapper.selectByExampleWithRowbounds(example, rowBounds);
-        return ResultDTO.okOf(ccfEvents, ccfEventMapper.countByExample(example));
+        List<CCFEventExtendedDTO> ccfEventExtendedDTOS = new ArrayList<>();
+        ccfEvents.forEach(value -> {
+            CCFEventExtendedDTO ccfEventExtendedDTO = new CCFEventExtendedDTO();
+            BeanUtils.copyProperties(value, ccfEventExtendedDTO);
+            ccfEventExtendedDTOS.add(ccfEventExtendedDTO);
+        });
+        return ResultDTO.okOf(ccfEventExtendedDTOS, ccfEventMapper.countByExample(example));
     }
 }

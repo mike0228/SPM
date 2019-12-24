@@ -1,26 +1,20 @@
 package cn.edu.njust.dev.ses.main.interceptor;
 
-import cn.edu.njust.dev.ses.main.dto.ResultDTO;
 import cn.edu.njust.dev.ses.main.model.Student;
-import cn.edu.njust.dev.ses.main.model.Teacher;
 import cn.edu.njust.dev.ses.main.model.User;
+import com.sun.nio.sctp.Association;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 @Component
-public class StudentLoginInterceptor implements HandlerInterceptor {
+public class AssociationLoginInterceptor implements HandlerInterceptor {
     @Override
-    public boolean preHandle(HttpServletRequest request,
-                             HttpServletResponse response,
-                             Object handler) throws Exception{
-        //TODO
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         User sessionUser = (User)request.getSession().getAttribute("logged_in_as");
-//        Student student_Info = (Student) request.getSession().getAttribute("student_info");  student_Info == null||
-        if(sessionUser == null|| !sessionUser.getType().equals("student")){
+        if(sessionUser == null|| !sessionUser.getType().equals("associate")){
             request.getRequestDispatcher("/").forward(request,response);
             return false;
         }

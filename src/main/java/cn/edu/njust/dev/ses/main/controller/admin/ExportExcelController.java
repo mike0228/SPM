@@ -40,7 +40,7 @@ public class ExportExcelController {
 
     @RequestMapping(value = "/api/export_qualified_persons_list", method = RequestMethod.GET)
     public void exportQualifiedPersons(HttpSession session, HttpServletResponse response, @RequestParam Integer eid) throws IOException {
-        //TODO login
+
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet("Sheet1");
 
@@ -65,7 +65,7 @@ public class ExportExcelController {
             rowNum++;
         }
 
-        String fileName = "name_list.xls";
+        String fileName = String.format("name_list_%d.xls", ccfEventMapper.selectByPrimaryKey(eid).getExamNo());
         response.setContentType("application/octet-stream");
         response.setHeader("Content-disposition", "attachment;filename=" + fileName);
         response.flushBuffer();
@@ -91,7 +91,7 @@ public class ExportExcelController {
             if(count >= globalSettingsService.getMaxSponsoredParticipants())
                 break;
             ApplicationExample applicationExample = new ApplicationExample();
-            applicationExample.createCriteria().andUidEqualTo(selectRankEntry.getUid()).andEidEqualTo(eid);
+            applicationExample.createCriteria().andUidEqualTo(selectRankEntry.getUid()).andEidEqualTo(eid).andAppStatusEqualTo("pending");
             List <Application> applications = applicationMapper.selectByExample(applicationExample);
             if(applications.size() > 0){
                 for(Application application:applications){
@@ -101,6 +101,11 @@ public class ExportExcelController {
                 count++;
             }
         }
+        ApplicationExample applicationExample3 = new ApplicationExample();
+        applicationExample3.createCriteria().andAppStatusNotIn(Arrays.asList("auto-approved", "approved", "manually-approved")).andEidEqualTo(eid);
+        Application application = new Application();
+        application.setAppStatus("failed");
+        applicationMapper.updateByExampleSelective(application, applicationExample3);
         return ResultDTO.okOf();
     }
 }

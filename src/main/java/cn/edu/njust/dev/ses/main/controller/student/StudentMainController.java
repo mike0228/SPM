@@ -35,6 +35,18 @@ public class StudentMainController {
     public String displaySubScore(HttpSession session){
         return "student/SubScore";
     }
+    @RequestMapping("/student/SelectionList")
+    public String displaySelectionList(HttpSession session){
+        return "student/SelectionList";
+    }
+    @RequestMapping("/student/SeeImformation")
+    public String displaySeeImformation(HttpSession session){
+        return "student/SeeImformation";
+    }
+    @RequestMapping("/student/changePassword")
+    public String displaychangePassword(HttpSession session){
+        return "teacher/changePassword";
+    }
     @RequestMapping("/student/apply")
     public String displayApply(HttpSession session){
         return "student-apply";
