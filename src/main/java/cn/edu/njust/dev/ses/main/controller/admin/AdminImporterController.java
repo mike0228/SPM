@@ -161,6 +161,8 @@ public class AdminImporterController {
             SelectRankEntry selectRankEntry = new SelectRankEntry();
             BeanUtils.copyProperties(selectRankEntryDTO, selectRankEntry);
             selectRankEntry.setEid(eid);
+            if(selectRankEntry.getUid() == null)
+                continue;
             count += selectRankEntryMapper.insertSelective(selectRankEntry);
         }
         session.removeAttribute("last_result_select_ranks_import");

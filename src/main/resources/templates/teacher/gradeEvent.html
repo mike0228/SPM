@@ -35,7 +35,7 @@
 <body>
 <div class="page">
     <div class="little-header">
-        <blockquote class="layui-elem-quote">学生信息</blockquote>
+        <blockquote class="layui-elem-quote">成绩信息</blockquote>
     </div>
 
     <table class="layui-table" id="demo" lay-filter="test"></table>
@@ -163,15 +163,33 @@
                         {
                             field: 'studentId',
                             title: '学号',
-                            sort: true
+                            sort: true,
+                            templet: function (d) {
+                                if(d.studentId == null){
+                                    return "<i>不可用</i>   <i class=\"layui-icon layui-icon-tips\" title=\"找不到该学生的信息，请使用学生信息表导入该学生的信息。\"></i>";
+                                }
+                                return d.studentId;
+                            }
                         }, {
                         field: 'name',
                         title: '姓名',
-                        sort: true
+                        sort: true,
+                        templet: function (d) {
+                            if(d.name == null){
+                                return "<i>不可用</i>   <i class=\"layui-icon layui-icon-tips\" title=\"找不到该学生的信息，请使用学生信息表导入该学生的信息。\"></i>";
+                            }
+                            return d.name;
+                        }
                     },{
                         field: 'idNo',
                         title: '身份证号',
-                        sort: true
+                        sort: true,
+                        templet: function (d) {
+                            if(d.idNo == null){
+                                return "<i>不可用</i>   <i class=\"layui-icon layui-icon-tips\" title=\"找不到该学生的信息，请使用学生信息表导入该学生的信息。\"></i>";
+                            }
+                            return d.idNo;
+                        }
                     }, {
                         field: 'grades',
                         title: '总分',
