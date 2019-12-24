@@ -6,10 +6,9 @@ import cn.edu.njust.dev.ses.main.exception.RequiredExcelFieldNotFoundException;
 import cn.edu.njust.dev.ses.main.exception.UnfitPropertyTypeException;
 import cn.edu.njust.dev.ses.main.exception.UnsupportedExcelFormatException;
 import cn.edu.njust.dev.ses.main.util.excelparser.annotation.ExcelField;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.OLE2NotOfficeXmlFileException;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
@@ -42,7 +41,14 @@ public class ExcelUniversalParser<E extends GenericDTO> {
     private final static List<Class<?>> supportedFieldType = Arrays.asList(String.class, Integer.class, Long.class, Short.class, Double.class, Float.class, Byte.class, Boolean.class);
 
     public List<E> parseFrom(InputStream in, Class<E> classObject) throws UnsupportedExcelFormatException, IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        XSSFWorkbook wb = new XSSFWorkbook(in);
+
+        Workbook wb = null;
+        try {
+            wb = new XSSFWorkbook(in);
+        } catch (OLE2NotOfficeXmlFileException e) {
+            wb = new HSSFWorkbook(in);
+        }
+
         List<E> result = new ArrayList<>();
         Field[] fields = classObject.getDeclaredFields();
         for (Iterator<Sheet> it = wb.sheetIterator(); it.hasNext(); ) {

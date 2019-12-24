@@ -10,6 +10,7 @@ import cn.edu.njust.dev.ses.main.service.StudentService;
 import cn.edu.njust.dev.ses.main.util.TempStorageObject;
 import cn.edu.njust.dev.ses.main.util.excelparser.ExcelUniversalParser;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.poi.poifs.filesystem.NotOLE2FileException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -52,7 +53,9 @@ public class AdminImporterController {
             InputStream in = file.getInputStream();
             ExcelUniversalParser<StudentDTO> eup = new ExcelUniversalParser<>();
             result = eup.parseFrom(in, StudentDTO.class);
-        } catch (Exception ex) {
+        }catch(NotOLE2FileException e) {
+            return ResultDTO.errorOf(0, String.format("该 Excel 文件无效，请尝试用 Excel 重新另存为保存。信息：%s", e.getLocalizedMessage()));
+        }catch (Exception ex) {
             ex.printStackTrace();
             return ResultDTO.errorOf(0, String.format("发生异常（%s）", ex.getClass()), ex.getLocalizedMessage());
         }
