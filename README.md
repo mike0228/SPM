@@ -9,3 +9,4 @@
 #### 修改pom.xml中org.flywaydb相关
 ### 执行 mvn flyway:migrate
 ### 编译执行
+## 默认端口：8500
