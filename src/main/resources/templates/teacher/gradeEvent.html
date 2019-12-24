@@ -55,6 +55,19 @@
         layui.use('table', function () {
             var table = layui.table;
             var $ = layui.jquery;
+            $.ajax({
+                url: '/api/json/available_events',
+                dataType: 'json',
+                type: 'get',
+                success: function (res) {
+                    $.each(res.data, function (index, item) {
+                        var text = "场次:" + item.examNo + "  开始时间:" + item.examTime.slice(0, 10) + " " + item.examTime.slice(11, 19);
+                        $('#eidlist').append(new Option(text, item.eid));// 下拉菜单里添加元素
+                        $('#eidlist2').append(new Option(text, item.eid));
+                    });
+                    layui.form.render("select");
+                }
+            });
             var active = {
                 reload: function () {
                     var demoReload = $('#demoReload');
@@ -106,14 +119,17 @@
                 } else if (layEvent === 'edit') { //编辑
                     //do something
                     $("#studentId2").val(data.studentId);
-                    $("#eid2").val(data.eid);
                     $("#grades2").val(data.grades);
                     $("#gradesProblem12").val(data.gradesProblem1);
                     $("#gradesProblem22").val(data.gradesProblem2);
                     $("#gradesProblem32").val(data.gradesProblem3);
                     $("#gradesProblem42").val(data.gradesProblem4);
                     $("#gradesProblem52").val(data.gradesProblem5);
+
+
+                    $("#eidlist2").val(data.eid);
                     $("#gid").val(data.gid);
+                    layui.form.render("select");
 
 
                     layer.open({
@@ -243,7 +259,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">考试批次</label>
             <div class="layui-input-inline">
-                <input type="text" name="eid" id="eid" required lay-verify="required" class="layui-input">
+                <select lay-filter="eid" name="eid" id="eidlist" required lay-verify="required"></select>
             </div>
         </div>
         <div class="layui-form-item">
@@ -318,7 +334,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">考试批次</label>
             <div class="layui-input-inline">
-                <input type="text" name="eid" id="eid2" required lay-verify="required" class="layui-input">
+                <select lay-filter="eid" name="eid" id="eidlist2" required lay-verify="required"></select>
             </div>
         </div>
         <div class="layui-form-item">
@@ -382,7 +398,6 @@
         <div class="layui-form-item">
             <div class="layui-input-block">
                 <button type="submit" class="layui-btn">提交</button>
-                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
         </div>
         <input type="hidden" name="gid" id="gid">
