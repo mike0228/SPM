@@ -43,6 +43,8 @@ public class StudentQueryController {
     FileService fileService;
     @Autowired
     DetailedSelectRankEntryMapper detailedSelectRankEntryMapper;
+    @Autowired
+    DetailedGradesEntryMapper detailedGradesEntryMapper;
 
     @ResponseBody
     @RequestMapping("/api/json/all_info")
@@ -86,9 +88,9 @@ public class StudentQueryController {
         if(sessionUser == null|| studentInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
-        GradesEntryExample gradesEntryExample=new GradesEntryExample();
+        DetailedGradesEntryExample gradesEntryExample=new DetailedGradesEntryExample();
         gradesEntryExample.createCriteria().andStudentIdEqualTo(studentInfo.getStudentId());
-        List<GradesEntry> result=gradesEntryMapper.selectByExample(gradesEntryExample);
+        List<DetailedGradesEntry> result = detailedGradesEntryMapper.selectByExample(gradesEntryExample);
         return ResultDTO.okOf(result);
     }
 
@@ -103,10 +105,10 @@ public class StudentQueryController {
         if(sessionUser == null|| studentInfo == null){
             return ResultDTO.errorOf(0, "用户未登录或用户类型不正确。");
         }
-        SelectRankEntryExample selectRankEntryExample=new SelectRankEntryExample();
+        DetailedSelectRankEntryExample selectRankEntryExample=new DetailedSelectRankEntryExample();
         selectRankEntryExample.createCriteria().andUidEqualTo(studentInfo.getUid());
         selectRankEntryExample.or().andIdNoEqualTo(studentInfo.getIdNo());
-        List<SelectRankEntry> result=selectRankEntryMapper.selectByExample(selectRankEntryExample);
+        List<DetailedSelectRankEntry> result=detailedSelectRankEntryMapper.selectByExample(selectRankEntryExample);
         return ResultDTO.okOf(result);
     }
 
