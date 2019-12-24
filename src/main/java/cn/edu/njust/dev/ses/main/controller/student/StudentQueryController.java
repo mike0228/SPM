@@ -44,6 +44,8 @@ public class StudentQueryController {
     GradesEntryProofMapper gradesEntryProofMapper;
     @Autowired
     FileService fileService;
+    @Autowired
+    DetailedSelectRankEntryMapper detailedSelectRankEntryMapper;
 
     @ResponseBody
     @RequestMapping("/api/json/all_info")
@@ -254,12 +256,11 @@ public class StudentQueryController {
         applicationExample.createCriteria().andUidEqualTo(studentInfo.getUid()).andEidEqualTo(eid).andAppStatusNotEqualTo("auto-approved");
         if(applicationMapper.countByExample(applicationExample) == 0)
             return ResultDTO.errorOf(0, "你没有参加该次选拔考试，不能查看该次考试的 rank 情况。");
-        SelectRankEntryExample selectRankEntryExample = new SelectRankEntryExample();
+        DetailedSelectRankEntryExample selectRankEntryExample = new DetailedSelectRankEntryExample();
         selectRankEntryExample.createCriteria().andEidEqualTo(eid);
-        List<SelectRankEntry> selectRankEntries = selectRankEntryMapper.selectByExample(selectRankEntryExample);
+        List<DetailedSelectRankEntry> selectRankEntries = detailedSelectRankEntryMapper.selectByExample(selectRankEntryExample);
         List<SelectRankItemDTO> selectRankItemDTOS = new ArrayList<>();
-        for(SelectRankEntry entry: selectRankEntries){
-            //将用户自己条目标出来，便于前端高亮显示
+        for(DetailedSelectRankEntry entry: selectRankEntries){
             SelectRankItemDTO selectRankItemDTO = new SelectRankItemDTO();
             BeanUtils.copyProperties(entry, selectRankItemDTO);
             selectRankItemDTO.setIsSelf(entry.getUid().equals(studentInfo.getUid()));
