@@ -9,7 +9,7 @@ public class CCFEventExtendedDTO extends CCFEvent {
     @Getter
     private boolean canApply;
     public boolean isCanApply(){
-        Date currentDate = new Date(new Date().getTime() - 8 * 3600 * 1000);
+        Date currentDate = new Date(new Date().getTime() + 8 * 3600 * 1000);
         return getAppliDeadline().after(currentDate) && getAppliStartsOn().before(currentDate) && getCanApply() > 0;
     }
 }
