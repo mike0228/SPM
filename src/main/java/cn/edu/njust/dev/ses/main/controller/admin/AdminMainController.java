@@ -58,6 +58,8 @@ public class AdminMainController {
     public String redList(HttpSession session){ return "teacher/redList"; }
     @RequestMapping("/teacher/userManager")
     public String userManager(HttpSession session){ return "teacher/userManager"; }
+    @RequestMapping("/teacher/rankEvent")
+    public String rankEvent(HttpSession session){ return "teacher/rankEvent"; }
 
 
 
