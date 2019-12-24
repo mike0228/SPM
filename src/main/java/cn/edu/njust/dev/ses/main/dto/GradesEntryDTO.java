@@ -12,7 +12,7 @@ public class GradesEntryDTO extends GenericDTO {
     private Integer grades;
     private Integer eid;
     private String studentId;
-    @ExcelField("证件号码")
+    @ExcelField({"证件号码","身份证号码"})
     private String idNo;
     @ExcelField("第一题得分")
     private Integer gradesProblem1;
