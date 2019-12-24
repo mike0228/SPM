@@ -219,10 +219,10 @@ public class StudentQueryController {
         gradesEntry.setGradesProblem3(gradesProblem3);
         gradesEntry.setGradesProblem4(gradesProblem4);
         gradesEntry.setGradesProblem5(gradesProblem5);
+        int items = gradesEntryMapper.insertSelective(gradesEntry);
         GradesEntryProof gradesEntryProof = new GradesEntryProof();
         gradesEntryProof.setGid(gradesEntry.getGid());
         gradesEntryProof.setProofUrl(fileService.upload(file.getInputStream(), Objects.requireNonNull(file.getOriginalFilename())));
-        int items = gradesEntryMapper.insertSelective(gradesEntry);
         int items2 = gradesEntryProofMapper.insertSelective(gradesEntryProof);
         return ResultDTO.okOf();
     }
