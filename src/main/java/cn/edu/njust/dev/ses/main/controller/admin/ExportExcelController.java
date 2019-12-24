@@ -91,7 +91,7 @@ public class ExportExcelController {
             if(count >= globalSettingsService.getMaxSponsoredParticipants())
                 break;
             ApplicationExample applicationExample = new ApplicationExample();
-            applicationExample.createCriteria().andUidEqualTo(selectRankEntry.getUid()).andEidEqualTo(eid);
+            applicationExample.createCriteria().andUidEqualTo(selectRankEntry.getUid()).andEidEqualTo(eid).andAppStatusEqualTo("pending");
             List <Application> applications = applicationMapper.selectByExample(applicationExample);
             if(applications.size() > 0){
                 for(Application application:applications){
