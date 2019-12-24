@@ -70,5 +70,8 @@ public class AdminMainController {
     public String associateImportScores(HttpSession session){ return "association_import_scores"; }
     @RequestMapping("/associate/association_change_password")
     public String associateChangePassword(HttpSession session){ return "association_change_password"; }
+    @RequestMapping("/associate/association_show_excel")
+    public String associateShowExcel(HttpSession session){ return "association_show_excel"; }
+
 
 }

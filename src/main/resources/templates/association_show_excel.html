@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>显示红名单</title>
+    <link rel="stylesheet" href="/css/layui.css" media="all">
+    <script src="/layui.js"></script>
+    <script src="/jquery-3.4.1.js"></script>
+</head>
+<body>
+    <div class="little-header">
+        <blockquote class="layui-elem-quote">显示红名单</blockquote>
+    </div>
+
+    <form class="layui-form" id="dataUpload">
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: auto">考试批次</label>
+            <div class="layui-input-inline" style="width: 360px">
+                <select  id="eidlist" name="eid" lay-filter="eid" lay-verify="required">
+                </select>
+            </div>
+        </div>
+        <input type="hidden" name="confirmId" id="confirmId">
+        <div class="layui-form-item" style="padding-left: 15px">
+            <button type="button" class="layui-btn" onclick="dataUpload()">确认提交</button>
+        </div>
+    </form>
+    <table class="layui-table" id="demo" lay-filter="test"></table>
+
+    <script>
+        layui.use('table', function () {
+            var table = layui.table;
+            var $ = layui.jquery;
+            var active = {
+                reload: function () {
+                    var demoReload = $('#demoReload');
+
+                    table.reload('testReload', {
+                        where: {
+                            keyword: demoReload.val()
+                        }
+                    });
+                }
+            };
+        });
+    </script>
+
+    <script>
+        layui.use(['form','layer'], function () {
+            var form = layui.form;
+            var $ =layui.jquery;
+            $.ajax({
+                url: '/api/json/available_events',
+                dataType: 'json',
+                type: 'get',
+                success: function (res) {
+                    $.each(res.data, function (index, item) {
+                        var text="场次:"+item.examNo +"  开始时间:"+ item.examTime.slice(0,10)+" "+item.examTime.slice(11,19);
+                        $('#eidlist').append(new Option(text, item.eid));// 下拉菜单里添加元素
+                    });
+                    layui.form.render("select");
+                }
+            });
+        })
+        function dataUpload() {
+            var eid = $("#eidlist").val()
+            alert(eid);
+            $.post("/api/json/obtain_application?status=auto-approved&status=approved&status=manually-approved&eid="+eid,
+                function (res) {
+                    if(res.code==200){
+                        layui.table.render({
+                            elem: '#demo',
+                            toolbar: '#toolbarDemo'
+                            //,height: 600
+                            ,
+                            data: res.data.data //数据接口
+                            , response: {
+                                statusName: 'code' //规定数据状态的字段名称，默认：code
+                                , statusCode: 200 //规定成功的状态码，默认：0
+                                , msgName: 'message' //规定状态信息的字段名称，默认：msg
+                                , dataName: 'data' //规定数据列表的字段名称，默认：data
+                            },
+                            page: true //开启分页
+                            ,
+                            id: 'testReload',
+                            cols: [
+                                [ //表头
+                                    {
+                                        field: 'name',
+                                        title: '姓名',
+                                        sort: true
+                                    }, {
+                                    field: 'idNo',
+                                    title: '身份证号/护照号',
+                                    sort: true
+                                }, {
+                                    title: '金额（元）',
+                                    value:0,
+                                    sort: true
+                                }
+                                ]
+                            ]
+                        });
+                    }else
+                    {
+                        layer.msg(res.message);
+                    }
+                });
+        }
+
+    </script>
+
+
+</body>
+</html>
