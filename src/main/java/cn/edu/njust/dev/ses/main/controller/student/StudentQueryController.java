@@ -156,7 +156,7 @@ public class StudentQueryController {
         Application application = new Application();
         application.setUid(studentInfo.getUid());
         application.setEid(eid);
-        application.setAppTime(currentTime);
+        application.setAppTime(new Date(currentTime.getTime() + 8 * 3600 * 1000));
         ApplicationExample applicationExample = new ApplicationExample();
         applicationExample.createCriteria().andAppStatusEqualTo("auto-approved").andUidEqualTo(studentInfo.getUid());
         long autoApprovedChancesUsed = applicationMapper.countByExample(applicationExample);
