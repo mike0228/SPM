@@ -12,6 +12,7 @@ import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -272,7 +273,11 @@ public class AdminQueryController {
         gradesEntry.setGradesProblem4(gradesProblem4);
         gradesEntry.setGradesProblem5(gradesProblem5);
 
-        gradesEntryMapper.insertSelective(gradesEntry);
+        try {
+            gradesEntryMapper.insertSelective(gradesEntry);
+        } catch (DuplicateKeyException e) {
+            return ResultDTO.errorOf(0, String.format("同一批次下已经有该生的成绩，请直接修改或删除后再添加"));
+        }
         return ResultDTO.okOf();
     }
 
@@ -485,7 +490,7 @@ public class AdminQueryController {
         return ResultDTO.okOf(selectRankEntries, selectRankEntryMapper.countByExample(selectRankEntryExample));
     }
 
-    final static List<String> availableStatus = Arrays.asList("not confirmed", "pending", "auto-approved", "approved", "manually-approved", "failed");
+    private final static List<String> availableStatus = Arrays.asList("not confirmed", "pending", "auto-approved", "approved", "manually-approved", "failed");
 
     @ResponseBody
     @RequestMapping("/api/json/obtain_application")

@@ -179,8 +179,8 @@
         <div class="layui-form-item">
             <label class="layui-form-label">类型</label>
             <div class="layui-input-inline">
-                <select name="type">
-                    <option value="teacher">teacher</option>
+                <select onchange="processChange()" name="type" id="a-type">
+                    <option value="teacher" selected>teacher</option>
                     <option value="associate">associate</option>
                 </select>
             </div>
@@ -188,7 +188,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">教师姓名</label>
             <div class="layui-input-inline">
-                <input type="text" name="teacherName" id="teacherName" class="layui-input" placeholder="如添加协会，此项可为空">
+                <input  type="text" name="teacherName" id="teacherName" class="layui-input" placeholder="如添加协会，此项可为空">
             </div>
         </div>
         <div class="layui-form-item">
@@ -210,6 +210,23 @@
 
 <script>
     //Demo
+    var typeElement = $("#a-type");
+    var teacherName = $("#teacherName");
+    var teacherId = $("#teacherWorkId");
+    function processChange(){
+        console.log("kkp");
+        if(typeElement.val() != 'teacher') {
+            teacherName.attr("disabled", "");
+            teacherId.attr("disabled", "");
+            teacherName.val("");
+            teacherId.val("");
+        }else{
+            teacherName.removeAttr("disabled");
+            teacherId.removeAttr("disabled");
+        }
+    }
+
+
     $('#addform').submit(function () {
             $.post("/api/json/create_admin_account", $("#addform").serialize(),
                 function (response) {
