@@ -15,57 +15,83 @@
         <blockquote class="layui-elem-quote">选拔考试所有成绩</blockquote>
     </div>
 </div>
+<form class="layui-form layui-form-pane"  id="eidForm">
+
+    <div class="layui-form-item">
+    <label class="layui-form-label">批次</label>
+    <div class="layui-input-block"style="width: 120px;">
+        <select id="eid" name="eid" lay-filter="eid" class="select">
+            <option value=""></option>
+        </select>
+    </div>
+    </div>
+
+<div class="layui-form-item" style="margin: 0px 0px 0px 100px;">
+
+        <button class="layui-btn" type="button" onclick="List()" >提交</button>
+
+</div>
+</form>
+
 <table class="layui-table" id="demo" lay-filter="test"></table>
-
-
 <script src="/layui.js" charset="utf-8"></script>
 <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
 
 <script>
-    layui.use('table', function(){
-        var table = layui.table;
+    layui.use(['form','layer'], function(){
+
         var $ = layui.jquery;
+        var form=layui.form;
 
-
-        table.render({
-            elem: '#demo',
-            toolbar: '#toolbarDemo'
-            //,height: 600
-            ,
-            url: '/api/json/all_select_rank' //数据接口
-            , response: {
-                statusName: 'code' //规定数据状态的字段名称，默认：code
-                , statusCode: 200 //规定成功的状态码，默认：0
-                , msgName: 'message' //规定状态信息的字段名称，默认：msg
-                , dataName: 'data' //规定数据列表的字段名称，默认：data
-            },
-            page: true //开启分页
-            ,
-            id: 'testReload',
-            cols: [
-                [ //表头
-                    {
-                        checkbox: true,
-                        fixed: true
-                    },
-                    // {
-                    //     field: 'eid',
-                    //     title: '批次',
-                    //     sort: true
-                    // },
-                    {
-                        field: 'name',
-                        title: '姓名',
-                        sort: true
-                    },{
-                    field: 'rankNo',
-                    title: '排名',
-                    sort: true
-                }, {fixed: 'right', width: 150, align: 'center', toolbar: '#barDemo'}
-                ]
-            ]
+        $.ajax({
+            url: '/api/json/available_events',
+            dataType: 'json',
+            type: 'get',
+            success: function (res) {
+                $.each(res.data, function (index, item) {
+                    var text="场次:"+item.eid ;
+                    $('#eid').append(new Option(text, item.eid));// 下拉菜单里添加元素
+                });
+                layui.form.render("select");
+            }
         });
     });
+        function List() {
+
+            layui.use(['table', 'layer'], function () {
+                var eid = $("#eid").val();
+               var table= layui.table;
+                $.post("/api/json/show_all_ranks", $("#eidForm").serialize(), function (res) {
+                    table.render({
+                        elem: '#demo',
+
+                        data: res.data
+                        , response: {
+                            statusName: 'code' //规定数据状态的字段名称，默认：code
+                            , statusCode: 200 //规定成功的状态码，默认：0
+                            , msgName: 'message' //规定状态信息的字段名称，默认：msg
+                            , dataName: 'data' //规定数据列表的字段名称，默认：data
+                        },
+                        page: true //开启分页
+                        ,
+                        id: 'testReload',
+                        cols: [
+                            [ //表头
+                                {
+                                    field: 'name',
+                                    title: '姓名',
+                                    sort: true
+                                }, {
+                                field: 'rankNo',
+                                title: '排名',
+                                sort: true
+                            }
+                            ]
+                        ]
+                    });
+                });
+            });
+        }
 </script>
 
 </body>

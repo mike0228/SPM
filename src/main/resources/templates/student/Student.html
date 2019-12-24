@@ -16,9 +16,8 @@
         <ul class="layui-nav layui-layout-right" lay-filter="user">
             <li class="layui-nav-item">
 
-                <a name="name" href="javascript:">
+                <a name="name" id="name" >
                     <img src="/images/student/njust.jpg" class="layui-nav-img">
-
                 </a>
                 <dl class="layui-nav-child">
                     <dd><a id="changePassword" >修改密码</a></dd>
@@ -38,7 +37,7 @@
                     <dl class="layui-nav-child">
                         <dd><a id="CCFscore" >CCF认证成绩</a></dd>
                         <dd><a id="SelectionScore" >公费选拔成绩</a></dd>
-
+                        <dd><a id="SelectionList" >公费选拔总排名</a></dd>
 
                     </dl>
                 </li>
@@ -64,7 +63,7 @@
     <div class="layui-body">
         <iframe id="childPage" style="width: 100%;height:99%;" frameboder="0" scrollong="no"
                 src="ChangeImformation"></iframe>
-
+    </div>
 
         <div class="layui-footer" style="text-align: center;">
             <!-- 底部固定区域 -->
@@ -100,7 +99,8 @@
 
         $.get("/api/json/all_info", function (res) {
             if (res.code == 200) {
-                $('a[name="name"]').append(res.data.name);
+                console.log(res)
+                $('a[name="name"]').append(res.data[0].name);
             } else {
                 layer.msg(res.message);
             }
