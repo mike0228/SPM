@@ -36,10 +36,9 @@
                         <div class="layui-form-item" >
                             <label class="layui-form-label">认证场次</label>
                             <div class="layui-input-inline" style="width: 160px;">
-                                <input type="text" name="eid" id="eid" placeholder="请输入" autocomplete="off"
-                                       class="layui-input"lay-verify="number1">
+                                <select id="eid" name="eid" lay-filter="*" class="select" required lay-verify="required">
+                                </select>
                             </div>
-                            <div class="layui-form-mid layui-word-aux">请输入认证届数，例如：10</div>
                         </div>
 
                         <div class="layui-form-item" >
@@ -48,7 +47,6 @@
                                 <input type="text" name="grades" id="grades" placeholder="请输入" autocomplete="off"
                                        class="layui-input"lay-verify="number2">
                             </div>
-                            <div class="layui-form-mid layui-word-aux">请输入总得分</div>
                         </div>
 
                         <div class="layui-form-item" >
@@ -57,7 +55,6 @@
                                 <input type="text" name="gradesProblem1" id="gradesProblem1" placeholder="请输入" autocomplete="off"
                                        class="layui-input"lay-verify="number2">
                             </div>
-                            <div class="layui-form-mid layui-word-aux">请输入题目1的得分</div>
                         </div>
 
                         <div class="layui-form-item" >
@@ -66,7 +63,6 @@
                                 <input type="text" name="gradesProblem2" id="gradesProblem2" placeholder="请输入" autocomplete="off"
                                        class="layui-input"lay-verify="number2">
                             </div>
-                            <div class="layui-form-mid layui-word-aux">请输入题目2的得分</div>
                         </div>
 
                         <div class="layui-form-item" >
@@ -75,7 +71,6 @@
                                 <input type="text" name="gradesProblem3" id="gradesProblem3" placeholder="请输入" autocomplete="off"
                                        class="layui-input"lay-verify="number2">
                             </div>
-                            <div class="layui-form-mid layui-word-aux">请输入题目3的得分</div>
                         </div>
 
                         <div class="layui-form-item" >
@@ -84,7 +79,6 @@
                                 <input type="text" name="gradesProblem4" id="gradesProblem4" placeholder="请输入" autocomplete="off"
                                        class="layui-input"lay-verify="number2">
                             </div>
-                            <div class="layui-form-mid layui-word-aux">请输入题目4的得分</div>
                         </div>
 
                         <div class="layui-form-item" >
@@ -93,7 +87,6 @@
                                 <input type="text" name="gradesProblem5" id="gradesProblem5" placeholder="请输入" autocomplete="off"
                                        class="layui-input"lay-verify="number2">
                             </div>
-                            <div class="layui-form-mid layui-word-aux">请输入题目5的得分</div>
                         </div>
 
                         <div class="layui-form-item" >
@@ -176,7 +169,19 @@
         });
 
     });
-
+    $.ajax({
+        url: '/api/json/available_events',
+        dataType: 'json',
+        type: 'get',
+        success: function (res) {
+            $.each(res.data, function (index, item) {
+                var text="场次:"+item.examNo +"  开始时间:"+ item.examTime.slice(0,10)+" "+ item.examTime.slice(11,19);
+                var newElem = new Option(text, item.eid);
+                $('#eid').append(newElem);// 下拉菜单里添加元素
+            });
+            layui.form.render("select");
+        }
+    });
     layui.use('upload', function(){
         var $ = layui.jquery
             ,upload = layui.upload;
