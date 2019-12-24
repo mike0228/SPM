@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class SelectRankEntryDTO  extends GenericDTO {
+    @ExcelField("序号")
     private Integer reid;
     @ExcelField("姓名")
     private String name;
